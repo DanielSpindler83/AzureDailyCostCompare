@@ -13,9 +13,10 @@ class Program
             var billingAccountId = await billingService.GetBillingAccountIdAsync(accessToken);
 
             var costService = new CostService();
-            var startDate = DateTime.UtcNow.AddMonths(-1).Date;
-            var endDate = DateTime.UtcNow.Date;
-            var costData = await costService.QueryCostManagementAPI(accessToken, billingAccountId, startDate, endDate);
+
+            var dateHelperService = new DateHelperService();
+
+            var costData = await costService.QueryCostManagementAPI(accessToken, billingAccountId, dateHelperService.StartDate, dateHelperService.EndDate);
 
             var reportGenerator = new ReportGenerator();
             reportGenerator.GenerateDailyCostReport(costData);
