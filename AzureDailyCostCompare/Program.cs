@@ -1,26 +1,21 @@
-﻿namespace AzureDailyCostCompare;
-
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Headers;
 using Azure.Identity;
 using Azure.Core;
 using System.Net.Http.Json;
 using System.Text.Json;
 
+namespace AzureDailyCostCompare;
+
 class Program
 {
     static async Task Main(string[] args)
     {
-        // Replace with your billing account ID
-        // this is NOT a real billing account ID - but its the same format - need to split out to config and explain how to get this
-        string billingScope = "/providers/Microsoft.Billing/billingAccounts/a1b2c3d4-e5f6-7890-1234-abcd5678efgh:0987zyxw-4321-vbnm-lkji-8765qwer4321_2019-05-31";
-
         try
         {
             // you need to be already logged into Azure CLI with an account that has billing account read access
-            string accessToken = await GetAccessToken();
+            string accessToken = await GetAzureCliAccessToken();
+
+            string billingId = await GetBillingAccountIdAsync(accessToken);
 
             // I believe billing is done via UTC time
             DateTime today = DateTime.UtcNow;
@@ -35,7 +30,7 @@ class Program
             DateTime firstDayOfCurrentMonth = new DateTime(today.Year, today.Month, 1);
 
             // Fetch the cost data for the entire date range once
-            List<DailyCosts> costData = await QueryCostManagementAPI(accessToken, billingScope, firstDayOfPreviousMonth, today);
+            List<DailyCosts> costData = await QueryCostManagementAPI(accessToken, billingId, firstDayOfPreviousMonth, today);
 
             // Filter data for current month and previous month
             var currentMonthData = costData
@@ -96,9 +91,8 @@ class Program
         return new DateTime(date.Year, date.Month, date.Day).AddMonths(-1);
     }
 
-    private static async Task<string> GetAccessToken()
+    private static async Task<string> GetAzureCliAccessToken()
     {
-        // Authenticate using Azure CLI
         var credential = new AzureCliCredential();
         var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
         var accessToken = await credential.GetTokenAsync(tokenRequestContext);
@@ -181,4 +175,32 @@ class Program
         return dailyCostsList;
     }
 
+
+
+    private static async Task<string> GetBillingAccountIdAsync(string token)
+    {
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var requestUri = "https://management.azure.com/providers/Microsoft.Billing/billingAccounts?api-version=2020-05-01";
+        var response = await client.GetAsync(requestUri);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var jsonDocument = JsonDocument.Parse(content);
+            foreach (var item in jsonDocument.RootElement.GetProperty("value").EnumerateArray())
+            {
+                var id = item.GetProperty("id").GetString();
+                return id; // Return the first billing account ID
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+            throw new HttpRequestException($"Failed to retrieve billing account: {response.ReasonPhrase}");
+        }
+
+        throw new InvalidOperationException("Failed to extract billing account ID from JSON response");
+    }
 }
