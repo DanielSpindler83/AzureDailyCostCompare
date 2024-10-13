@@ -1,7 +1,4 @@
-﻿
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace AzureDailyCostCompare;
+﻿namespace AzureDailyCostCompare;
 
 class ReportGenerator
 {
@@ -69,7 +66,6 @@ class ReportGenerator
 
 
         Console.WriteLine("\nDaily Averages in USD");
-        (not including current day as data is incomplete)
         Console.WriteLine("Current Month Average: {0:F2}", averageCurrentPartialMonth);
         Console.WriteLine("Previous Month Average for same period: {0:F2}", averagePreviousPartialMonth);
         Console.WriteLine("Running averages do NOT include current day as data is incomplete.");
