@@ -7,8 +7,9 @@ class ReportGenerator
     private DateHelperService dateHelperService;
     private List<DailyCosts> currentMonthCostData;
     private List<DailyCosts> previousMonthCostData;
-    private decimal averageCurrentMonth;
-    private decimal averageLastMonth;
+    private decimal averageCurrentPartialMonth;
+    private decimal averagePreviousPartialMonth;
+    private decimal averagePreviousFullMonth;
 
 
     public ReportGenerator(List<DailyCosts> costData, DateHelperService dateHelperService)
@@ -23,10 +24,17 @@ class ReportGenerator
                 .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfPreviousMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfPreviousMonth.Year)
                 .ToList();
 
-        averageCurrentMonth = currentMonthCostData // dont include the last day as the data is not complete and skews the average down
-            .Take(currentMonthCostData.Count - 1)
+        var dayCountCurrentMonth = currentMonthCostData.Count - 1; // dont include the last day as the data is not complete and skews the average down
+
+        averageCurrentPartialMonth = currentMonthCostData
+            .Take(dayCountCurrentMonth)
             .Average(dc => dc.Cost);
-        averageLastMonth = previousMonthCostData.Average(dc => dc.Cost);
+
+        averagePreviousPartialMonth = previousMonthCostData
+            .Take(dayCountCurrentMonth)
+            .Average(dc => dc.Cost);
+
+        averagePreviousFullMonth = previousMonthCostData.Average(dc => dc.Cost);
 
     }
     public void GenerateDailyCostReport()
@@ -59,7 +67,10 @@ class ReportGenerator
 
 
         Console.WriteLine("\nDaily Averages in USD:");
-        Console.WriteLine("Current Month Average(not inlcuding current day as data is incomplete): {0:F2}", averageCurrentMonth);
-        Console.WriteLine("Last Month Average: {0:F2}", averageLastMonth);
+        Console.WriteLine("Current Month Average(not inlcuding current day as data is incomplete): {0:F2}", averageCurrentPartialMonth);
+        Console.WriteLine("Previous Month Average for same period(not inlcuding current day as data is incomplete): {0:F2}", averagePreviousPartialMonth);
+        Console.WriteLine("---");
+        Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
+        Console.WriteLine("---");
     }
 }
