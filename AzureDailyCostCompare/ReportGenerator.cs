@@ -64,13 +64,18 @@ class ReportGenerator
             Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", row.DayOfMonth, previousCost, currentCost, costDifference);
         }
 
+        // not ideal but the time created isnt really tied to when we grabbed the datafrom the api - just when we instantiated the dateHelperService - something to be weary of if making changes
+        DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.Today, TimeZoneInfo.Local);
 
-        Console.WriteLine("\nDaily Averages in USD");
+
+        Console.WriteLine("\nALL costs in USD");
         Console.WriteLine("Current Month Average: {0:F2}", averageCurrentPartialMonth);
         Console.WriteLine("Previous Month Average for same period: {0:F2}", averagePreviousPartialMonth);
         Console.WriteLine("Running averages do NOT include current day as data is incomplete.");
         Console.WriteLine("------");
         Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
         Console.WriteLine("------");
+        Console.WriteLine("Time data was retrieved from Microsoft Azure Cost Management API(approx.): {0}", localDateTimeToday);
+        Console.WriteLine("------\n");
     }
 }

@@ -10,7 +10,7 @@ public class DateHelperService
 
     public DateHelperService()
     {
-        Today = DateTime.UtcNow.Date;
+        Today = DateTime.UtcNow;
         if (Today.Day == 1)
         {
             Console.WriteLine("Today is first of the month, no data yet, so using last day of previous month.");
