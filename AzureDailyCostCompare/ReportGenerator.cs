@@ -75,7 +75,7 @@ class ReportGenerator
         Console.WriteLine("------");
         Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
         Console.WriteLine("------");
-        Console.WriteLine("Time data was retrieved from Microsoft Azure Cost Management API(approx.): {0}", localDateTimeToday);
+        Console.WriteLine("Time data was retrieved from Microsoft Azure Cost Management API(approx. & in local system timezone): {0}", localDateTimeToday);
         Console.WriteLine("------\n");
     }
 }
