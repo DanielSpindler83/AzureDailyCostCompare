@@ -2,12 +2,11 @@
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         try
         {
-            var authenticationService = new AuthenticationService();
-            var accessToken = await authenticationService.GetAccessToken();
+            var accessToken = await AuthenticationService.GetAccessToken();
 
             var billingService = new BillingService();
             var billingAccountId = await billingService.GetBillingAccountIdAsync(accessToken);
