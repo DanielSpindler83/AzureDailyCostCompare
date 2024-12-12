@@ -7,11 +7,14 @@ namespace AzureDailyCostCompare;
 class CostService
 {
     private readonly HttpClient _httpClient = new HttpClient();
+    private const int DataLatencyHours = 6;
 
     public async Task<List<DailyCosts>> QueryCostManagementAPI(string accessToken, string billingAccountId, DateTime startDate, DateTime endDate)
     {
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        // Adjust end date to account for data latency
+        var adjustedEndDate = endDate.AddHours(-DataLatencyHours);
 
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         var requestBody = new
         {
             type = "ActualCost",
@@ -19,7 +22,7 @@ class CostService
             timePeriod = new
             {
                 from = startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                to = endDate.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                to = adjustedEndDate.ToString("yyyy-MM-ddTHH:mm:ssZ")
             },
             dataSet = new
             {
