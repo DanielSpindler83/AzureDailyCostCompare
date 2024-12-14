@@ -65,7 +65,7 @@ class ReportGenerator
         }
 
         // not ideal but the time created isnt really tied to when we grabbed the datafrom the api - just when we instantiated the dateHelperService - something to be weary of if making changes
-        DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.Today, TimeZoneInfo.Local);
+        DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.TodayUtc, TimeZoneInfo.Local);
 
 
         Console.WriteLine("\nALL costs in USD");

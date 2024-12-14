@@ -15,7 +15,7 @@ class Program
 
             var costService = new CostService();
 
-            var costData = await costService.QueryCostManagementAPI(accessToken, billingAccountId, dateHelperService.FirstDayOfPreviousMonth, dateHelperService.Today);
+            var costData = await costService.QueryCostManagementAPI(accessToken, billingAccountId, dateHelperService.FirstDayOfPreviousMonth, dateHelperService.DataReferenceDate);
 
             var reportGenerator = new ReportGenerator(costData, dateHelperService);
             reportGenerator.GenerateDailyCostReport();
