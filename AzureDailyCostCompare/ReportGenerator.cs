@@ -23,7 +23,7 @@ class ReportGenerator
                 .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfPreviousMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfPreviousMonth.Year)
                 .ToList();
 
-        var dayCountCurrentMonth = currentMonthCostData.Count - 1; // dont include the last day as the data is not complete and skews the average down
+        var dayCountCurrentMonth = currentMonthCostData.Count;
 
         averageCurrentPartialMonth = currentMonthCostData
             .Take(dayCountCurrentMonth)
@@ -64,8 +64,10 @@ class ReportGenerator
             Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", row.DayOfMonth, previousCost, currentCost, costDifference);
         }
 
+
+        /// do we move this to datehelperservice as a static method maybe? Idea is keep all date\time logic in one palce
         // not ideal but the time created isnt really tied to when we grabbed the datafrom the api - just when we instantiated the dateHelperService - something to be weary of if making changes
-        DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.TodayUtc, TimeZoneInfo.Local);
+        //DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.DataReferenceDate, TimeZoneInfo.Local);
 
 
         Console.WriteLine("\nALL costs in USD");
@@ -75,7 +77,8 @@ class ReportGenerator
         Console.WriteLine("------");
         Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
         Console.WriteLine("------");
-        Console.WriteLine("Time data was retrieved from Microsoft Azure Cost Management API(approx. & in local system timezone): {0}", localDateTimeToday);
+        // Console.WriteLine("Time data was retrieved from Microsoft Azure Cost Management API(approx. & in local system timezone): {0}", localDateTimeToday);
+        Console.WriteLine(dateHelperService.GetDataCurrencyDescription());
         Console.WriteLine("------\n");
     }
 }
