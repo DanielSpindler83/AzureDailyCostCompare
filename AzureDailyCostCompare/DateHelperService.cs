@@ -41,12 +41,12 @@ public class DateHelperService
         {
             return $"Today is between 1st of the month 6am and 2nd of the month 5:59am, showing last two full months(all days complete data)." +
                    $"Daily cost data is complete up to {DataReferenceDate:yyyy-MM-dd} at 06:00 UTC\n" +
-                   $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay:yyyy-MM-dd}";
+                   $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay}";
         }
         else
         {
             return $"Daily cost data is complete up to {DataReferenceDate:yyyy-MM-dd} at 06:00 UTC\n" +
-            $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay:yyyy-MM-dd}";
+            $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay}";
         }
 
     }
