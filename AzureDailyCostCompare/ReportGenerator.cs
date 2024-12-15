@@ -68,9 +68,11 @@ class ReportGenerator
         // not ideal but the time created isnt really tied to when we grabbed the datafrom the api - just when we instantiated the dateHelperService - something to be weary of if making changes
         //DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.DataReferenceDate, TimeZoneInfo.Local);
 
-        Console.WriteLine("\nALL costs in USD and for full days periods only - no partial day cost data is displayed.");
-        Console.WriteLine("Current Month Average(for {0:F2} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
-        Console.WriteLine("Previous Month Average for same period({0:F2} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);
+        // still want to show the time that we displayed the results (in users timezone)
+
+        Console.WriteLine("\nALL costs in USD and for full day periods only - no partial day cost data is displayed.");
+        Console.WriteLine("Current Month Average(for {0} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
+        Console.WriteLine("Previous Month Average for same period({0} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);
         Console.WriteLine("Rolling averages only include full days.");
         Console.WriteLine("------");
         Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
