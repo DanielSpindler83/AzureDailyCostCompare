@@ -1,6 +1,6 @@
 ﻿namespace AzureDailyCostCompare;
 
-class DailyCosts
+record DailyCosts
 {
     public DateOnly DateString { get; set; }
     public decimal Cost { get; set; }

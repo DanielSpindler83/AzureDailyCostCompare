@@ -2,18 +2,17 @@
 
 class ReportGenerator
 {
-    private List<DailyCosts> costData;
-    private DateHelperService dateHelperService;
-    private List<DailyCosts> currentMonthCostData;
-    private List<DailyCosts> previousMonthCostData;
-    private decimal averageCurrentPartialMonth;
-    private decimal averagePreviousPartialMonth;
-    private decimal averagePreviousFullMonth;
+    private readonly DateHelperService dateHelperService;
+    private readonly List<DailyCosts> currentMonthCostData;
+    private readonly List<DailyCosts> previousMonthCostData;
+    private readonly decimal averageCurrentPartialMonth;
+    private readonly decimal averagePreviousPartialMonth;
+    private readonly decimal averagePreviousFullMonth;
 
 
     public ReportGenerator(List<DailyCosts> costData, DateHelperService dateHelperService)
     {
-        this.costData = costData;
+
         this.dateHelperService = dateHelperService;
 
         currentMonthCostData = costData
