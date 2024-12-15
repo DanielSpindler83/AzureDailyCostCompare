@@ -8,7 +8,6 @@ public class DateHelperService
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
 
-
     public DateHelperService(
         DateTime? overrideDate = null,
         IDateProvider? dateProvider = null)
@@ -19,15 +18,15 @@ public class DateHelperService
         // Get the reference datetime
         var referenceDateTime = overrideDate ?? provider.GetCurrentDate();
 
-        // NOTE if we set historical date to be 1st UTC with midnight time(the default) - do we have a bug? What does it show? last 2 months without last day of month....not ideal
-        // For historical if we want to see two full months(all days complete) - set datetime between 1st of the month 6am and 2nd of the month 5:59am
-
-        // NOTE 6am is a educated guess regarding MS Cost API having the full days data mostly done and available
+        // NOTE 6am is a educated approximation regarding MS Cost API having the full days data complete and available
         // Determine the data reference date, accounting for the 6am UTC cutoff to ensure a complete day data set
         // Once we pass 6am UTC - the full cost data is available for the date prior to todays UTC date
-        DataReferenceDate = referenceDateTime.Hour < 6
-            ? referenceDateTime.Date.AddDays(-2)  // Before 6am UTC, we dont have full day today so last full day is 2 days ago
-            : referenceDateTime.Date.AddDays(-1); // its after 6am UTC so yesterday is last full day
+        // If no override date, apply the 6am UTC cutoff logic
+        DataReferenceDate = overrideDate.HasValue
+            ? ValidateOverrideDate(overrideDate.Value)
+            : (referenceDateTime.Hour < 6
+                ? referenceDateTime.Date.AddDays(-2)  // Before 6am UTC, we dont have full day today so last full day is 2 days ago
+                : referenceDateTime.Date.AddDays(-1)); // its after 6am UTC so yesterday is last full day
 
         FirstDayOfPreviousMonth = new DateTime(DataReferenceDate.Year, DataReferenceDate.Month, 1).AddMonths(-1);
         FirstDayOfCurrentMonth = new DateTime(DataReferenceDate.Year, DataReferenceDate.Month, 1);
@@ -42,16 +41,40 @@ public class DateHelperService
 
         if (DataReferenceDate.Day == 1) // NOTE this covers up to 5:59am UTC on 2nd (due to already accounting for 6am UTC full day data set)
         {
-            return $"Today is between 1st of the month 6am and 2nd of the month 5:59am, showing last two full months(all days complete data)." +
-                   $"Daily cost data is complete up to {DataReferenceDate:yyyy-MM-dd} at 06:00 UTC\n" +
+            // not sure if really need this? If we do is there a way we can deduplicate the string data?
+            return $"Today is between 1st of the month 6am and 2nd of the month 5:59am UTC, showing last two full months(all days complete data)." +
+                   $"Daily cost data is complete up to {DataReferenceDate} UTC\n" +
                    $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay}";
         }
         else
         {
-            return $"Daily cost data is complete up to {DataReferenceDate:yyyy-MM-dd} at 06:00 UTC\n" +
+            return $"Daily cost data is complete up to {DataReferenceDate} UTC\n" +
             $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay}";
         }
 
+    }
+
+    private static DateTime ValidateOverrideDate(DateTime overrideDate)
+    {
+        // Get the current UTC time
+        var currentUtcTime = DateTime.UtcNow;
+
+        // Determine the latest date with full data available based on 6am UTC cutoff
+        DateTime latestFullDataDate = currentUtcTime.Hour < 6
+            ? currentUtcTime.Date.AddDays(-2)  // Before 6am, full data is available two days back
+            : currentUtcTime.Date.AddDays(-1); // After 6am, full data is available for previous day
+
+        // Ensure the override date is not in the future and has full data available
+        if (overrideDate.Date > latestFullDataDate.Date)
+        {
+            throw new ArgumentException(
+                $"Override date must be on or before {latestFullDataDate:yyyy-MM-dd} " +
+                "to ensure full data availability (based on 6am UTC cutoff).",
+                nameof(overrideDate));
+        }
+
+        // Return the date with time stripped
+        return overrideDate.Date;
     }
 
     // Static method for easy testing creation
