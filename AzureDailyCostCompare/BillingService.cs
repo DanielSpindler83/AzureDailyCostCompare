@@ -5,7 +5,7 @@ namespace AzureDailyCostCompare;
 
 class BillingService
 {
-    private readonly HttpClient _httpClient = new HttpClient();
+    private readonly HttpClient _httpClient = new();
 
     public async Task<string> GetBillingAccountIdAsync(string token)
     {
@@ -20,7 +20,7 @@ class BillingService
             foreach (var item in jsonDocument.RootElement.GetProperty("value").EnumerateArray())
             {
                 var id = item.GetProperty("id").GetString();
-                return id; // Return the first billing account ID
+                return id!; // Return the first billing account ID
             }
         }
         else

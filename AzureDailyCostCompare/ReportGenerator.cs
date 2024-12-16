@@ -8,7 +8,7 @@ class ReportGenerator
     private readonly decimal averageCurrentPartialMonth;
     private readonly decimal averagePreviousPartialMonth;
     private readonly decimal averagePreviousFullMonth;
-
+    private readonly decimal currentToPreviousMonthAveragesCostDelta;
 
     public ReportGenerator(List<DailyCosts> costData, DateHelperService dateHelperService)
     {
@@ -31,6 +31,8 @@ class ReportGenerator
         averagePreviousPartialMonth = previousMonthCostData
             .Take(dayCountCurrentMonth)
             .Average(dc => dc.Cost);
+
+        currentToPreviousMonthAveragesCostDelta = averageCurrentPartialMonth - averagePreviousPartialMonth;
 
         averagePreviousFullMonth = previousMonthCostData.Average(dc => dc.Cost);
 
@@ -63,22 +65,14 @@ class ReportGenerator
             Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", row.DayOfMonth, previousCost, currentCost, costDifference);
         }
 
-
-        /// do we move this to datehelperservice as a static method maybe? Idea is keep all date\time logic in one palce
-        // not ideal but the time created isnt really tied to when we grabbed the datafrom the api - just when we instantiated the dateHelperService - something to be weary of if making changes
-        //DateTime localDateTimeToday = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.DataReferenceDate, TimeZoneInfo.Local);
-
-        // still want to show the time that we displayed the results (in users timezone)
-
         Console.WriteLine("\nALL costs in USD and for full day periods only - no partial day cost data is displayed.");
-        Console.WriteLine("Current Month Average(for {0} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
-        Console.WriteLine("Previous Month Average for same period({0} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);
-        Console.WriteLine("Rolling averages only include full days.");
+        Console.WriteLine("------");
+        Console.WriteLine("Current month average(for {0} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
+        Console.WriteLine("Previous month average for same period({0} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);
+        Console.WriteLine("Current to previous month averages cost delta : {0:F2}", currentToPreviousMonthAveragesCostDelta);
         Console.WriteLine("------");
         Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
         Console.WriteLine("------");
-        // Console.WriteLine("Time data was retrieved from Microsoft Azure Cost Management API(approx. & in local system timezone): {0}", localDateTimeToday);
         Console.WriteLine(dateHelperService.GetDataCurrencyDescription());
-        Console.WriteLine("------\n");
     }
 }

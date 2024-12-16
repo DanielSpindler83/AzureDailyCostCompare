@@ -8,6 +8,8 @@ public class DateHelperService
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
 
+    private const int FULL_DAY_DATA_CUTOFF_HOUR = 4; // NOTE 4am is a educated approximation regarding MS Cost API having the full days data complete and available
+
     public DateHelperService(
         DateTime? overrideDate = null,
         IDateProvider? dateProvider = null)
@@ -18,15 +20,10 @@ public class DateHelperService
         // Get the reference datetime
         var referenceDateTime = overrideDate ?? provider.GetCurrentDate();
 
-        // NOTE 6am is a educated approximation regarding MS Cost API having the full days data complete and available
-        // Determine the data reference date, accounting for the 6am UTC cutoff to ensure a complete day data set
-        // Once we pass 6am UTC - the full cost data is available for the date prior to todays UTC date
-        // If no override date, apply the 6am UTC cutoff logic
+        // If no override date, apply the Xam UTC cutoff logic
         DataReferenceDate = overrideDate.HasValue
             ? ValidateOverrideDate(overrideDate.Value)
-            : (referenceDateTime.Hour < 6
-                ? referenceDateTime.Date.AddDays(-2)  // Before 6am UTC, we dont have full day today so last full day is 2 days ago
-                : referenceDateTime.Date.AddDays(-1)); // its after 6am UTC so yesterday is last full day
+            : DetermineDataReferenceDate(referenceDateTime);
 
         FirstDayOfPreviousMonth = new DateTime(DataReferenceDate.Year, DataReferenceDate.Month, 1).AddMonths(-1);
         FirstDayOfCurrentMonth = new DateTime(DataReferenceDate.Year, DataReferenceDate.Month, 1);
@@ -39,30 +36,17 @@ public class DateHelperService
         localTimeZone ??= TimeZoneInfo.Local;
         var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(DataReferenceDate, localTimeZone);
 
-        if (DataReferenceDate.Day == 1) // NOTE this covers up to 5:59am UTC on 2nd (due to already accounting for 6am UTC full day data set)
-        {
-            // not sure if really need this? If we do is there a way we can deduplicate the string data?
-            return $"Today is between 1st of the month 6am and 2nd of the month 5:59am UTC, showing last two full months(all days complete data)." +
-                   $"Daily cost data is complete up to {DataReferenceDate} UTC\n" +
-                   $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay}";
-        }
-        else
-        {
-            return $"Daily cost data is complete up to {DataReferenceDate} UTC\n" +
-            $"In your local timezone ({localTimeZone.DisplayName}): {localDataReferenceDay}";
-        }
-
+        return $"Daily cost data is complete up to {DataReferenceDate} UTC\n" +
+               $"Daily cost data is complete up to {localDataReferenceDay} {localTimeZone.DisplayName}\n" +
+               $"------\n" +
+               $"This report was generated at {DateTime.Now} {localTimeZone.DisplayName}\n" +
+               $"------\n";
     }
 
     private static DateTime ValidateOverrideDate(DateTime overrideDate)
     {
-        // Get the current UTC time
-        var currentUtcTime = DateTime.UtcNow;
-
-        // Determine the latest date with full data available based on 6am UTC cutoff
-        DateTime latestFullDataDate = currentUtcTime.Hour < 6
-            ? currentUtcTime.Date.AddDays(-2)  // Before 6am, full data is available two days back
-            : currentUtcTime.Date.AddDays(-1); // After 6am, full data is available for previous day
+        // Determine the latest date with full data available based on reference cut off
+        DateTime latestFullDataDate = DetermineDataReferenceDate(DateTime.UtcNow);
 
         // Ensure the override date is not in the future and has full data available
         if (overrideDate.Date > latestFullDataDate.Date)
@@ -75,6 +59,15 @@ public class DateHelperService
 
         // Return the date with time stripped
         return overrideDate.Date;
+    }
+
+    private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime)
+    {
+        DateTime selectedDate = referenceDateTime.Hour < FULL_DAY_DATA_CUTOFF_HOUR
+            ? referenceDateTime.Date.AddDays(-2)  // Before cutoff, we dont have full day today so last full day is 2 days ago
+            : referenceDateTime.Date.AddDays(-1); // its after cutoff so yesterday is last full day
+
+        return selectedDate.Date.AddHours(FULL_DAY_DATA_CUTOFF_HOUR); // set time to be the cutoff so when we display it as date time it is to when the data is current to
     }
 
     // Static method for easy testing creation
