@@ -37,6 +37,7 @@ public class DateHelperService
                $"The end of the day in UTC time is {localDataReferenceDay} in local timezone of {localTimeZone.DisplayName}\n" +
                $"------\n" +
                $"This report was generated at {DateTime.Now} {localTimeZone.DisplayName}\n" +
+               $"This report was generated at {DateTime.UtcNow} UTC\n" +
                $"------\n";
     }
 
