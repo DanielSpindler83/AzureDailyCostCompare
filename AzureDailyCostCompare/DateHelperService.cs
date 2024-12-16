@@ -8,7 +8,7 @@ public class DateHelperService
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
 
-    public const int FULL_DAY_DATA_CUTOFF_HOUR = 4; // NOTE 4am is a educated approximation regarding MS Cost API having the full days data complete and available
+    public const int FULL_DAY_DATA_CUTOFF_HOUR = 4; // NOTE 4am is a educated approximation(based on testing) regarding MS Cost API having the full previous days data complete and available
 
     public DateHelperService(
         DateTime? overrideDate = null,
