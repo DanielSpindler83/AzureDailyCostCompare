@@ -1,0 +1,188 @@
+{
+  "mockCostData": [
+    {
+      "dateString": "2023-12-01",
+      "cost": 95.50
+    },
+    {
+      "dateString": "2023-12-02",
+      "cost": 102.75
+    },
+    {
+      "dateString": "2023-12-03",
+      "cost": 88.25
+    },
+    {
+      "dateString": "2023-12-04",
+      "cost": 110.60
+    },
+    {
+      "dateString": "2023-12-05",
+      "cost": 103.95
+    },
+    {
+      "dateString": "2023-12-06",
+      "cost": 112.30
+    },
+    {
+      "dateString": "2023-12-07",
+      "cost": 106.65
+    },
+    {
+      "dateString": "2023-12-08",
+      "cost": 118.00
+    },
+    {
+      "dateString": "2023-12-09",
+      "cost": 109.35
+    },
+    {
+      "dateString": "2023-12-10",
+      "cost": 125.70
+    },
+    {
+      "dateString": "2023-12-11",
+      "cost": 115.05
+    },
+    {
+      "dateString": "2023-12-12",
+      "cost": 132.40
+    },
+    {
+      "dateString": "2023-12-13",
+      "cost": 120.75
+    },
+    {
+      "dateString": "2023-12-14",
+      "cost": 138.10
+    },
+    {
+      "dateString": "2023-12-15",
+      "cost": 125.45
+    },
+    {
+      "dateString": "2023-12-16",
+      "cost": 142.80
+    },
+    {
+      "dateString": "2023-12-17",
+      "cost": 131.15
+    },
+    {
+      "dateString": "2023-12-18",
+      "cost": 148.50
+    },
+    {
+      "dateString": "2023-12-19",
+      "cost": 136.85
+    },
+    {
+      "dateString": "2023-12-20",
+      "cost": 155.20
+    },
+    {
+      "dateString": "2023-12-21",
+      "cost": 142.55
+    },
+    {
+      "dateString": "2023-12-22",
+      "cost": 161.90
+    },
+    {
+      "dateString": "2023-12-23",
+      "cost": 148.25
+    },
+    {
+      "dateString": "2023-12-24",
+      "cost": 168.60
+    },
+    {
+      "dateString": "2023-12-25",
+      "cost": 154.95
+    },
+    {
+      "dateString": "2023-12-26",
+      "cost": 175.30
+    },
+    {
+      "dateString": "2023-12-27",
+      "cost": 161.65
+    },
+    {
+      "dateString": "2023-12-28",
+      "cost": 182.00
+    },
+    {
+      "dateString": "2023-12-29",
+      "cost": 168.35
+    },
+    {
+      "dateString": "2023-12-30",
+      "cost": 189.70
+    },
+    {
+      "dateString": "2023-12-31",
+      "cost": 175.05
+    },
+    {
+      "dateString": "2024-01-01",
+      "cost": 100.50
+    },
+    {
+      "dateString": "2024-01-02",
+      "cost": 110.75
+    },
+    {
+      "dateString": "2024-01-03",
+      "cost": 121.25
+    },
+    {
+      "dateString": "2024-01-04",
+      "cost": 132.60
+    },
+    {
+      "dateString": "2024-01-05",
+      "cost": 143.95
+    },
+    {
+      "dateString": "2024-01-06",
+      "cost": 155.30
+    },
+    {
+      "dateString": "2024-01-07",
+      "cost": 166.65
+    },
+    {
+      "dateString": "2024-01-08",
+      "cost": 178.00
+    },
+    {
+      "dateString": "2024-01-09",
+      "cost": 189.35
+    },
+    {
+      "dateString": "2024-01-10",
+      "cost": 200.70
+    },
+    {
+      "dateString": "2024-01-11",
+      "cost": 212.05
+    },
+    {
+      "dateString": "2024-01-12",
+      "cost": 223.40
+    },
+    {
+      "dateString": "2024-01-13",
+      "cost": 234.75
+    },
+    {
+      "dateString": "2024-01-14",
+      "cost": 246.10
+    },
+    {
+      "dateString": "2024-01-15",
+      "cost": 257.45
+    }
+  ]
+}
