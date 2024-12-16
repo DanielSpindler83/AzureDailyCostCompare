@@ -65,7 +65,8 @@ class ReportGenerator
             Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", row.DayOfMonth, previousCost, currentCost, costDifference);
         }
 
-        Console.WriteLine("\nALL costs in USD and for full day periods only - no partial day cost data is displayed.");
+        Console.WriteLine("\nAll costs in USD");
+        Console.WriteLine("A day's data is considered complete {0} hours after the end of the day in UTC time.", DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR);
         Console.WriteLine("------");
         Console.WriteLine("Current month average(for {0} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
         Console.WriteLine("Previous month average for same period({0} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);

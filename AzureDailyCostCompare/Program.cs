@@ -12,6 +12,8 @@ class Program
             var billingAccountId = await billingService.GetBillingAccountIdAsync(accessToken);
 
             // we can now add optional app command line parameter for historical date and pass into dateHelperService
+            // DateTime lastDayOfNovember = new DateTime(2024, 11, 30);\
+            // var dateHelperService = new DateHelperService(lastDayOfNovember);
 
             var dateHelperService = new DateHelperService();
 
