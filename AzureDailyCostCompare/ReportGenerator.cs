@@ -66,7 +66,7 @@ class ReportGenerator
         }
 
         Console.WriteLine("\nAll costs in USD");
-        Console.WriteLine("A day's data is considered complete {0} hours after the end of the day in UTC time.", DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR);
+        Console.WriteLine("A day's data is considered complete {0} hours after the end of the day in UTC time.", DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR_UTC);
         Console.WriteLine("------");
         Console.WriteLine("Current month average(for {0} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
         Console.WriteLine("Previous month average for same period({0} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);

@@ -8,7 +8,7 @@ public class DateHelperService
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
 
-    public const int FULL_DAY_DATA_CUTOFF_HOUR = 4; // NOTE 4am is a educated approximation(based on testing) regarding MS Cost API having the full previous days data complete and available
+    public const int FULL_DAY_DATA_CUTOFF_HOUR_UTC = 4; // NOTE 4am is a educated approximation(based on testing) regarding MS Cost API having the full previous days data complete and available
 
     public DateHelperService(
         DateTime? overrideDate = null,
@@ -50,7 +50,7 @@ public class DateHelperService
         {
             throw new ArgumentException(
                 $"Override date must be on or before {latestFullDataDate:yyyy-MM-dd} " +
-                $"to ensure full data availability (based on {FULL_DAY_DATA_CUTOFF_HOUR} o'clock UTC cutoff).",
+                $"to ensure full data availability (based on {FULL_DAY_DATA_CUTOFF_HOUR_UTC} o'clock UTC cutoff).",
                 nameof(overrideDate));
         }
 
@@ -59,14 +59,13 @@ public class DateHelperService
 
     private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime)
     {
-        DateTime selectedDate = referenceDateTime.Hour < FULL_DAY_DATA_CUTOFF_HOUR
+        DateTime selectedDate = referenceDateTime.Hour < FULL_DAY_DATA_CUTOFF_HOUR_UTC
             ? referenceDateTime.Date.AddDays(-2)  // Before cutoff, we dont have full day today so last full day is 2 days ago
             : referenceDateTime.Date.AddDays(-1); // its after cutoff so yesterday is last full day
 
         return selectedDate.Date;
     }
 
-    // Static method for easy testing creation
     public static DateHelperService CreateForTesting(int year, int month, int day)
     {
         return new DateHelperService(new DateTime(year, month, day));
