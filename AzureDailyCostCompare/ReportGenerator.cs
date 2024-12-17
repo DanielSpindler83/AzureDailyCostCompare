@@ -165,6 +165,6 @@ class ReportGenerator
         Console.WriteLine($"The end of the day in UTC time is {localDataReferenceDay} in local timezone of {localTimeZone.DisplayName}");
 
         Console.WriteLine($"\nThis report was generated at {DateTime.Now} {localTimeZone.DisplayName}");
-        Console.WriteLine($"This report was generated at {DateTime.UtcNow} UTC");
+        Console.WriteLine($"This report was generated at {DateTime.UtcNow} UTC\n");
     }
 }
