@@ -115,29 +115,48 @@ class ReportGenerator
         var localTimeZone = TimeZoneInfo.Local;
         var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.DataReferenceDate, localTimeZone);
 
+        PrintMonthlyAveragesTable();
+
         PrintSectionHeader("Cost Analysis");
         Console.WriteLine($"All costs in USD");
         Console.WriteLine($"A day's data is considered complete {DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR_UTC} hours after the end of the day in UTC time.");
-
-        PrintSectionHeader("Monthly Cost Averages");
-        PrintCostAverageComparison(currentMonthCostData.Count, averageCurrentPartialMonth, averagePreviousPartialMonth, currentToPreviousMonthAveragesCostDelta);
-        Console.WriteLine($"Previous Full Month Average: {averagePreviousFullMonth,10:F2}");
 
         PrintSectionHeader("Data Reference Information");
         PrintDataReferenceDetails(dateHelperService.DataReferenceDate, localDataReferenceDay, localTimeZone);
     }
 
+    private void PrintMonthlyAveragesTable()
+    {
+        PrintSectionHeader("Monthly Cost Averages");
+
+        // Table header
+        Console.WriteLine("{0,-60} {1,10}", "Metric", "Amount (USD)");
+        Console.WriteLine(new string('-', 72));
+
+        // Current month partial average
+        Console.WriteLine("{0,-60} {1,10:F2}",
+            $"Current month average (for {currentMonthCostData.Count} days)",
+            averageCurrentPartialMonth);
+
+        // Previous month partial average
+        Console.WriteLine("{0,-60} {1,10:F2}",
+            $"Previous month average (for {currentMonthCostData.Count} days)",
+            averagePreviousPartialMonth);
+
+        // Cost delta
+        Console.WriteLine("{0,-60} {1,10:F2}",
+            "Current to previous month averages cost delta",
+            currentToPreviousMonthAveragesCostDelta);
+
+        // Previous full month average
+        Console.WriteLine("{0,-60} {1,10:F2}",
+            "Previous Full Month Average",
+            averagePreviousFullMonth);
+    }
+
     private static void PrintSectionHeader(string headerText)
     {
         Console.WriteLine($"\n------ {headerText} ------");
-    }
-
-    private static void PrintCostAverageComparison(int dayCount, decimal currentAverage, decimal previousAverage, decimal costDelta)
-    {
-        // Using alignment to keep numbers lined up
-        Console.WriteLine($"Current month average (for {dayCount,2} days): {currentAverage,10:F2}");
-        Console.WriteLine($"Previous month average for same period ({dayCount,2} days): {previousAverage,10:F2}");
-        Console.WriteLine($"Current to previous month averages cost delta: {costDelta,10:F2}");
     }
 
     private static void PrintDataReferenceDetails(DateTime dataReferenceDate, DateTime localDataReferenceDay, TimeZoneInfo localTimeZone)
