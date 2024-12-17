@@ -65,15 +65,45 @@ class ReportGenerator
             Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", row.DayOfMonth, previousCost, currentCost, costDifference);
         }
 
-        Console.WriteLine("\nAll costs in USD");
-        Console.WriteLine("A day's data is considered complete {0} hours after the end of the day in UTC time.", DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR_UTC);
-        Console.WriteLine("------");
-        Console.WriteLine("Current month average(for {0} days) : {1:F2}", currentMonthCostData.Count, averageCurrentPartialMonth);
-        Console.WriteLine("Previous month average for same period({0} days) : {1:F2}", currentMonthCostData.Count, averagePreviousPartialMonth);
-        Console.WriteLine("Current to previous month averages cost delta : {0:F2}", currentToPreviousMonthAveragesCostDelta);
-        Console.WriteLine("------");
-        Console.WriteLine("Previous Full Month Average: {0:F2}", averagePreviousFullMonth);
-        Console.WriteLine("------");
-        Console.WriteLine(dateHelperService.GetDataCurrencyDescription());
+        PrintDataAnalysisAndInfo();
+    }
+
+    private void PrintDataAnalysisAndInfo()
+    {
+        var localTimeZone = TimeZoneInfo.Local;
+        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.DataReferenceDate, localTimeZone);
+
+        PrintSectionHeader("Cost Analysis");
+        Console.WriteLine($"All costs in USD");
+        Console.WriteLine($"A day's data is considered complete {DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR_UTC} hours after the end of the day in UTC time.");
+
+        PrintSectionHeader("Monthly Cost Averages");
+        PrintCostAverageComparison(currentMonthCostData.Count, averageCurrentPartialMonth, averagePreviousPartialMonth, currentToPreviousMonthAveragesCostDelta);
+        Console.WriteLine($"Previous Full Month Average: {averagePreviousFullMonth,10:F2}");
+
+        PrintSectionHeader("Data Reference Information");
+        PrintDataReferenceDetails(dateHelperService.DataReferenceDate, localDataReferenceDay, localTimeZone);
+    }
+
+    private static void PrintSectionHeader(string headerText)
+    {
+        Console.WriteLine($"\n------ {headerText} ------");
+    }
+
+    private static void PrintCostAverageComparison(int dayCount, decimal currentAverage, decimal previousAverage, decimal costDelta)
+    {
+        // Using alignment to keep numbers lined up
+        Console.WriteLine($"Current month average (for {dayCount,2} days): {currentAverage,10:F2}");
+        Console.WriteLine($"Previous month average for same period ({dayCount,2} days): {previousAverage,10:F2}");
+        Console.WriteLine($"Current to previous month averages cost delta: {costDelta,10:F2}");
+    }
+
+    private static void PrintDataReferenceDetails(DateTime dataReferenceDate, DateTime localDataReferenceDay, TimeZoneInfo localTimeZone)
+    {
+        Console.WriteLine($"Daily cost data is complete up to end of the day {dataReferenceDate:yyyy-MM-dd} in UTC timezone");
+        Console.WriteLine($"The end of the day in UTC time is {localDataReferenceDay} in local timezone of {localTimeZone.DisplayName}");
+
+        Console.WriteLine($"\nThis report was generated at {DateTime.Now} {localTimeZone.DisplayName}");
+        Console.WriteLine($"This report was generated at {DateTime.UtcNow} UTC");
     }
 }
