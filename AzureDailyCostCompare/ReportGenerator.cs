@@ -70,7 +70,7 @@ class ReportGenerator
 
     private void PrintTableHeader()
     {
-        Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}",
+        Console.WriteLine("\n{0,-18} {1,-18} {2,-18} {3,-18}",
             "Day of Month",
             dateHelperService.FirstDayOfPreviousMonth.ToString("MMMM"),
             dateHelperService.FirstDayOfCurrentMonth.ToString("MMMM"),
