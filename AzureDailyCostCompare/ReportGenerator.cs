@@ -128,7 +128,7 @@ class ReportGenerator
     private void PrintMonthlyAveragesTable()
     {
         // Table header
-        Console.WriteLine("{0,-60} {1,10}", "Monthly Cost Averages", "Amount (USD)");
+        Console.WriteLine("\n{0,-60} {1,10}", "Monthly Cost Averages", "Amount (USD)");
         Console.WriteLine(new string('-', 72));
 
         // Current month partial average
