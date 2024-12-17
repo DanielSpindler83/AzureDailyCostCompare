@@ -3,14 +3,14 @@
 class ReportGenerator
 {
     private readonly DateHelperService dateHelperService;
-    private readonly List<DailyCosts> currentMonthCostData;
-    private readonly List<DailyCosts> previousMonthCostData;
+    private readonly List<DailyCostData> currentMonthCostData;
+    private readonly List<DailyCostData> previousMonthCostData;
     private readonly decimal averageCurrentPartialMonth;
     private readonly decimal averagePreviousPartialMonth;
     private readonly decimal averagePreviousFullMonth;
     private readonly decimal currentToPreviousMonthAveragesCostDelta;
 
-    public ReportGenerator(List<DailyCosts> costData, DateHelperService dateHelperService)
+    public ReportGenerator(List<DailyCostData> costData, DateHelperService dateHelperService)
     {
 
         this.dateHelperService = dateHelperService;
@@ -37,35 +37,77 @@ class ReportGenerator
         averagePreviousFullMonth = previousMonthCostData.Average(dc => dc.Cost);
 
     }
+
     public void GenerateDailyCostReport()
     {
-        var tableData = from day in Enumerable.Range(1, Math.Max(dateHelperService.CountOfDaysInPreviousMonth, dateHelperService.CountOfDaysInCurrentMonth))
-                        join currentDay in currentMonthCostData on day equals currentDay.DateString.Day into currentDays
-                        from currentDay in currentDays.DefaultIfEmpty()
-                        join previousDay in previousMonthCostData on day equals previousDay.DateString.Day into previousDays
-                        from previousDay in previousDays.DefaultIfEmpty()
-                        select new
-                        {
-                            DayOfMonth = day,
-                            PreviousCost = previousDay?.Cost ?? (day > dateHelperService.CountOfDaysInPreviousMonth ? (decimal?)null : 0),
-                            CurrentCost = currentDay?.Cost ?? (day > dateHelperService.CountOfDaysInCurrentMonth ? (decimal?)null : 0),
-                            CostDifference = (currentDay?.Cost ?? 0) - (previousDay?.Cost ?? 0)
-                        };
+        var tableData = CreateDailyCostTableData();
+        PrintDailyCostTable(tableData);
+        PrintDataAnalysisAndInfo();
+    }
 
-        // Print table header
-        Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", "Day of Month", dateHelperService.FirstDayOfPreviousMonth.ToString("MMMM"), dateHelperService.FirstDayOfCurrentMonth.ToString("MMMM"), "Cost Difference(USD)");
+    private IEnumerable<DailyCostRow> CreateDailyCostTableData()
+    {
+        return from day in Enumerable.Range(1, GetMaxDaysAcrossMonths())
+               let currentDay = FindDayInCurrentMonth(day)
+               let previousDay = FindDayInPreviousMonth(day)
+               select new DailyCostRow
+               {
+                   DayOfMonth = day,
+                   PreviousCost = DetermineMonthCost(previousDay, day, dateHelperService.CountOfDaysInPreviousMonth),
+                   CurrentCost = DetermineMonthCost(currentDay, day, dateHelperService.CountOfDaysInCurrentMonth),
+                   CostDifference = CalculateCostDifference(currentDay, previousDay)
+               };
+    }
 
-        // Print table data
+    private void PrintDailyCostTable(IEnumerable<DailyCostRow> tableData)
+    {
+        PrintTableHeader();
         foreach (var row in tableData)
         {
-            string previousCost = row.PreviousCost.HasValue ? row.PreviousCost.Value.ToString("F2") : "";
-            string currentCost = row.CurrentCost.HasValue ? row.CurrentCost.Value.ToString("F2") : "";
-            string costDifference = row.CostDifference.ToString("F2");
-
-            Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}", row.DayOfMonth, previousCost, currentCost, costDifference);
+            PrintTableRow(row);
         }
+    }
 
-        PrintDataAnalysisAndInfo();
+    private void PrintTableHeader()
+    {
+        Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}",
+            "Day of Month",
+            dateHelperService.FirstDayOfPreviousMonth.ToString("MMMM"),
+            dateHelperService.FirstDayOfCurrentMonth.ToString("MMMM"),
+            "Cost Difference(USD)");
+    }
+
+    private static void PrintTableRow(DailyCostRow row)
+    {
+        string previousCost = FormatCost(row.PreviousCost);
+        string currentCost = FormatCost(row.CurrentCost);
+        string costDifference = row.CostDifference.ToString("F2");
+
+        Console.WriteLine("{0,-18} {1,-18} {2,-18} {3,-18}",
+            row.DayOfMonth,
+            previousCost,
+            currentCost,
+            costDifference);
+    }
+
+    private static string FormatCost(decimal? cost) => cost.HasValue ? cost.Value.ToString("F2") : "";
+
+    private int GetMaxDaysAcrossMonths() => Math.Max(dateHelperService.CountOfDaysInPreviousMonth, dateHelperService.CountOfDaysInCurrentMonth);
+
+    private DailyCostData? FindDayInCurrentMonth(int day) => currentMonthCostData.FirstOrDefault(d => d.DateString.Day == day);
+
+    private DailyCostData? FindDayInPreviousMonth(int day) => previousMonthCostData.FirstOrDefault(d => d.DateString.Day == day); 
+
+    private static decimal? DetermineMonthCost(DailyCostData dayData, int day, int monthDaysCount) => dayData?.Cost ?? (day > monthDaysCount ? (decimal?)null : 0);
+
+    private static decimal CalculateCostDifference(DailyCostData currentDay, DailyCostData previousDay) => (currentDay?.Cost ?? 0) - (previousDay?.Cost ?? 0);
+
+    private class DailyCostRow
+    {
+        public int DayOfMonth { get; set; }
+        public decimal? PreviousCost { get; set; }
+        public decimal? CurrentCost { get; set; }
+        public decimal CostDifference { get; set; }
     }
 
     private void PrintDataAnalysisAndInfo()

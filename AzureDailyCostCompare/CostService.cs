@@ -8,7 +8,7 @@ class CostService
 {
     private readonly HttpClient _httpClient = new();
 
-    public async Task<List<DailyCosts>> QueryCostManagementAPI(string accessToken, string billingAccountId, DateTime startDate, DateTime endDate)
+    public async Task<List<DailyCostData>> QueryCostManagementAPI(string accessToken, string billingAccountId, DateTime startDate, DateTime endDate)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
@@ -49,17 +49,17 @@ class CostService
         }
     }
 
-    private static List<DailyCosts> ParseCostData(string responseBody)
+    private static List<DailyCostData> ParseCostData(string responseBody)
     {
         var jsonDocument = JsonDocument.Parse(responseBody);
-        var dailyCostsList = new List<DailyCosts>();
+        var dailyCostsList = new List<DailyCostData>();
 
         foreach (var item in jsonDocument.RootElement.GetProperty("properties").GetProperty("rows").EnumerateArray())
         {
             var cost = item[0].GetDecimal();
             var dateNumber = item[1].GetInt64();
 
-            var dailyCost = new DailyCosts
+            var dailyCost = new DailyCostData
             {
                 DateString = DateOnly.FromDateTime(DateTime.ParseExact(dateNumber.ToString(), "yyyyMMdd", null)),
                 Cost = Math.Round(cost, 2)
