@@ -117,11 +117,9 @@ class ReportGenerator
 
         PrintMonthlyAveragesTable();
 
-        PrintSectionHeader("Cost Analysis");
+        PrintSectionHeader("Data Reference Information");
         Console.WriteLine($"All costs in USD");
         Console.WriteLine($"A day's data is considered complete {DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR_UTC} hours after the end of the day in UTC time.");
-
-        PrintSectionHeader("Data Reference Information");
         PrintDataReferenceDetails(dateHelperService.DataReferenceDate, localDataReferenceDay, localTimeZone);
     }
 
