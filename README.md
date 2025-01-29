@@ -121,4 +121,4 @@ This command generates a cost comparison report using 2025-01-28 as the referenc
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the Apache-2.0 license.
