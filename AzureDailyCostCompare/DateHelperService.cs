@@ -10,22 +10,26 @@ public class DateHelperService
 
     public const int FULL_DAY_DATA_CUTOFF_HOUR_UTC = 4; // NOTE 4am is a educated approximation(based on testing) regarding MS Cost API having the full previous days data complete and available
 
-    public DateHelperService(
-        DateTime? overrideDate = null,
-        IDateProvider? dateProvider = null)
+    private DateHelperService(DateTime referenceDate)
     {
-        var provider = dateProvider ?? new UtcDateProvider();
+        DataReferenceDate = referenceDate;
 
-        var referenceDateTime = overrideDate.HasValue
-            ? ValidateOverrideDate(overrideDate.Value)
-            : provider.GetCurrentDate();
-
-        DataReferenceDate = overrideDate ?? DetermineDataReferenceDate(referenceDateTime);
-
-        FirstDayOfPreviousMonth = new DateTime(DataReferenceDate.Year, DataReferenceDate.Month, 1).AddMonths(-1);
-        FirstDayOfCurrentMonth = new DateTime(DataReferenceDate.Year, DataReferenceDate.Month, 1);
+        FirstDayOfPreviousMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(-1);
+        FirstDayOfCurrentMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1);
         CountOfDaysInPreviousMonth = DateTime.DaysInMonth(FirstDayOfPreviousMonth.Year, FirstDayOfPreviousMonth.Month);
         CountOfDaysInCurrentMonth = DateTime.DaysInMonth(FirstDayOfCurrentMonth.Year, FirstDayOfCurrentMonth.Month);
+    }
+
+    // Constructor for current date
+    public DateHelperService(IDateProvider? dateProvider = null)
+        : this(DetermineDataReferenceDate((dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
+    {
+    }
+
+    // Constructor for override date
+    public DateHelperService(DateTime overrideDate, IDateProvider? dateProvider = null)
+        : this(AdjustDateForFullMonthInPast(ValidateOverrideDate(overrideDate), (dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
+    {
     }
 
     public string GetDataCurrencyDescription(TimeZoneInfo? localTimeZone = null)
@@ -41,9 +45,17 @@ public class DateHelperService
                $"------\n";
     }
 
+    private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime)
+    {
+        DateTime selectedDate = referenceDateTime.Hour < FULL_DAY_DATA_CUTOFF_HOUR_UTC
+            ? referenceDateTime.Date.AddDays(-2)  // Before cutoff, we don't have full day today so last full day is 2 days ago
+            : referenceDateTime.Date.AddDays(-1); // It's after cutoff so yesterday is last full day
+
+        return selectedDate.Date;
+    }
+
     private static DateTime ValidateOverrideDate(DateTime overrideDate)
     {
-
         DateTime latestFullDataDate = DetermineDataReferenceDate(DateTime.UtcNow);
 
         if (overrideDate.Date > latestFullDataDate.Date)
@@ -57,13 +69,17 @@ public class DateHelperService
         return overrideDate.Date;
     }
 
-    private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime)
+    private static DateTime AdjustDateForFullMonthInPast(DateTime overrideDate, DateTime currentDate)
     {
-        DateTime selectedDate = referenceDateTime.Hour < FULL_DAY_DATA_CUTOFF_HOUR_UTC
-            ? referenceDateTime.Date.AddDays(-2)  // Before cutoff, we dont have full day today so last full day is 2 days ago
-            : referenceDateTime.Date.AddDays(-1); // its after cutoff so yesterday is last full day
+        // Check if the override date is in a full month in the past
+        if (overrideDate < currentDate && overrideDate.Month != currentDate.Month && overrideDate.Year <= currentDate.Year)
+        {
+            // Adjust the date to the last day of the provided month
+            return new DateTime(overrideDate.Year, overrideDate.Month, DateTime.DaysInMonth(overrideDate.Year, overrideDate.Month));
+        }
 
-        return selectedDate.Date;
+        // Otherwise, use the provided date as-is
+        return overrideDate;
     }
 
     public static DateHelperService CreateForTesting(int year, int month, int day)
