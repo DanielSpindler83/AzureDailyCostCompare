@@ -97,7 +97,7 @@ class ReportGenerator
 
     private DailyCostData? FindDayInCurrentMonth(int day) => currentMonthCostData.FirstOrDefault(d => d.DateString.Day == day);
 
-    private DailyCostData? FindDayInPreviousMonth(int day) => previousMonthCostData.FirstOrDefault(d => d.DateString.Day == day); 
+    private DailyCostData? FindDayInPreviousMonth(int day) => previousMonthCostData.FirstOrDefault(d => d.DateString.Day == day);
 
     private static decimal? DetermineMonthCost(DailyCostData dayData, int day, int monthDaysCount) => dayData?.Cost ?? (day > monthDaysCount ? (decimal?)null : 0);
 
@@ -127,27 +127,27 @@ class ReportGenerator
     private void PrintMonthlyAveragesTable()
     {
         // Table header
-        Console.WriteLine("\n{0,-60} {1,10}", "Monthly Cost Averages", "Amount (USD)");
-        Console.WriteLine(new string('-', 72));
+        Console.WriteLine("\n{0,-70} {1,10}", "Monthly Cost Averages", "Amount (USD)");
+        Console.WriteLine(new string('-', 82));
 
         // Current month partial average
-        Console.WriteLine("{0,-60} {1,10:F2}",
-            $"Current month average (for {currentMonthCostData.Count} days)",
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{dateHelperService.DataReferenceDate:MMMM} average (for {currentMonthCostData.Count} days)",
             averageCurrentPartialMonth);
 
         // Previous month partial average
-        Console.WriteLine("{0,-60} {1,10:F2}",
-            $"Previous month average (for {currentMonthCostData.Count} days)",
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{dateHelperService.DataReferenceDate.AddMonths(-1):MMMM} average (for {currentMonthCostData.Count} days)",
             averagePreviousPartialMonth);
 
         // Cost delta
-        Console.WriteLine("{0,-60} {1,10:F2}",
-            "Current to previous month averages cost delta",
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"Month averages cost delta ({dateHelperService.DataReferenceDate:MMMM} average minus {dateHelperService.DataReferenceDate.AddMonths(-1):MMMM} average)",
             currentToPreviousMonthAveragesCostDelta);
 
         // Previous full month average
-        Console.WriteLine("{0,-60} {1,10:F2}",
-            "Previous Full Month Average",
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{dateHelperService.DataReferenceDate.AddMonths(-1):MMMM} full month average",
             averagePreviousFullMonth);
     }
 
