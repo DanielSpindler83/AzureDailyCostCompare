@@ -13,22 +13,28 @@ Day of Month       December           January            Cost Difference(USD)
 1                  2800.89            2806.26            5.37
 2                  1852.19            1834.37            -17.82
 3                  1850.99            1830.96            -20.03
-...
+4                  1861.91            1814.77            -47.14
+5                  1882.82            1834.32            -48.50
+6                  1865.77            1872.07            6.30
+7                  1831.34            1882.61            51.27
+8                  1843.22            1873.93            30.71
+
 Monthly Cost Averages                                                  Amount (USD)
 ----------------------------------------------------------------------------------
-January average (for 28 days)                                             2042.37
-December average (for 28 days)                                            2029.78
-Month averages cost delta (January average minus December average)          12.59
+January average (for 8 days)                                             1834.91
+December average (for 8 days)                                            1852.85
+Month averages cost delta (January average minus December average)        -17.94
 December full month average                                               2029.78
 
 ------ Data Reference Information ------
 All costs in USD
 A day's data is considered complete 4 hours after the end of the day in UTC time.
-Daily cost data is complete up to end of the day 2025-01-28 in UTC timezone.
-The end of the day in UTC time is 28/01/2025 10:00:00 AM in local timezone of (UTC+10:00) Brisbane
+Daily cost data is complete up to end of the day 2025-01-08 in UTC timezone
+The end of the day in UTC time is 08/01/2025 10:00:00 AM in local timezone of (UTC+10:00) Brisbane
 
-This report was generated at 29/01/2025 6:17:17 PM (UTC+10:00) Brisbane
-This report was generated at 29/01/2025 8:17:17 AM UTC
+This report was generated at 08/01/2025 6:17:17 PM (UTC+10:00) Brisbane
+This report was generated at 08/01/2025 8:17:17 AM UTC
+
 ```
 
 ## Features
