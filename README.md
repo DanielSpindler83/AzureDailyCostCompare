@@ -66,7 +66,7 @@ via Azure **Cost Management + Billing** - **Access control (IAM)**
 
 3. Clone this repository:
    ```bash
-   git clone https://github.com/your-repo/AzureDailyCostCompare.git
+   git clone https://github.com/DanielSpindler83/AzureDailyCostCompare.git
    ```
 4. Navigate to the project directory:
    ```bash
