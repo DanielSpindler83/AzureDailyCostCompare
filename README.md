@@ -93,7 +93,6 @@ via Azure **Cost Management + Billing** - **Access control (IAM)**
    dotnet run
    ```
 
-
 ## Usage
 
 ### Command-Line Options
