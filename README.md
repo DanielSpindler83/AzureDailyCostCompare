@@ -72,22 +72,27 @@ via Azure **Cost Management + Billing** - **Access control (IAM)**
    ```
    https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-interactively
 
-3. Clone this repository:
+3. Clone this repository(in preferred folder path):
    ```bash
    git clone https://github.com/DanielSpindler83/AzureDailyCostCompare.git
    ```
-4. Navigate to the project directory:
+4. Navigate to the repo directory(using relative path from previous step):
    ```bash
    cd AzureDailyCostCompare
    ```
-5. Build the project:
+5. Build the solution:
    ```bash
    dotnet build
    ```
-6. Run the application:
+6. Navigate to the project directory(using relative path from previous step):
+   ```bash
+   cd AzureDailyCostCompare
+   ```
+7. Run the application:
    ```bash
    dotnet run
    ```
+
 
 ## Usage
 
