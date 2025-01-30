@@ -1,4 +1,4 @@
-name: Build and Release .NET 8 Console App
+name: Build and Release by Tag
 
 on:
   push:
@@ -61,14 +61,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download build artifacts
+      - name: Download build artifacts (Linux)
         uses: actions/download-artifact@v3
         with:
           name: AzureDailyCostCompare-${{ github.ref_name }}-linux-x64
+          
       - name: Download build artifacts (Windows)
         uses: actions/download-artifact@v3
         with:
           name: AzureDailyCostCompare-${{ github.ref_name }}-win-x64
+
       - name: Download build artifacts (macOS)
         uses: actions/download-artifact@v3
         with:
