@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: packages
-        path: src/nupkgs/*.nupkg
+        path: nupkgs/*.nupkg
 
     - name: Push NuGet Package
       run: |
