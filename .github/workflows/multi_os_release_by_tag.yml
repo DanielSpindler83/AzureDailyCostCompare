@@ -1,0 +1,69 @@
+name: Build and Release .NET 8 Multi OS by Tag
+
+on:
+  push:
+    tags:
+      - "v*"  # Triggers when a tag like v1.0.0 is pushed
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            ext: tar.gz
+          - os: windows-latest
+            rid: win-x64
+            ext: zip
+          - os: macos-latest
+            rid: osx-x64
+            ext: tar.gz
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish project
+        run: dotnet publish -r ${{ matrix.rid }} --self-contained true --configuration Release --output publish
+
+      - name: Archive build artifacts
+        shell: bash
+        run: |
+          if [ "${{ matrix.ext }}" == "zip" ]; then
+            powershell Compress-Archive -Path publish/* -DestinationPath AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}.zip
+          else
+            tar -czvf AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz -C publish .
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}
+          path: AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}.${{ matrix.ext }}
+
+      - name: Create GitHub Release (only for one job)
+        if: matrix.os == 'ubuntu-latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            AzureDailyCostCompare-${{ github.ref_name }}-linux-x64.tar.gz
+            AzureDailyCostCompare-${{ github.ref_name }}-win-x64.zip
+            AzureDailyCostCompare-${{ github.ref_name }}-osx-x64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
