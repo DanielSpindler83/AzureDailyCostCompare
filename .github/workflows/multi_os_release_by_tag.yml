@@ -87,41 +87,35 @@ jobs:
           path: AzureDailyCostCompare-${{ github.ref_name }}-osx-x64.tar.gz
 
   release:
-      runs-on: ubuntu-latest
-      needs: [build-linux, build-windows, build-macos]
-      steps:
-        - name: Create download directory
-          run: mkdir downloads
-  
-        - name: Download all artifacts
-          uses: actions/download-artifact@v3
-          with:
-            path: downloads
-  
-        # List contents to verify what we got
-        - name: Display structure of downloaded files
-          run: ls -R downloads
-  
-        # Extract the artifacts if needed and move to correct location
-        - name: Prepare release files
-          run: |
-            cd downloads
-            for zipfile in */*.zip; do
-              unzip "$zipfile"
-            done
-            mv */*.tar.gz ../
-            mv */*.zip ../
-  
-        - name: Create GitHub Release
-          uses: softprops/action-gh-release@v2
-          with:
-            tag_name: ${{ github.ref_name }}
-            name: Release ${{ github.ref_name }}
-            draft: false
-            prerelease: false
-            files: |
-              AzureDailyCostCompare-${{ github.ref_name }}-linux-x64.tar.gz
-              AzureDailyCostCompare-${{ github.ref_name }}-win-x64.zip
-              AzureDailyCostCompare-${{ github.ref_name }}-osx-x64.tar.gz
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-windows, build-macos]  # Ensures all build jobs finish before the release job
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      # Download build artifacts from all platforms
+      - name: Download build artifacts (Linux)
+        uses: actions/download-artifact@v4
+        with:
+          name: AzureDailyCostCompare-${{ github.ref_name }}-linux-x64
+      - name: Download build artifacts (Windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: AzureDailyCostCompare-${{ github.ref_name }}-win-x64
+      - name: Download build artifacts (macOS)
+        uses: actions/download-artifact@v4
+        with:
+          name: AzureDailyCostCompare-${{ github.ref_name }}-osx-x64
+      # Create GitHub release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            AzureDailyCostCompare-${{ github.ref_name }}-linux-x64.tar.gz
+            AzureDailyCostCompare-${{ github.ref_name }}-win-x64.zip
+            AzureDailyCostCompare-${{ github.ref_name }}-osx-x64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
