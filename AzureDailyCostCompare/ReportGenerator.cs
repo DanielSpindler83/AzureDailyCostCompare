@@ -24,7 +24,6 @@ class ReportGenerator
 
         previousMonthCostData = costData
                 .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfPreviousMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfPreviousMonth.Year)
-                .Take(dayCountCurrentMonth)
                 .ToList();
 
         averageCurrentPartialMonth = currentMonthCostData
