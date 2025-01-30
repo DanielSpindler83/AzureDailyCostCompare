@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: write  # Required to create a release
-  id-token: read   # Required for some authentication workflows
 
 jobs:
   build-linux:
