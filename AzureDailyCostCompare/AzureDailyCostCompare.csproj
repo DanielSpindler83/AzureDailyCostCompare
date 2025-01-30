@@ -1,11 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>AzureDailyCostCompare</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>default</LangVersion>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>azure-daily-cost-compare</ToolCommandName>
+		<Title>Azure Daily Cost Compare</Title>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<PackageId>azure-daily-cost-compare</PackageId>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+		<Version>0.4.0</Version>
+		<Authors>Daniel Spindler</Authors>
+		<Description>A simple tool to provide daily cost comparisons for an entire Azure billing account—across multiple tenants and subscriptions—between the current month and the same day of the previous month. It helps track spending trends, whether costs are rising, falling, or staying the same. </Description>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/DanielSpindler83/AzureDailyCostCompare/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/DanielSpindler83/AzureDailyCostCompare/</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>azure;daily;cost;compare</PackageTags>
+	</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.12.0" />
