@@ -4,7 +4,8 @@ name: Build, Pack and Release on Tag
 on:
   push:
     tags:
-      - '*'
+      - 'v*'  # or your tag pattern
+  workflow_dispatch:  # allows manual trigger  
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
