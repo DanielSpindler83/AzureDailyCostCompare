@@ -1,4 +1,4 @@
-name: Build and Release by Tag
+name: Build and Release .NET 8 by Tag
 
 on:
   push:
@@ -6,23 +6,8 @@ on:
       - "v*"  # Triggers when a tag like v1.0.0 is pushed
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            rid: linux-x64
-            ext: tar.gz
-          - os: windows-latest
-            rid: win-x64
-            ext: zip
-          - os: macos-latest
-            rid: osx-x64
-            ext: tar.gz
-
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,36 +21,86 @@ jobs:
         run: dotnet restore
 
       - name: Publish project
-        run: dotnet publish -r ${{ matrix.rid }} --self-contained true --configuration Release --output publish
+        run: dotnet publish -r linux-x64 --self-contained true --configuration Release --output publish
 
       - name: Archive build artifacts
-        shell: bash
         run: |
-          if [ "${{ matrix.ext }}" == "zip" ]; then
-            powershell Compress-Archive -Path publish/* -DestinationPath AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}.zip
-          else
-            tar -czvf AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz -C publish .
-          fi
+          tar -czvf AzureDailyCostCompare-${{ github.ref_name }}-linux-x64.tar.gz -C publish .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}
-          path: AzureDailyCostCompare-${{ github.ref_name }}-${{ matrix.rid }}.${{ matrix.ext }}
+          name: AzureDailyCostCompare-${{ github.ref_name }}-linux-x64
+          path: AzureDailyCostCompare-${{ github.ref_name }}-linux-x64.tar.gz
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish project
+        run: dotnet publish -r win-x64 --self-contained true --configuration Release --output publish
+
+      - name: Archive build artifacts
+        run: |
+          powershell Compress-Archive -Path publish/* -DestinationPath AzureDailyCostCompare-${{ github.ref_name }}-win-x64.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AzureDailyCostCompare-${{ github.ref_name }}-win-x64
+          path: AzureDailyCostCompare-${{ github.ref_name }}-win-x64.zip
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish project
+        run: dotnet publish -r osx-x64 --self-contained true --configuration Release --output publish
+
+      - name: Archive build artifacts
+        run: |
+          tar -czvf AzureDailyCostCompare-${{ github.ref_name }}-osx-x64.tar.gz -C publish .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AzureDailyCostCompare-${{ github.ref_name }}-osx-x64
+          path: AzureDailyCostCompare-${{ github.ref_name }}-osx-x64.tar.gz
 
   release:
     runs-on: ubuntu-latest
-    needs: build  # This ensures the release job runs only after the build job is completed.
+    needs: [build-linux, build-windows, build-macos]  # Ensures all build jobs finish before the release job
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Download build artifacts from all platforms
       - name: Download build artifacts (Linux)
         uses: actions/download-artifact@v3
         with:
           name: AzureDailyCostCompare-${{ github.ref_name }}-linux-x64
-          
+
       - name: Download build artifacts (Windows)
         uses: actions/download-artifact@v3
         with:
@@ -76,6 +111,7 @@ jobs:
         with:
           name: AzureDailyCostCompare-${{ github.ref_name }}-osx-x64
 
+      # Create GitHub release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
