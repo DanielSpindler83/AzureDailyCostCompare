@@ -16,7 +16,6 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<PackageId>azure-daily-cost-compare</PackageId>
 		<PackageOutputPath>./nupkg</PackageOutputPath>
-		<Version>0.4.0</Version>
 		<Authors>Daniel Spindler</Authors>
 		<Description>A simple tool to provide daily cost comparisons for an entire Azure billing account—across multiple tenants and subscriptions—between the current month and the same day of the previous month. It helps track spending trends, whether costs are rising, falling, or staying the same. </Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

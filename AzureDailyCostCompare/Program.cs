@@ -11,7 +11,10 @@ class Program
             name: "--date",
             description: "Optional reference date for the report (format: yyyy-MM-dd). If not provided, current date will be used.");
 
-        var rootCommand = new RootCommand("Azure Daily Cost Comparison Tool");
+        var rootCommand = new RootCommand("Azure Daily Cost Comparison Tool")
+        {
+            Name = "azure-daily-cost-compare"  // Set the correct CLI tool name
+        };
         rootCommand.AddOption(dateOption);
 
         rootCommand.SetHandler(async (date) =>

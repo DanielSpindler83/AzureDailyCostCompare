@@ -56,42 +56,41 @@ This report was generated at 08/01/2025 8:17:17 AM UTC
 
 Grant the account you wish to use either:
 
-**Reader** or **Billing Reader** role 
+**Reader** or **Billing Reader** or **Owner** role in Azure
 
-via Azure **Cost Management + Billing** - **Access control (IAM)**
+within Azure **Cost Management + Billing** - **Access control (IAM)**
 
 ## Installation
 
-1. Install Azure CLI:
+1. Install .NET Runtime 8 or higher
+
+	Install .NET Runtime - The .NET Runtime contains just the components needed to run a console app.
+	https://dotnet.microsoft.com/en-us/download/dotnet
+	
+
+2. Install Azure CLI:
 
 	https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
    
-2. Authenticate using Azure CLI:
+3. Authenticate using Azure CLI:
    ```bash
    az login
    ```
    https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-interactively
+   
+4. Install via dotnet tool command
+	```bash
+	dotnet tool install --global azure-daily-cost-compare
+	```
 
-3. Clone this repository(in preferred folder path):
-   ```bash
-   git clone https://github.com/DanielSpindler83/AzureDailyCostCompare.git
-   ```
-4. Navigate to the repo directory(using relative path from previous step):
-   ```bash
-   cd AzureDailyCostCompare
-   ```
-5. Build the solution:
-   ```bash
-   dotnet build
-   ```
-6. Navigate to the project directory(using relative path from previous step):
-   ```bash
-   cd AzureDailyCostCompare
-   ```
-7. Run the application:
-   ```bash
-   dotnet run
-   ```
+## Upgrading
+
+When there is a new version available on NuGet, you can use the `dotnet tool update` command to upgrade:
+
+```bash
+dotnet tool update --global azure-daily-cost-compare
+```
+
 
 ## Usage
 
@@ -102,7 +101,7 @@ Description:
   Azure Daily Cost Comparison Tool
 
 Usage:
-  AzureDailyCostCompare [options]
+  azure-daily-cost-compare [options]
 
 Options:
   --date <date>   Optional reference date for the report (format: yyyy-MM-dd). If not provided, the current date will be used.
@@ -113,7 +112,7 @@ Options:
 ### Example Command
 
 ```bash
-AzureDailyCostCompare
+azure-daily-cost-compare
 ```
 
 This command generates a cost comparison report using today as the reference date.
@@ -121,7 +120,7 @@ This command generates a cost comparison report using today as the reference dat
 ### Example Command with Specific Date
 
 ```bash
-AzureDailyCostCompare --date 2025-01-28
+azure-daily-cost-compare --date 2025-01-28
 ```
 
 This command generates a cost comparison report using 2025-01-28 as the reference date.
@@ -129,7 +128,6 @@ This command generates a cost comparison report using 2025-01-28 as the referenc
 ## Notes
 
 - **Data Accuracy:** Cost data is considered complete 4 hours after the end of the day in UTC.
-- **Data Completeness:** Ensure Azure cost data is fully available before generating the report.
 
 ## License
 
