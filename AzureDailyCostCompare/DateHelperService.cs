@@ -7,6 +7,7 @@ public class DateHelperService
     public DateTime FirstDayOfCurrentMonth { get; }
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
+    public int OutputTableDaysToDisplay { get; private set; }
 
     public const int FULL_DAY_DATA_CUTOFF_HOUR_UTC = 4; // NOTE 4am is a educated approximation(based on testing) regarding MS Cost API having the full previous days data complete and available
 
@@ -18,18 +19,36 @@ public class DateHelperService
         FirstDayOfCurrentMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1);
         CountOfDaysInPreviousMonth = DateTime.DaysInMonth(FirstDayOfPreviousMonth.Year, FirstDayOfPreviousMonth.Month);
         CountOfDaysInCurrentMonth = DateTime.DaysInMonth(FirstDayOfCurrentMonth.Year, FirstDayOfCurrentMonth.Month);
+
     }
 
     // Constructor for current date
     public DateHelperService(IDateProvider? dateProvider = null)
         : this(DetermineDataReferenceDate((dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
     {
+        OutputTableDaysToDisplay = DataReferenceDate.Day;
     }
 
     // Constructor for override date
     public DateHelperService(DateTime overrideDate, IDateProvider? dateProvider = null)
         : this(AdjustDateForFullMonthInPast(ValidateOverrideDate(overrideDate), (dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
     {
+        var currentDate = (dateProvider ?? new UtcDateProvider()).GetCurrentDate();
+
+        if (overrideDate.Month == currentDate.Month && overrideDate.Year == currentDate.Year)
+        {
+            // If override date is in current month, use the current day of month
+            OutputTableDaysToDisplay = currentDate.Day;
+        }
+        else
+        {
+            // For dates in previous months, use the larger of the two month's day counts
+            int overrideMonthDays = DateTime.DaysInMonth(overrideDate.Year, overrideDate.Month);
+            DateTime previousMonth = overrideDate.AddMonths(-1);
+            int previousMonthDays = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
+
+            OutputTableDaysToDisplay = Math.Max(overrideMonthDays, previousMonthDays);
+        }
     }
 
     public string GetDataCurrencyDescription(TimeZoneInfo? localTimeZone = null)

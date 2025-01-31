@@ -9,7 +9,6 @@ class ReportGenerator
     private readonly decimal averagePreviousPartialMonth;
     private readonly decimal averagePreviousFullMonth;
     private readonly decimal currentToPreviousMonthAveragesCostDelta;
-    private readonly int dayCountCurrentMonth;
 
     public ReportGenerator(List<DailyCostData> costData, DateHelperService dateHelperService)
     {
@@ -20,18 +19,16 @@ class ReportGenerator
                 .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfCurrentMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfCurrentMonth.Year)
                 .ToList();
 
-        dayCountCurrentMonth = currentMonthCostData.Count;
-
         previousMonthCostData = costData
                 .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfPreviousMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfPreviousMonth.Year)
                 .ToList();
 
         averageCurrentPartialMonth = currentMonthCostData
-            .Take(dayCountCurrentMonth)
+            .Take(currentMonthCostData.Count)
             .Average(dc => dc.Cost);
 
         averagePreviousPartialMonth = previousMonthCostData
-            .Take(dayCountCurrentMonth)
+            .Take(currentMonthCostData.Count)
             .Average(dc => dc.Cost);
 
         currentToPreviousMonthAveragesCostDelta = averageCurrentPartialMonth - averagePreviousPartialMonth;
@@ -49,7 +46,7 @@ class ReportGenerator
 
     private IEnumerable<DailyCostRow> CreateDailyCostTableData()
     {
-        return from day in Enumerable.Range(1, dayCountCurrentMonth)
+        return from day in Enumerable.Range(1, dateHelperService.OutputTableDaysToDisplay)
                let currentDay = FindDayInCurrentMonth(day)
                let previousDay = FindDayInPreviousMonth(day)
                select new DailyCostRow
