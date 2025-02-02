@@ -1,6 +1,6 @@
 ﻿namespace AzureDailyCostCompare;
 
-class ReportGenerator
+public class ReportGenerator
 {
     private readonly DateHelperService dateHelperService;
     private readonly List<DailyCostData> currentMonthCostData;

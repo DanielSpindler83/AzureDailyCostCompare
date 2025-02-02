@@ -126,63 +126,127 @@
     },
     {
       "dateString": "2024-01-01",
-      "cost": 100.50
+      "cost": 180.50
     },
     {
       "dateString": "2024-01-02",
-      "cost": 110.75
+      "cost": 185.75
     },
     {
       "dateString": "2024-01-03",
-      "cost": 121.25
+      "cost": 190.25
     },
     {
       "dateString": "2024-01-04",
-      "cost": 132.60
+      "cost": 195.60
     },
     {
       "dateString": "2024-01-05",
-      "cost": 143.95
+      "cost": 200.95
     },
     {
       "dateString": "2024-01-06",
-      "cost": 155.30
+      "cost": 205.30
     },
     {
       "dateString": "2024-01-07",
-      "cost": 166.65
+      "cost": 210.65
     },
     {
       "dateString": "2024-01-08",
-      "cost": 178.00
+      "cost": 215.00
     },
     {
       "dateString": "2024-01-09",
-      "cost": 189.35
+      "cost": 220.35
     },
     {
       "dateString": "2024-01-10",
-      "cost": 200.70
+      "cost": 225.70
     },
     {
       "dateString": "2024-01-11",
-      "cost": 212.05
+      "cost": 230.05
     },
     {
       "dateString": "2024-01-12",
-      "cost": 223.40
+      "cost": 235.40
     },
     {
       "dateString": "2024-01-13",
-      "cost": 234.75
+      "cost": 240.75
     },
     {
       "dateString": "2024-01-14",
-      "cost": 246.10
+      "cost": 245.10
     },
     {
       "dateString": "2024-01-15",
-      "cost": 257.45
+      "cost": 250.45
+    },
+    {
+      "dateString": "2024-01-16",
+      "cost": 255.80
+    },
+    {
+      "dateString": "2024-01-17",
+      "cost": 260.15
+    },
+    {
+      "dateString": "2024-01-18",
+      "cost": 265.50
+    },
+    {
+      "dateString": "2024-01-19",
+      "cost": 270.85
+    },
+    {
+      "dateString": "2024-01-20",
+      "cost": 275.20
+    },
+    {
+      "dateString": "2024-01-21",
+      "cost": 280.55
+    },
+    {
+      "dateString": "2024-01-22",
+      "cost": 285.90
+    },
+    {
+      "dateString": "2024-01-23",
+      "cost": 290.25
+    },
+    {
+      "dateString": "2024-01-24",
+      "cost": 295.60
+    },
+    {
+      "dateString": "2024-01-25",
+      "cost": 300.95
+    },
+    {
+      "dateString": "2024-01-26",
+      "cost": 305.30
+    },
+    {
+      "dateString": "2024-01-27",
+      "cost": 310.65
+    },
+    {
+      "dateString": "2024-01-28",
+      "cost": 315.00
+    },
+    {
+      "dateString": "2024-01-29",
+      "cost": 320.35
+    },
+    {
+      "dateString": "2024-01-30",
+      "cost": 325.70
+    },
+    {
+      "dateString": "2024-01-31",
+      "cost": 330.05
     }
   ]
 }
