@@ -41,6 +41,8 @@ public class ReportGenerator
     {
         var tableData = CreateDailyCostTableData();
         PrintDailyCostTable(tableData);
+        PrintWeeklyComparisons();
+        PrintDayOfWeekAverages();
         PrintDataAnalysisAndInfo();
     }
 
@@ -160,4 +162,189 @@ public class ReportGenerator
         Console.WriteLine($"\nThis report was generated at {DateTime.Now} {localTimeZone.DisplayName}");
         Console.WriteLine($"This report was generated at {DateTime.UtcNow} UTC\n");
     }
+
+
+    private class WeeklyComparison
+    {
+        public DayOfWeek DayOfWeek { get; set; }
+        public int WeekNumber { get; set; }
+        public DateTime PreviousDate { get; set; }
+        public DateTime CurrentDate { get; set; }
+        public decimal? PreviousCost { get; set; }
+        public decimal? CurrentCost { get; set; }
+        public decimal CostDifference => (CurrentCost ?? 0) - (PreviousCost ?? 0);
+    }
+
+    private class DayOfWeekAverage
+    {
+        public DayOfWeek DayOfWeek { get; set; }
+        public decimal PreviousMonthAverage { get; set; }
+        public decimal CurrentMonthAverage { get; set; }
+        public decimal Difference => CurrentMonthAverage - PreviousMonthAverage;
+        public int PreviousMonthCount { get; set; }
+        public int CurrentMonthCount { get; set; }
+    }
+
+    private void PrintWeeklyComparisons()
+    {
+        Console.WriteLine("\n------ Weekly Pattern Analysis (UTC) ------");
+        Console.WriteLine("Comparing corresponding weeks (1st Monday to 1st Monday, etc.)\n");
+
+        var comparisons = GetWeeklyComparisons();
+        foreach (var dayGroup in comparisons.GroupBy(c => c.DayOfWeek).OrderBy(g => g.Key))
+        {
+            Console.WriteLine($"{dayGroup.Key}s:");
+            foreach (var comp in dayGroup.OrderBy(c => c.WeekNumber))
+            {
+                string weekLabel = GetWeekLabel(comp.WeekNumber);
+                string costDiff = comp.CostDifference.ToString("+0.00;-0.00;0.00");
+
+                Console.WriteLine(
+                    $"{weekLabel,-8} {comp.PreviousDate:MMM dd} (UTC):{comp.PreviousCost,10:F2} -> " +
+                    $"{comp.CurrentDate:MMM dd} (UTC):{comp.CurrentCost,10:F2} = {costDiff,10}");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    private void PrintDayOfWeekAverages()
+    {
+        Console.WriteLine("\n------ Day of Week Averages (UTC) ------");
+        var averages = CalculateDayOfWeekAverages();
+
+        if (!averages.Any())
+        {
+            Console.WriteLine("No complete day-of-week data available for comparison yet.");
+            return;
+        }
+
+        Console.WriteLine($"{"Day",-10} {"Prev Avg",12} {"Curr Avg",12} {"Diff",12} {"Samples",8}");
+        Console.WriteLine(new string('-', 55));
+
+        foreach (var avg in averages.OrderBy(a => a.DayOfWeek))
+        {
+            string diff = avg.Difference.ToString("+0.00;-0.00;0.00");
+            string samples = $"({avg.PreviousMonthCount}/{avg.CurrentMonthCount})";
+
+            Console.WriteLine(
+                $"{avg.DayOfWeek,-10} {avg.PreviousMonthAverage,12:F2} " +
+                $"{avg.CurrentMonthAverage,12:F2} {diff,12} {samples,8}");
+        }
+
+        //Console.WriteLine($"\nData complete through: {dateHelperService.DataReferenceDate:yyyy-MM-dd HH:mm} UTC");
+    }
+
+    private List<WeeklyComparison> GetWeeklyComparisons()
+    {
+        var comparisons = new List<WeeklyComparison>();
+        var previousMonth = dateHelperService.FirstDayOfPreviousMonth; // Already UTC
+        var currentMonth = dateHelperService.FirstDayOfCurrentMonth;   // Already UTC
+
+        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+            var previousWeeks = GetWeeksForDay(day, previousMonth)
+                .Where(d => d <= dateHelperService.DataReferenceDate)
+                .ToList();
+
+            var currentWeeks = GetWeeksForDay(day, currentMonth)
+                .Where(d => d <= dateHelperService.DataReferenceDate)
+                .ToList();
+
+            for (int weekNum = 0; weekNum < Math.Min(previousWeeks.Count, currentWeeks.Count); weekNum++)
+            {
+                var prevDate = previousWeeks[weekNum];
+                var currDate = currentWeeks[weekNum];
+
+                var prevCost = FindDayInPreviousMonth(prevDate.Day)?.Cost;
+                var currCost = FindDayInCurrentMonth(currDate.Day)?.Cost;
+
+                if (prevCost.HasValue && currCost.HasValue)
+                {
+                    comparisons.Add(new WeeklyComparison
+                    {
+                        DayOfWeek = day,
+                        WeekNumber = weekNum + 1,
+                        PreviousDate = prevDate,
+                        CurrentDate = currDate,
+                        PreviousCost = prevCost,
+                        CurrentCost = currCost
+                    });
+                }
+            }
+        }
+
+        return comparisons;
+    }
+
+    private List<DayOfWeekAverage> CalculateDayOfWeekAverages()
+    {
+        var averages = new List<DayOfWeekAverage>();
+
+        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+            // Use UTC DateString for day-of-week calculation
+            var previousDays = previousMonthCostData
+                .Where(d => d.DateString.DayOfWeek == day &&
+                           d.DateString <= DateOnly.FromDateTime(dateHelperService.DataReferenceDate))
+                .ToList();
+
+            var currentDays = currentMonthCostData
+                .Where(d => d.DateString.DayOfWeek == day &&
+                           d.DateString <= DateOnly.FromDateTime(dateHelperService.DataReferenceDate))
+                .ToList();
+
+            if (previousDays.Any() || currentDays.Any())
+            {
+                averages.Add(new DayOfWeekAverage
+                {
+                    DayOfWeek = day,
+                    PreviousMonthAverage = previousDays.Any() ? previousDays.Average(d => d.Cost) : 0,
+                    CurrentMonthAverage = currentDays.Any() ? currentDays.Average(d => d.Cost) : 0,
+                    PreviousMonthCount = previousDays.Count,
+                    CurrentMonthCount = currentDays.Count
+                });
+            }
+        }
+
+        return averages;
+    }
+
+    private List<DateTime> GetWeeksForDay(DayOfWeek targetDay, DateTime monthUtc)
+    {
+        var dates = new List<DateTime>();
+        // Ensure we're creating UTC dates
+        var current = new DateTime(monthUtc.Year, monthUtc.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lastDay = new DateTime(monthUtc.Year, monthUtc.Month,
+            DateTime.DaysInMonth(monthUtc.Year, monthUtc.Month), 23, 59, 59, DateTimeKind.Utc);
+
+        // Find first occurrence
+        while (current.DayOfWeek != targetDay && current <= lastDay)
+        {
+            current = current.AddDays(1);
+        }
+
+        // Add all occurrences
+        while (current <= lastDay)
+        {
+            dates.Add(current);
+            current = current.AddDays(7);
+        }
+
+        return dates;
+    }
+
+    private static string GetWeekLabel(int weekNumber)
+    {
+        return weekNumber switch
+        {
+            1 => "First",
+            2 => "Second",
+            3 => "Third",
+            4 => "Fourth",
+            5 => "Fifth",
+            _ => $"Week {weekNumber}"
+        };
+    }
+
+
 }
