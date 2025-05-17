@@ -37,12 +37,14 @@ public class ReportGenerator
 
     }
 
-    public void GenerateDailyCostReport()
+    public void GenerateDailyCostReport(bool showWeeklyPatterns, bool showDayOfWeekAverages)
     {
         var tableData = CreateDailyCostTableData();
         PrintDailyCostTable(tableData);
-        PrintWeeklyComparisons();
-        PrintDayOfWeekAverages();
+        if (showWeeklyPatterns)
+            PrintWeeklyComparisons();
+        if (showDayOfWeekAverages)
+            PrintDayOfWeekAverages();
         PrintDataAnalysisAndInfo();
     }
 
@@ -212,7 +214,7 @@ public class ReportGenerator
         Console.WriteLine("\n------ Day of Week Averages (UTC) ------");
         var averages = CalculateDayOfWeekAverages();
 
-        if (!averages.Any())
+        if (averages.Count == 0)
         {
             Console.WriteLine("No complete day-of-week data available for comparison yet.");
             return;
@@ -240,13 +242,13 @@ public class ReportGenerator
         var previousMonth = dateHelperService.FirstDayOfPreviousMonth; // Already UTC
         var currentMonth = dateHelperService.FirstDayOfCurrentMonth;   // Already UTC
 
-        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
-            var previousWeeks = GetWeeksForDay(day, previousMonth)
+            var previousWeeks = ReportGenerator.GetWeeksForDay(day, previousMonth)
                 .Where(d => d <= dateHelperService.DataReferenceDate)
                 .ToList();
 
-            var currentWeeks = GetWeeksForDay(day, currentMonth)
+            var currentWeeks = ReportGenerator.GetWeeksForDay(day, currentMonth)
                 .Where(d => d <= dateHelperService.DataReferenceDate)
                 .ToList();
 
@@ -280,7 +282,7 @@ public class ReportGenerator
     {
         var averages = new List<DayOfWeekAverage>();
 
-        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
             // Use UTC DateString for day-of-week calculation
             var previousDays = previousMonthCostData
@@ -293,13 +295,13 @@ public class ReportGenerator
                            d.DateString <= DateOnly.FromDateTime(dateHelperService.DataReferenceDate))
                 .ToList();
 
-            if (previousDays.Any() || currentDays.Any())
+            if (previousDays.Count != 0 || currentDays.Count != 0)
             {
                 averages.Add(new DayOfWeekAverage
                 {
                     DayOfWeek = day,
-                    PreviousMonthAverage = previousDays.Any() ? previousDays.Average(d => d.Cost) : 0,
-                    CurrentMonthAverage = currentDays.Any() ? currentDays.Average(d => d.Cost) : 0,
+                    PreviousMonthAverage = previousDays.Count != 0 ? previousDays.Average(d => d.Cost) : 0,
+                    CurrentMonthAverage = currentDays.Count != 0 ? currentDays.Average(d => d.Cost) : 0,
                     PreviousMonthCount = previousDays.Count,
                     CurrentMonthCount = currentDays.Count
                 });
@@ -309,7 +311,7 @@ public class ReportGenerator
         return averages;
     }
 
-    private List<DateTime> GetWeeksForDay(DayOfWeek targetDay, DateTime monthUtc)
+    private static List<DateTime> GetWeeksForDay(DayOfWeek targetDay, DateTime monthUtc)
     {
         var dates = new List<DateTime>();
         // Ensure we're creating UTC dates
