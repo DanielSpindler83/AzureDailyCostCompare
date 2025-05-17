@@ -22,7 +22,7 @@ public class ProgramTests
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport();
+        reportGenerator.GenerateDailyCostReport(showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
@@ -52,7 +52,7 @@ public class ProgramTests
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport();
+        reportGenerator.GenerateDailyCostReport(showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
