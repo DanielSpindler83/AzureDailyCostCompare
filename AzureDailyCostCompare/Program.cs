@@ -37,8 +37,8 @@ class Program
     private static IConfiguration LoadAndValidateConfiguration()
     {
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
 
         IConfiguration configuration = builder.Build();
 
