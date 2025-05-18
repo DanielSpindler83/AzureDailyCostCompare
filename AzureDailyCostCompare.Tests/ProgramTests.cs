@@ -12,7 +12,8 @@ public class ProgramTests
 
         // Arrange: Use a fixed reference date
         var referenceDate = new DateTime(2024, 01, 01);
-        var dateHelperService = new DateHelperService(referenceDate);
+        var cutoffHourUtc = 4;
+        var dateHelperService = new DateHelperService(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
         var reportGenerator = new ReportGenerator(mockCostData, dateHelperService);
@@ -42,7 +43,8 @@ public class ProgramTests
 
         // Arrange: Use a fixed reference date
         var referenceDate = new DateTime(2024, 02, 10);
-        var dateHelperService = new DateHelperService(referenceDate);
+        var cutoffHourUtc = 4;
+        var dateHelperService = new DateHelperService(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
         var reportGenerator = new ReportGenerator(mockCostData, dateHelperService);
