@@ -55,7 +55,7 @@ public static class CommandLineBuilder
 
         var dataLoadDelayOption = new Option<int?>(
             aliases: ["--previous-day-utc-data-load-delay", "-pdl"],
-            description: "Number of hours after midnight UTC used to determine when the previous day's Azure cost data is considered complete enough to load. For example, a value of 4 means data for the previous day is assumed complete at 04:00 UTC. Valid values: 0–23. Setting this persists for current and future executions.")
+            description: "Number of hours after midnight UTC used to determine when the previous day's Azure cost data is considered complete enough to load. For example, a value of 4 means data for the previous day is assumed complete at 04:00 UTC. Valid values: 0–23. Setting is used now and persists for future executions.")
         {
             ArgumentHelpName = "int:0-23"
         };
