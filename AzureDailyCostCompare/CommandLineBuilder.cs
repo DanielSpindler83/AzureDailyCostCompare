@@ -38,23 +38,29 @@ public static class CommandLineBuilder
         Option<int?> DataLoadDelayOption
     ) CreateCommandOptions()
     {
-        return (
-            new Option<DateTime?>(
-                "--date",
-                "Optional reference date for the report (format: yyyy-MM-dd). If not provided, current date will be used."),
+        var dateOption = new Option<DateTime?>(
+            "--date",
+            "Optional reference date for the report (format: yyyy-MM-dd). If not provided, current date will be used.")
+        {
+            ArgumentHelpName = "yyyy-MM-dd"
+        };
 
-            new Option<bool>(
-                aliases: ["--weekly-pattern-analysis", "-wpa"],
-                description: "Show weekly pattern analysis comparing corresponding weekdays"),
+        var weeklyPatternOption = new Option<bool>(
+            aliases: ["--weekly-pattern-analysis", "-wpa"],
+            description: "Show weekly pattern analysis comparing corresponding weekdays");
 
-            new Option<bool>(
-                aliases: ["--day-of-week-averages", "-dowa"],
-                description: "Show day of week averages comparing cost trends by weekday"),
+        var dayOfWeekOption = new Option<bool>(
+            aliases: ["--day-of-week-averages", "-dowa"],
+            description: "Show day of week averages comparing cost trends by weekday");
 
-            new Option<int?>(
-                aliases: ["--previous-day-utc-data-load-delay", "-pdl"],
-                description: "Number of hours after midnight UTC used to determine when the previous day's Azure cost data is considered complete enough to load. For example, a value of 4 means data for the previous day is assumed complete at 04:00 UTC. Valid values: 0–23.")
-        );
+        var dataLoadDelayOption = new Option<int?>(
+            aliases: ["--previous-day-utc-data-load-delay", "-pdl"],
+            description: "Number of hours after midnight UTC used to determine when the previous day's Azure cost data is considered complete enough to load. For example, a value of 4 means data for the previous day is assumed complete at 04:00 UTC. Valid values: 0–23. Setting this persists for current and future executions.")
+        {
+            ArgumentHelpName = "int:0-23"
+        };
+
+        return (dateOption, weeklyPatternOption, dayOfWeekOption, dataLoadDelayOption);
     }
 
     private static async Task ExecuteCommandAsync(
