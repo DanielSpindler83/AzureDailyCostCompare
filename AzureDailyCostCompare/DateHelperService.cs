@@ -8,12 +8,12 @@ public class DateHelperService
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
     public int OutputTableDaysToDisplay { get; private set; }
-    public int FullDayDataCutOffHourUTC { get; private set; }
+    public int PreviousDayUtcDataLoadDelayHours { get; private set; }
 
     private DateHelperService(int cutoffHourUtc, DateTime referenceDate)
     {
         DataReferenceDate = referenceDate;
-        FullDayDataCutOffHourUTC = cutoffHourUtc;
+        PreviousDayUtcDataLoadDelayHours = cutoffHourUtc;
 
         FirstDayOfPreviousMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(-1);
         FirstDayOfCurrentMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1);
