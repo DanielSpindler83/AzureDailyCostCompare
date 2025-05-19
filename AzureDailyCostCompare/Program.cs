@@ -9,14 +9,7 @@ class Program
     {
         try
         {
-            var configService = new ConfigurationService();
-            IConfiguration configuration = configService.LoadConfiguration();
-            
-            configService.ValidatePreviousDayUtcDataLoadDelayHours(configuration);
-
-            int previousDayUtcDataLoadDelayHours = configuration.GetValue<int>("AppSettings:PreviousDayUtcDataLoadDelayHours:Value");
-
-            var rootCommand = CommandLineBuilder.BuildCommandLine(previousDayUtcDataLoadDelayHours, configService);
+            var rootCommand = CommandLineBuilder.BuildCommandLine();
             return await rootCommand.InvokeAsync(args);
         }
         catch (ConfigurationValidationException ex)

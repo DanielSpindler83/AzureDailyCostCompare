@@ -1,10 +1,13 @@
-﻿using System.CommandLine;
+﻿using Microsoft.Extensions.Configuration;
+using System.CommandLine;
 
 namespace AzureDailyCostCompare;
 
 public static class CommandLineBuilder
 {
-    public static RootCommand BuildCommandLine(int cutoffHourUtc, ConfigurationService configService)
+    public static ConfigurationService ConfigService { get; } = new ConfigurationService();
+
+    public static RootCommand BuildCommandLine()
     {
         var rootCommand = new RootCommand("Azure Daily Cost Comparison Tool") { Name = "azure-daily-cost-compare" };
 
@@ -27,31 +30,41 @@ public static class CommandLineBuilder
         rootCommand.AddOption(dayOfWeekOption);
         rootCommand.AddOption(previousDayUtcDataLoadDelayHoursOption);
 
-        rootCommand.SetHandler(async (DateTime? date, bool showWeeklyPatterns, bool showDayOfWeekAverages, int? previousDayUtcDataLoadDelayHours) =>
+        rootCommand.SetHandler(async (DateTime? date, bool showWeeklyPatterns, bool showDayOfWeekAverages, int? previousDayUtcDataLoadDelayHoursCommandArg) =>
         {
-            if (previousDayUtcDataLoadDelayHours.HasValue)
+            int previousDayUtcDataLoadDelayHours;
+
+            try
             {
-                try
+                if (!previousDayUtcDataLoadDelayHoursCommandArg.HasValue)
                 {
-                    configService.ValidatePreviousDayUtcDataLoadDelayHoursValue(previousDayUtcDataLoadDelayHours.Value);
-                    configService.UpdatePreviousDayUtcDataLoadDelayHours(previousDayUtcDataLoadDelayHours.Value);
+                    IConfiguration configuration = ConfigurationService.LoadConfiguration();
+                    ConfigurationService.ValidatePreviousDayUtcDataLoadDelayHours(configuration);
+                    previousDayUtcDataLoadDelayHours = configuration.GetValue<int>("AppSettings:PreviousDayUtcDataLoadDelayHours:Value");
+
+                }
+                else
+                {
+                    ConfigurationService.ValidatePreviousDayUtcDataLoadDelayHoursValue(previousDayUtcDataLoadDelayHoursCommandArg.Value);
+                    ConfigurationService.UpdatePreviousDayUtcDataLoadDelayHours(previousDayUtcDataLoadDelayHoursCommandArg.Value);
+
+                    previousDayUtcDataLoadDelayHours = previousDayUtcDataLoadDelayHoursCommandArg.Value;
 
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"PreviousDayUtcDataLoadDelayHours value successfully updated to {previousDayUtcDataLoadDelayHours.Value} in {ConfigurationService.ConfigFileName} and will be used on next application execution.");
+                    Console.WriteLine($"PreviousDayUtcDataLoadDelayHours value successfully updated to {previousDayUtcDataLoadDelayHoursCommandArg.Value} in {ConfigurationService.ConfigFileName}. New value will be used now and for subsequent executions.");
                     Console.ResetColor();
-
                 }
-                catch (ConfigurationValidationException ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.WriteLine($"Error: {ex.Message}");
-                    Console.ResetColor();
-                    return;
-                }
+            }
+            catch (ConfigurationValidationException ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine($"Error: {ex.Message}");
+                Console.ResetColor();
+                return;
             }
 
             // Then run the cost comparison if no validation errors
-            await RunCostComparisonAsync(date, showWeeklyPatterns, showDayOfWeekAverages, previousDayUtcDataLoadDelayHours!.Value);
+            await RunCostComparisonAsync(date, showWeeklyPatterns, showDayOfWeekAverages, previousDayUtcDataLoadDelayHours);
         }, dateOption, weeklyPatternOption, dayOfWeekOption, previousDayUtcDataLoadDelayHoursOption);
 
         return rootCommand;

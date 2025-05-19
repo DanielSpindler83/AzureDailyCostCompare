@@ -8,7 +8,7 @@ public class ConfigurationService
 {
     public const string ConfigFileName = "appsettings.json";
 
-    public IConfiguration LoadConfiguration()
+    public static IConfiguration LoadConfiguration()
     {
         var builder = new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -17,7 +17,7 @@ public class ConfigurationService
         return builder.Build();
     }
 
-    public void ValidatePreviousDayUtcDataLoadDelayHours(IConfiguration configuration)
+    public static void ValidatePreviousDayUtcDataLoadDelayHours(IConfiguration configuration)
     {
         if (!configuration.GetSection("AppSettings:PreviousDayUtcDataLoadDelayHours:Value").Exists())
         {
@@ -32,7 +32,7 @@ public class ConfigurationService
         ValidatePreviousDayUtcDataLoadDelayHoursValue(previousDayUtcDataLoadDelayHours);
     }
 
-    public void ValidatePreviousDayUtcDataLoadDelayHoursValue(int previousDayUtcDataLoadDelayHour)
+    public static void ValidatePreviousDayUtcDataLoadDelayHoursValue(int previousDayUtcDataLoadDelayHour)
     {
         if (previousDayUtcDataLoadDelayHour < 0 || previousDayUtcDataLoadDelayHour > 23)
         {
@@ -40,7 +40,7 @@ public class ConfigurationService
         }
     }
 
-    public void UpdatePreviousDayUtcDataLoadDelayHours(int newPreviousDayUtcDataLoadDelayHours)
+    public static void UpdatePreviousDayUtcDataLoadDelayHours(int newPreviousDayUtcDataLoadDelayHours)
     {
         ValidatePreviousDayUtcDataLoadDelayHoursValue(newPreviousDayUtcDataLoadDelayHours);
 
