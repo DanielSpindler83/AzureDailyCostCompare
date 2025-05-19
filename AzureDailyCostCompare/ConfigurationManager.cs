@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 
 namespace AzureDailyCostCompare;
 
-public class ConfigurationService
+public static class ConfigurationManager
 {
     public const string ConfigFileName = "appsettings.json";
 
