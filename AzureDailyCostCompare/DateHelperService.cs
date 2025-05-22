@@ -8,12 +8,12 @@ public class DateHelperService
     public int CountOfDaysInPreviousMonth { get; }
     public int CountOfDaysInCurrentMonth { get; }
     public int OutputTableDaysToDisplay { get; private set; }
+    public int PreviousDayUtcDataLoadDelayHours { get; private set; }
 
-    public const int FULL_DAY_DATA_CUTOFF_HOUR_UTC = 4; // NOTE 4am is a educated approximation(based on testing) regarding MS Cost API having the full previous days data complete and available
-
-    private DateHelperService(DateTime referenceDate)
+    private DateHelperService(int cutoffHourUtc, DateTime referenceDate)
     {
         DataReferenceDate = referenceDate;
+        PreviousDayUtcDataLoadDelayHours = cutoffHourUtc;
 
         FirstDayOfPreviousMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(-1);
         FirstDayOfCurrentMonth = new DateTime(referenceDate.Year, referenceDate.Month, 1);
@@ -23,15 +23,15 @@ public class DateHelperService
     }
 
     // Constructor for current date
-    public DateHelperService(IDateProvider? dateProvider = null)
-        : this(DetermineDataReferenceDate((dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
+    public DateHelperService(int cutoffHourUtc, IDateProvider? dateProvider = null)
+        : this(cutoffHourUtc, DetermineDataReferenceDate((dateProvider ?? new UtcDateProvider()).GetCurrentDate(), cutoffHourUtc))
     {
         OutputTableDaysToDisplay = DataReferenceDate.Day;
     }
 
     // Constructor for override date
-    public DateHelperService(DateTime overrideDate, IDateProvider? dateProvider = null)
-        : this(AdjustDateForFullMonthInPast(ValidateOverrideDate(overrideDate), (dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
+    public DateHelperService(int cutoffHourUtc, DateTime overrideDate, IDateProvider? dateProvider = null)
+        : this(cutoffHourUtc, AdjustDateForFullMonthInPast(ValidateOverrideDate(overrideDate, cutoffHourUtc), (dateProvider ?? new UtcDateProvider()).GetCurrentDate()))
     {
         var currentDate = (dateProvider ?? new UtcDateProvider()).GetCurrentDate();
 
@@ -64,24 +64,24 @@ public class DateHelperService
                $"------\n";
     }
 
-    private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime)
+    private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime, int cutoffHourUtc)
     {
-        DateTime selectedDate = referenceDateTime.Hour < FULL_DAY_DATA_CUTOFF_HOUR_UTC
+        DateTime selectedDate = referenceDateTime.Hour < cutoffHourUtc
             ? referenceDateTime.Date.AddDays(-2)  // Before cutoff, we don't have full day today so last full day is 2 days ago
             : referenceDateTime.Date.AddDays(-1); // It's after cutoff so yesterday is last full day
 
         return selectedDate.Date;
     }
 
-    private static DateTime ValidateOverrideDate(DateTime overrideDate)
+    private static DateTime ValidateOverrideDate(DateTime overrideDate, int cutoffHourUtc)
     {
-        DateTime latestFullDataDate = DetermineDataReferenceDate(DateTime.UtcNow);
+        DateTime latestFullDataDate = DetermineDataReferenceDate(DateTime.UtcNow, cutoffHourUtc);
 
         if (overrideDate.Date > latestFullDataDate.Date)
         {
             throw new ArgumentException(
                 $"Override date must be on or before {latestFullDataDate:yyyy-MM-dd} " +
-                $"to ensure full data availability (based on {FULL_DAY_DATA_CUTOFF_HOUR_UTC} o'clock UTC cutoff).",
+                $"to ensure full data availability (based on {cutoffHourUtc} o'clock UTC cutoff).",
                 nameof(overrideDate));
         }
 
@@ -101,8 +101,8 @@ public class DateHelperService
         return overrideDate;
     }
 
-    public static DateHelperService CreateForTesting(int year, int month, int day)
+    public static DateHelperService CreateForTesting(int cutoffHourUtc, int year, int month, int day)
     {
-        return new DateHelperService(new DateTime(year, month, day));
+        return new DateHelperService(cutoffHourUtc, new DateTime(year, month, day));
     }
 }

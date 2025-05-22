@@ -120,7 +120,7 @@ public class ReportGenerator
 
         PrintSectionHeader("Data Reference Information");
         Console.WriteLine($"All costs in USD");
-        Console.WriteLine($"A day's data is considered complete {DateHelperService.FULL_DAY_DATA_CUTOFF_HOUR_UTC} hours after the end of the day in UTC time.");
+        Console.WriteLine($"A day's data is considered complete {dateHelperService.PreviousDayUtcDataLoadDelayHours} hours after the end of the day in UTC time.");
         PrintDataReferenceDetails(dateHelperService.DataReferenceDate, localDataReferenceDay, localTimeZone);
     }
 

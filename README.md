@@ -39,7 +39,7 @@ This report was generated at 08/01/2025 8:17:17 AM UTC
 
 ## Features
 
-- **Billing Account Scope:** Compare costs across subscriptions within a single billing account.
+- **Billing Account Scope:** Compare costs across Azure subscriptions and Azure tenants within a single Azure billing account.
 - **Daily Cost Comparison:** Compare the costs for each day between two months.
 - **Monthly Average Analysis:** Calculate and display the monthly cost averages.
 - **Cost Delta Calculation:** Highlight the difference in costs between the months.

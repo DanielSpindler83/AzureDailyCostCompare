@@ -2,6 +2,10 @@
   "profiles": {
     "AzureDailyCostCompare": {
       "commandName": "Project"
+    },
+    "--previous-day-utc-data-load-delay": {
+      "commandName": "Project",
+      "commandLineArgs": "--previous-day-utc-data-load-delay 8"
     }
   }
 }
