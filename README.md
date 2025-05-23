@@ -104,14 +104,18 @@ Usage:
   azure-daily-cost-compare [options]
 
 Options:
-  --date <date>   Optional reference date for the report (format: yyyy-MM-dd). If not provided, the current date will be used.
-  --version       Show version information
-  -?, -h, --help  Show help and usage information
+  --date <yyyy-MM-dd>                                  Optional reference date for the report (format: yyyy-MM-dd). If not provided, current date will be used.
+  -wpa, --weekly-pattern-analysis                      Show weekly pattern analysis comparing corresponding weekdays
+  -dowa, --day-of-week-averages                        Show day of week averages comparing cost trends by weekday
+  -pdl, --previous-day-utc-data-load-delay <int:0-23>  Number of hours after midnight UTC used to determine when the previous day's Azure cost data is considered complete enough to load. For
+                                                       example, a value of 4 means data for the previous day is assumed complete at 04:00 UTC. Valid values: 0-23.
+  --version                                            Show version information
+  -?, -h, --help                                       Show help and usage information
 ```
 
 ### Example Command
 
-```bash
+```
 azure-daily-cost-compare
 ```
 
@@ -125,9 +129,23 @@ azure-daily-cost-compare --date 2025-01-28
 
 This command generates a cost comparison report using 2025-01-28 as the reference date.
 
-## Notes
+### Example command to set previous day UTC data load delay value
 
-- **Data Accuracy:** Cost data is considered complete 4 hours after the end of the day in UTC.
+By default cost data is considered complete 4 hours after the end of the day in UTC.
+You can configure this via the --previous-day-utc-data-load-delay command line option.
+Setting value will be used for the current execution and persist for future executions as it is saved in the appsettings.json config file.
+
+```
+azure-daily-cost-compare --previous-day-utc-data-load-delay 8
+```
+
+## Data Accuracy
+
+Please note that Microsoft Cost Management data is refreshed every four hours as new usage data is received from Azure resource providers.
+https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/manage-automation#data-latency-and-rate-limits
+
+Cost data may change later on as Microsoft reviews and updates pricing information in the background prior to official invoicing. Please keep this in mind.
+
 
 ## License
 
