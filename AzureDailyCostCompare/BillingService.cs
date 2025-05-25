@@ -3,14 +3,14 @@ using System.Text.Json;
 
 namespace AzureDailyCostCompare;
 
-static class BillingService
+public class BillingService : IBillingService
 {
     private static readonly HttpClient _httpClient = new();
     private const string AZURE_BILLING_ACCOUNT_API_BASE_URI = "https://management.azure.com/providers/Microsoft.Billing/billingAccounts?api-version=";
     private const string AZURE_BILLING_ACCOUNT_API_VERSION = "2024-04-01"; // Check for newer API version https://learn.microsoft.com/en-us/rest/api/billing/billing-accounts/get
     private const string AZURE_BILLING_ACCOUNT_API_URI = AZURE_BILLING_ACCOUNT_API_BASE_URI + AZURE_BILLING_ACCOUNT_API_VERSION;
 
-    public static async Task<string> GetBillingAccountIdAsync(string token)
+    public async Task<string> GetBillingAccountIdAsync(string token)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var requestUri = AZURE_BILLING_ACCOUNT_API_URI;

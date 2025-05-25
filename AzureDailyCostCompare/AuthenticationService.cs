@@ -3,11 +3,11 @@ using Azure.Identity;
 
 namespace AzureDailyCostCompare;
 
-static class AuthenticationService
+public class AuthenticationService : IAuthenticationService
 {
     internal static readonly string[] scopes = ["https://management.azure.com/.default"];
 
-    public static async Task<string> GetAccessToken()
+    public async Task<string> GetAccessToken()
     {
         var credential = new AzureCliCredential();
         var tokenRequestContext = new TokenRequestContext(scopes);

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.CommandLine;
+﻿using System.CommandLine;
 
 namespace AzureDailyCostCompare;
 
@@ -19,14 +18,9 @@ public static class CommandLineBuilder
         rootCommand.AddOption(dayOfWeekOption);
         rootCommand.AddOption(dataLoadDelayOption);
 
-        rootCommand.SetHandler(
-            async context => await ExecuteCommandAsync(
-                context.ParseResult.GetValueForOption(dateOption),
-                context.ParseResult.GetValueForOption(weeklyPatternOption),
-                context.ParseResult.GetValueForOption(dayOfWeekOption),
-                context.ParseResult.GetValueForOption(dataLoadDelayOption)
-            )
-        );
+        // Register handler - System.CommandLine will execute this, not this builder
+        rootCommand.SetHandler(CostComparisonHandler.ExecuteAsync,
+            dateOption, weeklyPatternOption, dayOfWeekOption, dataLoadDelayOption);
 
         return rootCommand;
     }
@@ -61,90 +55,5 @@ public static class CommandLineBuilder
         };
 
         return (dateOption, weeklyPatternOption, dayOfWeekOption, dataLoadDelayOption);
-    }
-
-    private static async Task ExecuteCommandAsync(
-        DateTime? date,
-        bool showWeeklyPatterns,
-        bool showDayOfWeekAverages,
-        int? previousDayUtcDataLoadDelayHours)
-    {
-        try
-        {
-            int dataLoadDelayHours = ConfigureDataLoadDelayHours(previousDayUtcDataLoadDelayHours);
-            await RunCostComparisonAsync(date, showWeeklyPatterns, showDayOfWeekAverages, dataLoadDelayHours);
-        }
-        catch (ConfigurationValidationException ex)
-        {
-            DisplayError(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            DisplayError(ex.Message);
-        }
-    }
-
-    private static int ConfigureDataLoadDelayHours(int? commandLineValue)
-    {
-        if (!commandLineValue.HasValue)
-        {
-            // Load from configuration
-            IConfiguration configuration = ConfigurationManager.LoadConfiguration();
-            ConfigurationManager.ValidatePreviousDayUtcDataLoadDelayHours(configuration);
-            return configuration.GetValue<int>("AppSettings:PreviousDayUtcDataLoadDelayHours:Value");
-        }
-
-        // Use and save command line value
-        ConfigurationManager.ValidatePreviousDayUtcDataLoadDelayHoursValue(commandLineValue.Value);
-        ConfigurationManager.UpdatePreviousDayUtcDataLoadDelayHours(commandLineValue.Value);
-
-        DisplaySuccess($"PreviousDayUtcDataLoadDelayHours value successfully updated to {commandLineValue.Value} " +
-                      $"in {ConfigurationManager.ConfigFileName}. New value will be used now and for subsequent executions.");
-
-        return commandLineValue.Value;
-    }
-
-    private static async Task RunCostComparisonAsync(
-        DateTime? date,
-        bool showWeeklyPatterns,
-        bool showDayOfWeekAverages,
-        int previousDayUtcDataLoadDelayHours)
-    {
-        // Get authentication token
-        var accessToken = await AuthenticationService.GetAccessToken();
-
-        // Get billing account ID
-        var billingAccountId = await BillingService.GetBillingAccountIdAsync(accessToken);
-
-        // Create date helper (with optional reference date)
-        var dateHelper = date.HasValue
-            ? new DateHelperService(previousDayUtcDataLoadDelayHours, date.Value)
-            : new DateHelperService(previousDayUtcDataLoadDelayHours);
-
-        // Query cost data
-        var costService = new CostService();
-        var costData = await costService.QueryCostManagementAPI(
-            accessToken,
-            billingAccountId,
-            dateHelper.FirstDayOfPreviousMonth,
-            dateHelper.DataReferenceDate);
-
-        // Generate report
-        new ReportGenerator(costData, dateHelper)
-            .GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
-    }
-
-    private static void DisplayError(string message)
-    {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Error.WriteLine($"Error: {message}");
-        Console.ResetColor();
-    }
-
-    private static void DisplaySuccess(string message)
-    {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(message);
-        Console.ResetColor();
     }
 }

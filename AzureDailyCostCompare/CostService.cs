@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace AzureDailyCostCompare;
 
-class CostService
+class CostService : ICostService
 {
     private readonly HttpClient _httpClient = new();
 
@@ -35,7 +35,7 @@ class CostService
             }
         };
 
-        var url = $"https://management.azure.com{billingAccountId}/providers/Microsoft.CostManagement/query?api-version=2023-11-01";
+        var url = $"https://management.azure.com{billingAccountId}/providers/Microsoft.CostManagement/query?api-version=2023-11-01"; //magic string  - need to pull out and put up top - get clean
         var response = await _httpClient.PostAsJsonAsync(url, requestBody);
 
         if (response.IsSuccessStatusCode)
