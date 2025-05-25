@@ -1,6 +1,6 @@
 ﻿using System.CommandLine;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public static class CommandLineBuilder
 {

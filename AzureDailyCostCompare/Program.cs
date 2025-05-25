@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using AzureDailyCostCompare.Infrastructure;
+using System.CommandLine;
 
 namespace AzureDailyCostCompare;
 

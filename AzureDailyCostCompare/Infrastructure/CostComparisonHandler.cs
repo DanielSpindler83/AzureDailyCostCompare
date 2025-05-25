@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AzureDailyCostCompare.Application.Interfacces;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public static class CostComparisonHandler
 {

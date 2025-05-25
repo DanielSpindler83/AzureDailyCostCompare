@@ -1,7 +1,10 @@
-﻿
+﻿using AzureDailyCostCompare.Application.Interfacces;
+using AzureDailyCostCompare.Infrastructure;
+using AzureDailyCostCompare.Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
+using ConfigurationManager = AzureDailyCostCompare.Infrastructure.ConfigurationManager;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Application;
 
 public class CostComparisonBusinessHandler(
     IAuthenticationService authService,

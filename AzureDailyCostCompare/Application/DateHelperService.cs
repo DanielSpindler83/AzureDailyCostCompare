@@ -1,4 +1,6 @@
-﻿namespace AzureDailyCostCompare;
+﻿using AzureDailyCostCompare.Infrastructure;
+
+namespace AzureDailyCostCompare.Application;
 
 public class DateHelperService
 {

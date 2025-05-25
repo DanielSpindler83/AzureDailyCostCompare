@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http;
+﻿using AzureDailyCostCompare.Application;
+using AzureDailyCostCompare.Application.Interfacces;
+using AzureDailyCostCompare.Infrastructure.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {

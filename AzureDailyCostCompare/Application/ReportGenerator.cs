@@ -1,4 +1,4 @@
-﻿namespace AzureDailyCostCompare;
+﻿namespace AzureDailyCostCompare.Application;
 
 public class ReportGenerator
 {
@@ -99,7 +99,7 @@ public class ReportGenerator
 
     private DailyCostData? FindDayInPreviousMonth(int day) => previousMonthCostData.FirstOrDefault(d => d.DateString.Day == day);
 
-    private static decimal? DetermineMonthCost(DailyCostData dayData, int day, int monthDaysCount) => dayData?.Cost ?? (day > monthDaysCount ? (decimal?)null : 0);
+    private static decimal? DetermineMonthCost(DailyCostData dayData, int day, int monthDaysCount) => dayData?.Cost ?? (day > monthDaysCount ? null : 0);
 
     private static decimal CalculateCostDifference(DailyCostData currentDay, DailyCostData previousDay) => (currentDay?.Cost ?? 0) - (previousDay?.Cost ?? 0);
 
@@ -244,11 +244,11 @@ public class ReportGenerator
 
         foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
-            var previousWeeks = ReportGenerator.GetWeeksForDay(day, previousMonth)
+            var previousWeeks = GetWeeksForDay(day, previousMonth)
                 .Where(d => d <= dateHelperService.DataReferenceDate)
                 .ToList();
 
-            var currentWeeks = ReportGenerator.GetWeeksForDay(day, currentMonth)
+            var currentWeeks = GetWeeksForDay(day, currentMonth)
                 .Where(d => d <= dateHelperService.DataReferenceDate)
                 .ToList();
 

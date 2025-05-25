@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public static class ServiceProviderAccessor
 {

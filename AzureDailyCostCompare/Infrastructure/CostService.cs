@@ -1,8 +1,10 @@
-﻿using System.Net.Http.Headers;
+﻿using AzureDailyCostCompare.Application;
+using AzureDailyCostCompare.Infrastructure.Interfaces;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public class CostService : ICostService
 {

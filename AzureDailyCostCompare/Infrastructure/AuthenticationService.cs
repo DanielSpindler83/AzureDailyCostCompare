@@ -1,7 +1,8 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+using AzureDailyCostCompare.Infrastructure.Interfaces;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public class AuthenticationService : IAuthenticationService
 {

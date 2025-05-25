@@ -1,4 +1,4 @@
-﻿namespace AzureDailyCostCompare;
+﻿namespace AzureDailyCostCompare.Infrastructure;
 
 public interface IDateProvider
 {
