@@ -1,5 +1,7 @@
 
 
+using AzureDailyCostCompare.Application;
+
 namespace AzureDailyCostCompare.Tests;
 
 public class ProgramTests
