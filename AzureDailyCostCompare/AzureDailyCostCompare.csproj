@@ -23,6 +23,7 @@
 		<RepositoryUrl>https://github.com/DanielSpindler83/AzureDailyCostCompare/</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>azure;daily;cost;compare</PackageTags>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
