@@ -1,6 +1,4 @@
-﻿// Business logic interfaces and implementations
-
-namespace AzureDailyCostCompare.Application.Interfacces;
+﻿namespace AzureDailyCostCompare.Application.Interfaces;
 
 public interface ICostComparisonHandler
 {

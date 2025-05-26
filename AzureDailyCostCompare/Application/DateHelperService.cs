@@ -2,7 +2,7 @@
 
 namespace AzureDailyCostCompare.Application;
 
-public class DateHelperService
+public class DateHelperService //rename this and can I inject it where needed?
 {
     public DateTime DataReferenceDate { get; }
     public DateTime FirstDayOfPreviousMonth { get; }
@@ -51,19 +51,6 @@ public class DateHelperService
 
             OutputTableDaysToDisplay = Math.Max(overrideMonthDays, previousMonthDays);
         }
-    }
-
-    public string GetDataCurrencyDescription(TimeZoneInfo? localTimeZone = null)
-    {
-        localTimeZone ??= TimeZoneInfo.Local;
-        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(DataReferenceDate, localTimeZone);
-
-        return $"Daily cost data is complete up to end of the day {DataReferenceDate:yyyy-MM-dd} in UTC timezone\n" +
-               $"The end of the day in UTC time is {localDataReferenceDay} in local timezone of {localTimeZone.DisplayName}\n" +
-               $"------\n" +
-               $"This report was generated at {DateTime.Now} {localTimeZone.DisplayName}\n" +
-               $"This report was generated at {DateTime.UtcNow} UTC\n" +
-               $"------\n";
     }
 
     private static DateTime DetermineDataReferenceDate(DateTime referenceDateTime, int cutoffHourUtc)
