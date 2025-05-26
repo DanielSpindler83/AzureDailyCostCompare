@@ -1,4 +1,4 @@
-﻿using AzureDailyCostCompare.Application.Interfacces;
+﻿using AzureDailyCostCompare.Application.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureDailyCostCompare.Infrastructure;

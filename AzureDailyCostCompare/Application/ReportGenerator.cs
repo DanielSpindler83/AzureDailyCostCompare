@@ -2,7 +2,7 @@
 
 public class ReportGenerator
 {
-    private readonly DateHelperService dateHelperService;
+    private readonly CostComparisonDateService costComparisonDateService;
     private readonly List<DailyCostData> currentMonthCostData;
     private readonly List<DailyCostData> previousMonthCostData;
     private readonly decimal averageCurrentPartialMonth;
@@ -10,17 +10,17 @@ public class ReportGenerator
     private readonly decimal averagePreviousFullMonth;
     private readonly decimal currentToPreviousMonthAveragesCostDelta;
 
-    public ReportGenerator(List<DailyCostData> costData, DateHelperService dateHelperService)
+    public ReportGenerator(List<DailyCostData> costData, CostComparisonDateService costComparisonDateService)
     {
 
-        this.dateHelperService = dateHelperService;
+        this.costComparisonDateService = costComparisonDateService;
 
         currentMonthCostData = costData
-                .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfCurrentMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfCurrentMonth.Year)
+                .Where(dc => dc.DateString.Month == costComparisonDateService.CurrentMonthStartDate.Month && dc.DateString.Year == costComparisonDateService.CurrentMonthStartDate.Year)
                 .ToList();
 
         previousMonthCostData = costData
-                .Where(dc => dc.DateString.Month == dateHelperService.FirstDayOfPreviousMonth.Month && dc.DateString.Year == dateHelperService.FirstDayOfPreviousMonth.Year)
+                .Where(dc => dc.DateString.Month == costComparisonDateService.PreviousMonthStartDate.Month && dc.DateString.Year == costComparisonDateService.PreviousMonthStartDate.Year)
                 .ToList();
 
         averageCurrentPartialMonth = currentMonthCostData
@@ -50,14 +50,14 @@ public class ReportGenerator
 
     private IEnumerable<DailyCostRow> CreateDailyCostTableData()
     {
-        return from day in Enumerable.Range(1, dateHelperService.OutputTableDaysToDisplay)
+        return from day in Enumerable.Range(1, costComparisonDateService.ComparisonTableDayCount)
                let currentDay = FindDayInCurrentMonth(day)
                let previousDay = FindDayInPreviousMonth(day)
                select new DailyCostRow
                {
                    DayOfMonth = day,
-                   PreviousCost = DetermineMonthCost(previousDay, day, dateHelperService.CountOfDaysInPreviousMonth),
-                   CurrentCost = DetermineMonthCost(currentDay, day, dateHelperService.CountOfDaysInCurrentMonth),
+                   PreviousCost = DetermineMonthCost(previousDay, day, costComparisonDateService.PreviousMonthDayCount),
+                   CurrentCost = DetermineMonthCost(currentDay, day, costComparisonDateService.CurrentMonthDayCount),
                    CostDifference = CalculateCostDifference(currentDay, previousDay)
                };
     }
@@ -75,8 +75,8 @@ public class ReportGenerator
     {
         Console.WriteLine("\n{0,-18} {1,-18} {2,-18} {3,-18}",
             "Day of Month",
-            dateHelperService.FirstDayOfPreviousMonth.ToString("MMMM"),
-            dateHelperService.FirstDayOfCurrentMonth.ToString("MMMM"),
+            costComparisonDateService.PreviousMonthStartDate.ToString("MMMM"),
+            costComparisonDateService.CurrentMonthStartDate.ToString("MMMM"),
             "Cost Difference(USD)");
     }
 
@@ -114,14 +114,14 @@ public class ReportGenerator
     private void PrintDataAnalysisAndInfo()
     {
         var localTimeZone = TimeZoneInfo.Local;
-        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(dateHelperService.DataReferenceDate, localTimeZone);
+        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(costComparisonDateService.CostDataReferenceDate, localTimeZone);
 
         PrintMonthlyAveragesTable();
 
         PrintSectionHeader("Data Reference Information");
         Console.WriteLine($"All costs in USD");
-        Console.WriteLine($"A day's data is considered complete {dateHelperService.PreviousDayUtcDataLoadDelayHours} hours after the end of the day in UTC time.");
-        PrintDataReferenceDetails(dateHelperService.DataReferenceDate, localDataReferenceDay, localTimeZone);
+        Console.WriteLine($"A day's data is considered complete {costComparisonDateService.DataAvailabilityCutoffHourUtc} hours after the end of the day in UTC time.");
+        PrintDataReferenceDetails(costComparisonDateService.CostDataReferenceDate, localDataReferenceDay, localTimeZone);
     }
 
     private void PrintMonthlyAveragesTable()
@@ -132,22 +132,22 @@ public class ReportGenerator
 
         // Current month partial average
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{dateHelperService.DataReferenceDate:MMMM} average (for {currentMonthCostData.Count} days)",
+            $"{costComparisonDateService.CostDataReferenceDate:MMMM} average (for {currentMonthCostData.Count} days)",
             averageCurrentPartialMonth);
 
         // Previous month partial average
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{dateHelperService.DataReferenceDate.AddMonths(-1):MMMM} average (for {currentMonthCostData.Count} days)",
+            $"{costComparisonDateService.CostDataReferenceDate.AddMonths(-1):MMMM} average (for {currentMonthCostData.Count} days)",
             averagePreviousPartialMonth);
 
         // Cost delta
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"Month averages cost delta ({dateHelperService.DataReferenceDate:MMMM} average minus {dateHelperService.DataReferenceDate.AddMonths(-1):MMMM} average)",
+            $"Month averages cost delta ({costComparisonDateService.CostDataReferenceDate:MMMM} average minus {costComparisonDateService.CostDataReferenceDate.AddMonths(-1):MMMM} average)",
             currentToPreviousMonthAveragesCostDelta);
 
         // Previous full month average
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{dateHelperService.DataReferenceDate.AddMonths(-1):MMMM} full month average",
+            $"{costComparisonDateService.CostDataReferenceDate.AddMonths(-1):MMMM} full month average",
             averagePreviousFullMonth);
     }
 
@@ -233,23 +233,23 @@ public class ReportGenerator
                 $"{avg.CurrentMonthAverage,12:F2} {diff,12} {samples,8}");
         }
 
-        //Console.WriteLine($"\nData complete through: {dateHelperService.DataReferenceDate:yyyy-MM-dd HH:mm} UTC");
+        //Console.WriteLine($"\nData complete through: {costComparisonDateService.DataReferenceDate:yyyy-MM-dd HH:mm} UTC");
     }
 
     private List<WeeklyComparison> GetWeeklyComparisons()
     {
         var comparisons = new List<WeeklyComparison>();
-        var previousMonth = dateHelperService.FirstDayOfPreviousMonth; // Already UTC
-        var currentMonth = dateHelperService.FirstDayOfCurrentMonth;   // Already UTC
+        var previousMonth = costComparisonDateService.PreviousMonthStartDate; // Already UTC
+        var currentMonth = costComparisonDateService.CurrentMonthStartDate;   // Already UTC
 
         foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
             var previousWeeks = GetWeeksForDay(day, previousMonth)
-                .Where(d => d <= dateHelperService.DataReferenceDate)
+                .Where(d => d <= costComparisonDateService.CostDataReferenceDate)
                 .ToList();
 
             var currentWeeks = GetWeeksForDay(day, currentMonth)
-                .Where(d => d <= dateHelperService.DataReferenceDate)
+                .Where(d => d <= costComparisonDateService.CostDataReferenceDate)
                 .ToList();
 
             for (int weekNum = 0; weekNum < Math.Min(previousWeeks.Count, currentWeeks.Count); weekNum++)
@@ -287,12 +287,12 @@ public class ReportGenerator
             // Use UTC DateString for day-of-week calculation
             var previousDays = previousMonthCostData
                 .Where(d => d.DateString.DayOfWeek == day &&
-                           d.DateString <= DateOnly.FromDateTime(dateHelperService.DataReferenceDate))
+                           d.DateString <= DateOnly.FromDateTime(costComparisonDateService.CostDataReferenceDate))
                 .ToList();
 
             var currentDays = currentMonthCostData
                 .Where(d => d.DateString.DayOfWeek == day &&
-                           d.DateString <= DateOnly.FromDateTime(dateHelperService.DataReferenceDate))
+                           d.DateString <= DateOnly.FromDateTime(costComparisonDateService.CostDataReferenceDate))
                 .ToList();
 
             if (previousDays.Count != 0 || currentDays.Count != 0)

@@ -1,5 +1,5 @@
 ﻿using AzureDailyCostCompare.Application;
-using AzureDailyCostCompare.Application.Interfacces;
+using AzureDailyCostCompare.Application.Interfaces;
 using AzureDailyCostCompare.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 

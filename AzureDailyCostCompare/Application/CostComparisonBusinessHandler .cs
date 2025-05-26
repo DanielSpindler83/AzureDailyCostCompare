@@ -1,4 +1,4 @@
-﻿using AzureDailyCostCompare.Application.Interfacces;
+﻿using AzureDailyCostCompare.Application.Interfaces;
 using AzureDailyCostCompare.Infrastructure;
 using AzureDailyCostCompare.Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -70,15 +70,15 @@ public class CostComparisonBusinessHandler(
 
         // Create date helper (with optional reference date)
         var dateHelper = date.HasValue
-            ? new DateHelperService(previousDayUtcDataLoadDelayHours, date.Value)
-            : new DateHelperService(previousDayUtcDataLoadDelayHours);
+            ? new CostComparisonDateService(previousDayUtcDataLoadDelayHours, date.Value)
+            : new CostComparisonDateService(previousDayUtcDataLoadDelayHours);
 
         // Query cost data
         var costData = await _costService.QueryCostManagementAPI(
             accessToken,
             billingAccountId,
-            dateHelper.FirstDayOfPreviousMonth,
-            dateHelper.DataReferenceDate);
+            dateHelper.PreviousMonthStartDate,
+            dateHelper.CostDataReferenceDate);
 
         // Generate report
         new ReportGenerator(costData, dateHelper)
