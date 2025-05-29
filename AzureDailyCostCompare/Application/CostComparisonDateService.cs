@@ -1,5 +1,4 @@
-﻿using AzureDailyCostCompare.Application.Interfaces;
-using AzureDailyCostCompare.Infrastructure;
+﻿using AzureDailyCostCompare.Infrastructure;
 
 namespace AzureDailyCostCompare.Application;
 
@@ -7,7 +6,7 @@ namespace AzureDailyCostCompare.Application;
 /// Manages date calculations for Azure cost comparisons between current and previous months.
 /// Handles data availability cutoffs and determines appropriate comparison periods.
 /// </summary>
-public class CostComparisonDateService : ICostComparisonDateService
+public class CostComparisonDateService
 {
     /// <summary>
     /// The reference date used for all cost comparison calculations

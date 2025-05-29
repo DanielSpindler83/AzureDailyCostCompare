@@ -1,19 +1,17 @@
-﻿using AzureDailyCostCompare.Application.Interfaces;
-using AzureDailyCostCompare.Infrastructure;
-using AzureDailyCostCompare.Infrastructure.Interfaces;
+﻿using AzureDailyCostCompare.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using ConfigurationManager = AzureDailyCostCompare.Infrastructure.ConfigurationManager;
 
 namespace AzureDailyCostCompare.Application;
 
 public class CostComparisonBusinessHandler(
-    IAuthenticationService authService,
-    IBillingService billingService,
-    ICostService costService) : ICostComparisonHandler
+    AuthenticationService authService,
+    BillingService billingService,
+    CostService costService)
 {
-    private readonly IAuthenticationService _authService = authService;
-    private readonly IBillingService _billingService = billingService;
-    private readonly ICostService _costService = costService;
+    private readonly AuthenticationService _authService = authService;
+    private readonly BillingService _billingService = billingService;
+    private readonly CostService _costService = costService;
 
     public async Task RunAsync(
         DateTime? date,

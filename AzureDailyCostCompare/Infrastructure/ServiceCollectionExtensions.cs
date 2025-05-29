@@ -1,6 +1,4 @@
 ﻿using AzureDailyCostCompare.Application;
-using AzureDailyCostCompare.Application.Interfaces;
-using AzureDailyCostCompare.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureDailyCostCompare.Infrastructure;
@@ -22,12 +20,12 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient();
 
         // Register your business services
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddScoped<IBillingService, BillingService>();
-        services.AddScoped<ICostService, CostService>();
-        services.AddScoped<ICostComparisonHandler, CostComparisonBusinessHandler>();
+        services.AddScoped<AuthenticationService>();
+        services.AddScoped<BillingService>();
+        services.AddScoped<CostService>();
+        services.AddScoped<CostComparisonBusinessHandler>();
 
-        services.AddHttpClient<IBillingService, BillingService>(client =>
+        services.AddHttpClient<BillingService>(client =>
         {
             client.BaseAddress = new Uri("https://management.azure.com/");
             client.Timeout = TimeSpan.FromMinutes(5);
@@ -35,7 +33,7 @@ public static class ServiceCollectionExtensions
             //client.DefaultRequestHeaders.Add("User-Agent", "AzureDailyCostCompare");
         });
 
-        services.AddHttpClient<ICostService, CostService>(client =>
+        services.AddHttpClient<CostService>(client =>
         {
             client.BaseAddress = new Uri("https://management.azure.com/");
             client.Timeout = TimeSpan.FromMinutes(10); // Longer timeout for cost queries

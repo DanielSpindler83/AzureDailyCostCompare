@@ -1,10 +1,9 @@
-﻿using AzureDailyCostCompare.Infrastructure.Interfaces;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace AzureDailyCostCompare.Infrastructure;
 
-public class BillingService : IBillingService
+public class BillingService
 {
     private readonly HttpClient _httpClient;
 

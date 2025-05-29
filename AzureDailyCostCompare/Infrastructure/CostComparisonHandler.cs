@@ -1,4 +1,4 @@
-﻿using AzureDailyCostCompare.Application.Interfaces;
+﻿using AzureDailyCostCompare.Application;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureDailyCostCompare.Infrastructure;
@@ -18,7 +18,7 @@ public static class CostComparisonHandler
         }
 
         // Get the actual business handler from DI
-        var handler = ServiceProviderAccessor.ServiceProvider.GetRequiredService<ICostComparisonHandler>();
+        var handler = ServiceProviderAccessor.ServiceProvider.GetRequiredService<CostComparisonBusinessHandler>();
 
         await handler.RunAsync(date, showWeeklyPatterns, showDayOfWeekAverages, previousDayUtcDataLoadDelayHours);
     }

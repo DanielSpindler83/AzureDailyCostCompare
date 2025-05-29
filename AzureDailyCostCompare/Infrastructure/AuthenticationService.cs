@@ -1,10 +1,9 @@
 ﻿using Azure.Core;
 using Azure.Identity;
-using AzureDailyCostCompare.Infrastructure.Interfaces;
 
 namespace AzureDailyCostCompare.Infrastructure;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationService
 {
     internal static readonly string[] scopes = ["https://management.azure.com/.default"];
 
