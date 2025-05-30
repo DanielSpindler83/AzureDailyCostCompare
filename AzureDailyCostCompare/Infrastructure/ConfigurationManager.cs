@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
 public static class ConfigurationManager
 {

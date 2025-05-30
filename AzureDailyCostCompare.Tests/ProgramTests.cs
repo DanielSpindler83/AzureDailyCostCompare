@@ -1,5 +1,7 @@
 
 
+using AzureDailyCostCompare.Application;
+
 namespace AzureDailyCostCompare.Tests;
 
 public class ProgramTests
@@ -13,10 +15,11 @@ public class ProgramTests
         // Arrange: Use a fixed reference date
         var referenceDate = new DateTime(2024, 01, 01);
         var cutoffHourUtc = 4;
-        var dateHelperService = new DateHelperService(cutoffHourUtc, referenceDate);
+        var dateService = new CostComparisonDateService();
+        var context = dateService.CreateContextWithOverride(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, dateHelperService);
+        var reportGenerator = new ReportGenerator(mockCostData, context);
 
         // Capture console output
         using var consoleOutput = new StringWriter();
@@ -44,10 +47,11 @@ public class ProgramTests
         // Arrange: Use a fixed reference date
         var referenceDate = new DateTime(2024, 02, 10);
         var cutoffHourUtc = 4;
-        var dateHelperService = new DateHelperService(cutoffHourUtc, referenceDate);
+        var dateService = new CostComparisonDateService();
+        var context = dateService.CreateContextWithOverride(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, dateHelperService);
+        var reportGenerator = new ReportGenerator(mockCostData, context);
 
         // Capture console output
         using var consoleOutput = new StringWriter();

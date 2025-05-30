@@ -1,4 +1,4 @@
-﻿namespace AzureDailyCostCompare;
+﻿namespace AzureDailyCostCompare.Application;
 
 public record DailyCostData
 {

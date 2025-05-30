@@ -6,6 +6,10 @@
     "--previous-day-utc-data-load-delay": {
       "commandName": "Project",
       "commandLineArgs": "--previous-day-utc-data-load-delay 8"
+    },
+    "version": {
+      "commandName": "Project",
+      "commandLineArgs": "--version"
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿namespace AzureDailyCostCompare;
+﻿namespace AzureDailyCostCompare.Infrastructure;
 
 public class ConfigurationValidationException : Exception
 {
