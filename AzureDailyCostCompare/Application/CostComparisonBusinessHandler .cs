@@ -7,11 +7,13 @@ namespace AzureDailyCostCompare.Application;
 public class CostComparisonBusinessHandler(
     AuthenticationService authService,
     BillingService billingService,
-    CostService costService)
+    CostService costService,
+    ReportGeneratorFactory reportGeneratorFactory)
 {
     private readonly AuthenticationService _authService = authService;
     private readonly BillingService _billingService = billingService;
     private readonly CostService _costService = costService;
+    private readonly ReportGeneratorFactory _reportGeneratorFactory = reportGeneratorFactory;
 
     public async Task RunAsync(
         DateTime? date,
@@ -80,8 +82,9 @@ public class CostComparisonBusinessHandler(
             context.ReferenceDate);      // was dateHelper.CostDataReferenceDate
 
         // Generate report (pass context instead of dateHelper)
-        new ReportGenerator(costData, context)
-            .GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
+        reportGeneratorFactory.Create(costData, context).GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
+        //new ReportGenerator(costData, context)
+        //    .GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
     }
 
     private static void DisplayError(string message)

@@ -1,10 +1,10 @@
 ﻿using AzureDailyCostCompare.Domain;
+using AzureDailyCostCompare.Infrastructure;
 
 namespace AzureDailyCostCompare.Application;
 
 public class ReportGenerator
 {
-    //private readonly CostComparisonDateService costComparisonContext;
     private readonly CostComparisonContext costComparisonContext;
     private readonly List<DailyCostData> currentMonthCostData;
     private readonly List<DailyCostData> previousMonthCostData;
@@ -12,12 +12,14 @@ public class ReportGenerator
     private readonly decimal averagePreviousPartialMonth;
     private readonly decimal averagePreviousFullMonth;
     private readonly decimal currentToPreviousMonthAveragesCostDelta;
+    private readonly PreviousDayUtcDataLoadDelayHours previousDayUtcDataLoadDelayHours;
 
-    public ReportGenerator(List<DailyCostData> costData, CostComparisonContext context)
+    public ReportGenerator(PreviousDayUtcDataLoadDelayHours previousDayUtcDataLoadDelayHours, List<DailyCostData> costData, CostComparisonContext context)
     {
 
-        //this.costComparisonContext = costComparisonContext;
         this.costComparisonContext = context;
+        this.previousDayUtcDataLoadDelayHours = previousDayUtcDataLoadDelayHours;
+
 
         currentMonthCostData = costData
                 .Where(dc => dc.DateString.Month == costComparisonContext.CurrentMonthStart.Month && dc.DateString.Year == costComparisonContext.CurrentMonthStart.Year)
