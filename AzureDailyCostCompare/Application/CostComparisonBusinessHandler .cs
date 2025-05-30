@@ -66,20 +66,21 @@ public class CostComparisonBusinessHandler(
         // Get billing account ID
         var billingAccountId = await _billingService.GetBillingAccountIdAsync(accessToken);
 
-        // Create date helper (with optional reference date)
-        var dateHelper = date.HasValue
-            ? new CostComparisonDateService(previousDayUtcDataLoadDelayHours, date.Value)
-            : new CostComparisonDateService(previousDayUtcDataLoadDelayHours);
+        // Create comparison context (replaces dateHelper creation)
+        var dateService = new CostComparisonDateService();
+        var context = date.HasValue
+            ? dateService.CreateContextWithOverride(previousDayUtcDataLoadDelayHours, date.Value)
+            : dateService.CreateContext(previousDayUtcDataLoadDelayHours);
 
-        // Query cost data
+        // Query cost data (updated property names)
         var costData = await _costService.QueryCostManagementAPI(
             accessToken,
             billingAccountId,
-            dateHelper.PreviousMonthStartDate,
-            dateHelper.CostDataReferenceDate);
+            context.PreviousMonthStart,  // was dateHelper.PreviousMonthStartDate
+            context.ReferenceDate);      // was dateHelper.CostDataReferenceDate
 
-        // Generate report
-        new ReportGenerator(costData, dateHelper)
+        // Generate report (pass context instead of dateHelper)
+        new ReportGenerator(costData, context)
             .GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
     }
 

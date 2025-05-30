@@ -15,10 +15,11 @@ public class ProgramTests
         // Arrange: Use a fixed reference date
         var referenceDate = new DateTime(2024, 01, 01);
         var cutoffHourUtc = 4;
-        var costComparisonDateService = new CostComparisonDateService(cutoffHourUtc, referenceDate);
+        var dateService = new CostComparisonDateService();
+        var context = dateService.CreateContextWithOverride(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, costComparisonDateService);
+        var reportGenerator = new ReportGenerator(mockCostData, context);
 
         // Capture console output
         using var consoleOutput = new StringWriter();
@@ -46,10 +47,11 @@ public class ProgramTests
         // Arrange: Use a fixed reference date
         var referenceDate = new DateTime(2024, 02, 10);
         var cutoffHourUtc = 4;
-        var CostComparisonDateService = new CostComparisonDateService(cutoffHourUtc, referenceDate);
+        var dateService = new CostComparisonDateService();
+        var context = dateService.CreateContextWithOverride(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, CostComparisonDateService);
+        var reportGenerator = new ReportGenerator(mockCostData, context);
 
         // Capture console output
         using var consoleOutput = new StringWriter();
