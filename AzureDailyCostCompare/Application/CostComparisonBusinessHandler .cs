@@ -22,8 +22,6 @@ public class CostComparisonBusinessHandler(
         try
         {
             await RunCostComparisonAsync(_applicationUnifiedSettings.Date, 
-                                         _applicationUnifiedSettings.ShowWeeklyPatterns, 
-                                         _applicationUnifiedSettings.ShowDayOfWeekAverages, 
                                          _applicationUnifiedSettings.PreviousDayUtcDataLoadDelayHours);
         }
         catch (ConfigurationValidationException ex)
@@ -40,8 +38,6 @@ public class CostComparisonBusinessHandler(
 
     private async Task RunCostComparisonAsync(
         DateTime? date,
-        bool showWeeklyPatterns,
-        bool showDayOfWeekAverages,
         int previousDayUtcDataLoadDelayHours)
     {
         // Get authentication token
@@ -63,7 +59,7 @@ public class CostComparisonBusinessHandler(
             context.ReferenceDate);      // was dateHelper.CostDataReferenceDate
 
         // Generate report
-        _reportGenerator.GenerateDailyCostReport(costData, _applicationUnifiedSettings.ShowWeeklyPatterns, _applicationUnifiedSettings.ShowDayOfWeekAverages);
+        _reportGenerator.GenerateDailyCostReport(costData,context, _applicationUnifiedSettings.ShowWeeklyPatterns, _applicationUnifiedSettings.ShowDayOfWeekAverages);
     }
 
     private static void DisplayError(string message)

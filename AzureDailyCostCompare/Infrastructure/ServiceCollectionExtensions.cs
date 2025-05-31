@@ -1,4 +1,5 @@
 ﻿using AzureDailyCostCompare.Application;
+using AzureDailyCostCompare.Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,17 +32,18 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(previousDayUtcDataLoadDelayHours);
         // so now i can simply inject previousDayUtcDataLoadDelayHours and use it where it is needed? Yes I think so...
 
-        // Register HTTP client
-        services.AddHttpClient();
-
         // Register business services
         services.AddScoped<AuthenticationService>();
         services.AddScoped<BillingService>();
         services.AddScoped<CostService>();
         services.AddScoped<CostComparisonBusinessHandler>();
-        services.AddSingleton<ApplicationUnifiedSettings>();
+        services.AddScoped<CostComparisonContext>();
+        services.AddScoped<ApplicationUnifiedSettings>();
         services.AddScoped<CostComparisonDateService>();
-
+        services.AddScoped<DataAvailabilityService>();
+        services.AddScoped<OverrideDateProcessor>();
+        services.AddScoped<MonthCalculationService>();
+        services.AddScoped<ComparisonCalculationService>();
         services.AddScoped<ReportGenerator>();
 
         services.AddHttpClient<BillingService>(client =>

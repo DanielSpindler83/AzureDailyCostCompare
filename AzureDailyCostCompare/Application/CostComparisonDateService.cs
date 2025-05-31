@@ -8,15 +8,15 @@ namespace AzureDailyCostCompare.Application;
 /// APPLICATION: Facade service that orchestrates domain and application services
 /// </summary>
 public class CostComparisonDateService(
-    DataAvailabilityService? dataAvailability = null, //rename this service to something more meaningful
-    OverrideDateProcessor? overrideProcessor = null,
-    MonthCalculationService? monthCalculation = null,
-    ComparisonCalculationService? comparisonCalculation = null)
+    DataAvailabilityService dataAvailability, //rename this service to something more meaningful
+    OverrideDateProcessor overrideProcessor,
+    MonthCalculationService monthCalculation,
+    ComparisonCalculationService comparisonCalculation)
 {
-    private readonly DataAvailabilityService _dataAvailability = dataAvailability ?? new DataAvailabilityService();
-    private readonly OverrideDateProcessor _overrideProcessor = overrideProcessor ?? new OverrideDateProcessor();
-    private readonly MonthCalculationService _monthCalculation = monthCalculation ?? new MonthCalculationService();
-    private readonly ComparisonCalculationService _comparisonCalculation = comparisonCalculation ?? new ComparisonCalculationService();
+    private readonly DataAvailabilityService _dataAvailability = dataAvailability;
+    private readonly OverrideDateProcessor _overrideProcessor = overrideProcessor;
+    private readonly MonthCalculationService _monthCalculation = monthCalculation;
+    private readonly ComparisonCalculationService _comparisonCalculation = comparisonCalculation;
 
     public DateTime CurrentDateTimeUtc { get; init; } = DateTime.UtcNow;
 

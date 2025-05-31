@@ -23,16 +23,20 @@ public static class CommandLineBuilder
         // Command execution handler
         rootCommand.SetHandler(async (date, showWeeklyPatterns, showDayOfWeekAverages, previousDayUtcDataLoadDelayHours) =>
         {
-            // Get the singleton applicationUnifiedSettingsService instance and populate it
-            var applicationUnifiedSettingsService = serviceProvider.GetRequiredService<ApplicationUnifiedSettings>();
-            applicationUnifiedSettingsService.Date = date;
-            applicationUnifiedSettingsService.ShowWeeklyPatterns = showWeeklyPatterns;
-            applicationUnifiedSettingsService.ShowDayOfWeekAverages = showDayOfWeekAverages;
-            applicationUnifiedSettingsService.PreviousDayUtcDataLoadDelayHoursCommandLine = previousDayUtcDataLoadDelayHours;
+            try
+            {
+                // Get the singleton applicationUnifiedSettingsService instance and populate it
+                var applicationUnifiedSettingsService = serviceProvider.GetRequiredService<ApplicationUnifiedSettings>();
+                applicationUnifiedSettingsService.Date = date;
+                applicationUnifiedSettingsService.ShowWeeklyPatterns = showWeeklyPatterns;
+                applicationUnifiedSettingsService.ShowDayOfWeekAverages = showDayOfWeekAverages;
+                applicationUnifiedSettingsService.PreviousDayUtcDataLoadDelayHoursCommandLine = previousDayUtcDataLoadDelayHours;
 
-            // Now delegate to your actual application logic
-            var app = serviceProvider.GetRequiredService<CostComparisonBusinessHandler>();
-            await app.RunAsync(); //Auto injects the ApplicationUnifiedSettings to get access to above ApplicationUnifiedSettings values
+                // Now delegate to your actual application logic
+                var app = serviceProvider.GetRequiredService<CostComparisonBusinessHandler>();
+                await app.RunAsync(); //Auto injects the ApplicationUnifiedSettings to get access to above ApplicationUnifiedSettings values
+            }
+            catch (Exception ex) { Console.WriteLine($"Service1 failed: {ex}"); }
 
         }, dateOption, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption);
 

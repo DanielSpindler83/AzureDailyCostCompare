@@ -4,11 +4,9 @@ using AzureDailyCostCompare.Infrastructure;
 namespace AzureDailyCostCompare.Application;
 
 public class ReportGenerator(
-    CostComparisonContext costComparisonContext,
     ApplicationUnifiedSettings applicationUnifiedSettings
     )
 {
-    private readonly CostComparisonContext _costComparisonContext = costComparisonContext;
     private readonly ApplicationUnifiedSettings _applicationUnifiedSettings = applicationUnifiedSettings;
     private List<DailyCostData> CurrentMonthCostData { get; set; } = [];
     private List<DailyCostData> PreviousMonthCostData { get; set; } = [];
@@ -17,8 +15,11 @@ public class ReportGenerator(
     private decimal AveragePreviousFullMonth { get; set; }
     private decimal CurrentToPreviousMonthAveragesCostDelta { get; set; }
 
-    public void GenerateDailyCostReport(List<DailyCostData> costData, bool showWeeklyPatterns, bool showDayOfWeekAverages)
+    private CostComparisonContext? CostComparisonContext { get; set; } = null;
+
+    public void GenerateDailyCostReport(List<DailyCostData> costData, CostComparisonContext costComparisonContext, bool showWeeklyPatterns, bool showDayOfWeekAverages)
     {
+        this.CostComparisonContext = costComparisonContext;
         SetCostData(costData);
         var tableData = CreateDailyCostTableData();
         PrintDailyCostTable(tableData);
@@ -32,11 +33,11 @@ public class ReportGenerator(
     public void SetCostData(List<DailyCostData> costData)
     {
         CurrentMonthCostData = costData
-                .Where(dc => dc.DateString.Month == _costComparisonContext.CurrentMonthStart.Month && dc.DateString.Year == _costComparisonContext.CurrentMonthStart.Year)
+                .Where(dc => dc.DateString.Month == CostComparisonContext.CurrentMonthStart.Month && dc.DateString.Year == CostComparisonContext.CurrentMonthStart.Year)
                 .ToList();
 
         PreviousMonthCostData = costData
-                .Where(dc => dc.DateString.Month == _costComparisonContext.PreviousMonthStart.Month && dc.DateString.Year == _costComparisonContext.PreviousMonthStart.Year)
+                .Where(dc => dc.DateString.Month == CostComparisonContext.PreviousMonthStart.Month && dc.DateString.Year == CostComparisonContext.PreviousMonthStart.Year)
                 .ToList();
 
         AverageCurrentPartialMonth = CurrentMonthCostData
@@ -55,14 +56,14 @@ public class ReportGenerator(
 
     private IEnumerable<DailyCostRow> CreateDailyCostTableData()
     {
-        return from day in Enumerable.Range(1, _costComparisonContext.ComparisonTableDayCount)
+        return from day in Enumerable.Range(1, CostComparisonContext.ComparisonTableDayCount)
                let currentDay = FindDayInCurrentMonth(day)
                let previousDay = FindDayInPreviousMonth(day)
                select new DailyCostRow
                {
                    DayOfMonth = day,
-                   PreviousCost = DetermineMonthCost(previousDay, day,_costComparisonContext.PreviousMonthDayCount),
-                   CurrentCost = DetermineMonthCost(currentDay, day,_costComparisonContext.CurrentMonthDayCount),
+                   PreviousCost = DetermineMonthCost(previousDay, day,CostComparisonContext.PreviousMonthDayCount),
+                   CurrentCost = DetermineMonthCost(currentDay, day,CostComparisonContext.CurrentMonthDayCount),
                    CostDifference = CalculateCostDifference(currentDay, previousDay)
                };
     }
@@ -80,8 +81,8 @@ public class ReportGenerator(
     {
         Console.WriteLine("\n{0,-18} {1,-18} {2,-18} {3,-18}",
             "Day of Month",
-           _costComparisonContext.PreviousMonthStart.ToString("MMMM"),
-           _costComparisonContext.CurrentMonthStart.ToString("MMMM"),
+           CostComparisonContext.PreviousMonthStart.ToString("MMMM"),
+           CostComparisonContext.CurrentMonthStart.ToString("MMMM"),
             "Cost Difference(USD)");
     }
 
@@ -119,14 +120,14 @@ public class ReportGenerator(
     private void PrintDataAnalysisAndInfo()
     {
         var localTimeZone = TimeZoneInfo.Local;
-        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(_costComparisonContext.ReferenceDate, localTimeZone);
+        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(CostComparisonContext.ReferenceDate, localTimeZone);
 
         PrintMonthlyAveragesTable();
 
         PrintSectionHeader("Data Reference Information");
         Console.WriteLine($"All costs in USD");
         Console.WriteLine($"A day's data is considered complete {_applicationUnifiedSettings.PreviousDayUtcDataLoadDelayHours} hours after the end of the day in UTC time.");
-        PrintDataReferenceDetails(_costComparisonContext.ReferenceDate, localDataReferenceDay, localTimeZone);
+        PrintDataReferenceDetails(CostComparisonContext.ReferenceDate, localDataReferenceDay, localTimeZone);
     }
 
     private void PrintMonthlyAveragesTable()
@@ -137,22 +138,22 @@ public class ReportGenerator(
 
         // Current month partial average
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{_costComparisonContext.ReferenceDate:MMMM} average (for {CurrentMonthCostData.Count} days)",
+            $"{CostComparisonContext.ReferenceDate:MMMM} average (for {CurrentMonthCostData.Count} days)",
             AverageCurrentPartialMonth);
 
         // Previous month partial average
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{_costComparisonContext.ReferenceDate.AddMonths(-1):MMMM} average (for {CurrentMonthCostData.Count} days)",
+            $"{CostComparisonContext.ReferenceDate.AddMonths(-1):MMMM} average (for {CurrentMonthCostData.Count} days)",
             AveragePreviousPartialMonth);
 
         // Cost delta
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"Month averages cost delta ({_costComparisonContext.ReferenceDate:MMMM} average minus {_costComparisonContext.ReferenceDate.AddMonths(-1):MMMM} average)",
+            $"Month averages cost delta ({CostComparisonContext.ReferenceDate:MMMM} average minus {CostComparisonContext.ReferenceDate.AddMonths(-1):MMMM} average)",
             CurrentToPreviousMonthAveragesCostDelta);
 
         // Previous full month average
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{_costComparisonContext.ReferenceDate.AddMonths(-1):MMMM} full month average",
+            $"{CostComparisonContext.ReferenceDate.AddMonths(-1):MMMM} full month average",
             AveragePreviousFullMonth);
     }
 
@@ -244,17 +245,17 @@ public class ReportGenerator(
     private List<WeeklyComparison> GetWeeklyComparisons()
     {
         var comparisons = new List<WeeklyComparison>();
-        var previousMonth =_costComparisonContext.PreviousMonthStart; // Already UTC
-        var currentMonth =_costComparisonContext.CurrentMonthStart;   // Already UTC
+        var previousMonth =CostComparisonContext.PreviousMonthStart; // Already UTC
+        var currentMonth =CostComparisonContext.CurrentMonthStart;   // Already UTC
 
         foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
             var previousWeeks = GetWeeksForDay(day, previousMonth)
-                .Where(d => d <=_costComparisonContext.ReferenceDate)
+                .Where(d => d <=CostComparisonContext.ReferenceDate)
                 .ToList();
 
             var currentWeeks = GetWeeksForDay(day, currentMonth)
-                .Where(d => d <=_costComparisonContext.ReferenceDate)
+                .Where(d => d <=CostComparisonContext.ReferenceDate)
                 .ToList();
 
             for (int weekNum = 0; weekNum < Math.Min(previousWeeks.Count, currentWeeks.Count); weekNum++)
@@ -292,12 +293,12 @@ public class ReportGenerator(
             // Use UTC DateString for day-of-week calculation
             var previousDays = PreviousMonthCostData
                 .Where(d => d.DateString.DayOfWeek == day &&
-                           d.DateString <= DateOnly.FromDateTime(_costComparisonContext.ReferenceDate))
+                           d.DateString <= DateOnly.FromDateTime(CostComparisonContext.ReferenceDate))
                 .ToList();
 
             var currentDays = CurrentMonthCostData
                 .Where(d => d.DateString.DayOfWeek == day &&
-                           d.DateString <= DateOnly.FromDateTime(_costComparisonContext.ReferenceDate))
+                           d.DateString <= DateOnly.FromDateTime(CostComparisonContext.ReferenceDate))
                 .ToList();
 
             if (previousDays.Count != 0 || currentDays.Count != 0)
