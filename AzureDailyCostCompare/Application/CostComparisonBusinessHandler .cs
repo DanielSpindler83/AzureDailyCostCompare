@@ -1,6 +1,4 @@
 ﻿using AzureDailyCostCompare.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using ConfigurationManager = AzureDailyCostCompare.Infrastructure.ConfigurationManager;
 
 namespace AzureDailyCostCompare.Application;
 
@@ -8,23 +6,25 @@ public class CostComparisonBusinessHandler(
     AuthenticationService authService,
     BillingService billingService,
     CostService costService,
-    ReportGeneratorFactory reportGeneratorFactory)
+    ApplicationUnifiedSettings applicationUnifiedSettings,
+    CostComparisonDateService costComparisonDateService,
+    ReportGenerator reportGenerator)
 {
     private readonly AuthenticationService _authService = authService;
     private readonly BillingService _billingService = billingService;
     private readonly CostService _costService = costService;
-    private readonly ReportGeneratorFactory _reportGeneratorFactory = reportGeneratorFactory;
+    private readonly ApplicationUnifiedSettings _applicationUnifiedSettings = applicationUnifiedSettings;
+    private readonly CostComparisonDateService _costComparisonDateService = costComparisonDateService;
+    private readonly ReportGenerator _reportGenerator = reportGenerator;
 
-    public async Task RunAsync(
-        DateTime? date,
-        bool showWeeklyPatterns,
-        bool showDayOfWeekAverages,
-        int? previousDayUtcDataLoadDelayHours)
+    public async Task RunAsync()
     {
         try
         {
-            int dataLoadDelayHours = ConfigureDataLoadDelayHours(previousDayUtcDataLoadDelayHours);
-            await RunCostComparisonAsync(date, showWeeklyPatterns, showDayOfWeekAverages, dataLoadDelayHours);
+            await RunCostComparisonAsync(_applicationUnifiedSettings.Date, 
+                                         _applicationUnifiedSettings.ShowWeeklyPatterns, 
+                                         _applicationUnifiedSettings.ShowDayOfWeekAverages, 
+                                         _applicationUnifiedSettings.PreviousDayUtcDataLoadDelayHours);
         }
         catch (ConfigurationValidationException ex)
         {
@@ -36,24 +36,6 @@ public class CostComparisonBusinessHandler(
             DisplayError(ex.Message);
             throw;
         }
-    }
-
-    private static int ConfigureDataLoadDelayHours(int? commandLineValue)
-    {
-        if (!commandLineValue.HasValue)
-        {
-            var configuration = ConfigurationManager.LoadConfiguration();
-            ConfigurationManager.ValidatePreviousDayUtcDataLoadDelayHours(configuration);
-            return configuration.GetValue<int>("AppSettings:PreviousDayUtcDataLoadDelayHours:Value");
-        }
-
-        ConfigurationManager.ValidatePreviousDayUtcDataLoadDelayHoursValue(commandLineValue.Value);
-        ConfigurationManager.UpdatePreviousDayUtcDataLoadDelayHours(commandLineValue.Value);
-
-        DisplaySuccess($"PreviousDayUtcDataLoadDelayHours value successfully updated to {commandLineValue.Value} " +
-                      $"in {ConfigurationManager.ConfigFileName}. New value will be used now and for subsequent executions.");
-
-        return commandLineValue.Value;
     }
 
     private async Task RunCostComparisonAsync(
@@ -69,10 +51,9 @@ public class CostComparisonBusinessHandler(
         var billingAccountId = await _billingService.GetBillingAccountIdAsync(accessToken);
 
         // Create comparison context (replaces dateHelper creation)
-        var dateService = new CostComparisonDateService();
         var context = date.HasValue
-            ? dateService.CreateContextWithOverride(previousDayUtcDataLoadDelayHours, date.Value)
-            : dateService.CreateContext(previousDayUtcDataLoadDelayHours);
+            ? _costComparisonDateService.CreateContextWithOverride(previousDayUtcDataLoadDelayHours, date.Value)
+            : _costComparisonDateService.CreateContext(previousDayUtcDataLoadDelayHours);
 
         // Query cost data (updated property names)
         var costData = await _costService.QueryCostManagementAPI(
@@ -81,10 +62,8 @@ public class CostComparisonBusinessHandler(
             context.PreviousMonthStart,  // was dateHelper.PreviousMonthStartDate
             context.ReferenceDate);      // was dateHelper.CostDataReferenceDate
 
-        // Generate report (pass context instead of dateHelper)
-        reportGeneratorFactory.Create(costData, context).GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
-        //new ReportGenerator(costData, context)
-        //    .GenerateDailyCostReport(showWeeklyPatterns, showDayOfWeekAverages);
+        // Generate report
+        _reportGenerator.GenerateDailyCostReport(costData, _applicationUnifiedSettings.ShowWeeklyPatterns, _applicationUnifiedSettings.ShowDayOfWeekAverages);
     }
 
     private static void DisplayError(string message)
@@ -94,10 +73,4 @@ public class CostComparisonBusinessHandler(
         Console.ResetColor();
     }
 
-    private static void DisplaySuccess(string message)
-    {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(message);
-        Console.ResetColor();
-    }
 }

@@ -12,7 +12,7 @@ public record CostComparisonContext(
     int CurrentMonthDayCount,
     int PreviousMonthDayCount,
     int ComparisonTableDayCount,
-    DataAvailabilityConfig Config)
+    int DataLoadDelayHours)
 {
     /// <summary>Gets the date range for the previous month</summary>
     public DateRange GetPreviousMonthRange()

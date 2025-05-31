@@ -1,5 +1,5 @@
 ﻿using AzureDailyCostCompare.Domain;
-using AzureDailyCostCompare.Infrastructure;
+
 
 namespace AzureDailyCostCompare.Application;
 
@@ -8,7 +8,7 @@ namespace AzureDailyCostCompare.Application;
 /// APPLICATION: Facade service that orchestrates domain and application services
 /// </summary>
 public class CostComparisonDateService(
-    DataAvailabilityService? dataAvailability = null,
+    DataAvailabilityService? dataAvailability = null, //rename this service to something more meaningful
     OverrideDateProcessor? overrideProcessor = null,
     MonthCalculationService? monthCalculation = null,
     ComparisonCalculationService? comparisonCalculation = null)
@@ -18,22 +18,22 @@ public class CostComparisonDateService(
     private readonly MonthCalculationService _monthCalculation = monthCalculation ?? new MonthCalculationService();
     private readonly ComparisonCalculationService _comparisonCalculation = comparisonCalculation ?? new ComparisonCalculationService();
 
+    public DateTime CurrentDateTimeUtc { get; init; } = DateTime.UtcNow;
+
     /// <summary>
     /// Creates a comparison context using the current date and data availability cutoff
     /// </summary>
-    /// <param name="cutoffHourUtc">UTC hour after which previous day's data is complete</param>
+    /// <param name="previousDayUtcDataLoadDelayHours">UTC hour after which previous day's data is complete</param>
     /// <param name="dateProvider">Optional date provider for testing</param>
-    public CostComparisonContext CreateContext(int cutoffHourUtc, IDateProvider? dateProvider = null)
+    public CostComparisonContext CreateContext(int previousDayUtcDataLoadDelayHours)
     {
-        var config = new DataAvailabilityConfig(cutoffHourUtc);
-        var currentDate = (dateProvider ?? new UtcDateProvider()).GetCurrentDate();
-        var referenceDate = _dataAvailability.GetLatestAvailableDataDate(currentDate, config);
+        var referenceDate = _dataAvailability.GetLatestAvailableDataDate(CurrentDateTimeUtc, previousDayUtcDataLoadDelayHours);
 
         var (currentStart, previousStart, currentDays, previousDays) =
             _monthCalculation.CalculateMonthBoundaries(referenceDate);
 
         var comparisonDayCount = _comparisonCalculation.CalculateComparisonDayCount(
-            null, currentDate, referenceDate);
+            null, CurrentDateTimeUtc, referenceDate);
 
         return new CostComparisonContext(
             referenceDate,
@@ -43,32 +43,27 @@ public class CostComparisonDateService(
             currentDays,
             previousDays,
             comparisonDayCount,
-            config);
+            previousDayUtcDataLoadDelayHours); // i dont think this context needs previousDayUtcDataLoadDelayHours anymore - we handle it elsewhere....please check when you can...
     }
 
     /// <summary>
     /// Creates a comparison context for a specific override date
     /// </summary>
-    /// <param name="cutoffHourUtc">UTC hour after which previous day's data is complete</param>
+    /// <param name="previousDayUtcDataLoadDelayHour">UTC hour after which previous day's data is complete</param>
     /// <param name="overrideDate">Specific date to use for comparison calculations</param>
-    /// <param name="dateProvider">Optional date provider for testing</param>
     public CostComparisonContext CreateContextWithOverride(
-        int cutoffHourUtc,
-        DateTime overrideDate,
-        IDateProvider? dateProvider = null)
+        int previousDayUtcDataLoadDelayHour,
+        DateTime overrideDate)
     {
-        var config = new DataAvailabilityConfig(cutoffHourUtc);
-        var currentDate = (dateProvider ?? new UtcDateProvider()).GetCurrentDate();
-
-        var validatedDate = _dataAvailability.ValidateOverrideDate(overrideDate, currentDate, config);
-        var processedDate = _overrideProcessor.ProcessOverrideDate(validatedDate, currentDate);
+        var validatedDate = _dataAvailability.ValidateOverrideDate(overrideDate, CurrentDateTimeUtc, previousDayUtcDataLoadDelayHour);
+        var processedDate = _overrideProcessor.ProcessOverrideDate(validatedDate, CurrentDateTimeUtc);
 
         var (currentStart, previousStart, currentDays, previousDays) =
             _monthCalculation.CalculateMonthBoundaries(processedDate);
 
-        var comparisonType = _comparisonCalculation.DetermineComparisonType(overrideDate, currentDate);
+        var comparisonType = _comparisonCalculation.DetermineComparisonType(overrideDate, CurrentDateTimeUtc);
         var comparisonDayCount = _comparisonCalculation.CalculateComparisonDayCount(
-            overrideDate, currentDate, processedDate);
+            overrideDate, CurrentDateTimeUtc, processedDate);
 
         return new CostComparisonContext(
             processedDate,
@@ -78,18 +73,6 @@ public class CostComparisonDateService(
             currentDays,
             previousDays,
             comparisonDayCount,
-            config);
+            previousDayUtcDataLoadDelayHour); // i dont think this context needs previousDayUtcDataLoadDelayHours anymore - we handle it elsewhere....please check when you can...
     }
-
-    /// <summary>
-    /// Creates a service instance for testing with specific date parameters
-    /// </summary>
-    //public static CostComparisonContext CreateForTesting(int cutoffHourUtc, int year, int month, int day)
-    //{
-    //    var service = new CostComparisonDateService();
-    //    var testDate = new DateTime(year, month, day);
-    //    var mockDateProvider = new TestDateProvider(testDate);
-
-    //    return service.CreateContextWithOverride(cutoffHourUtc, testDate, mockDateProvider);
-    //}
 }

@@ -12,11 +12,9 @@ class Program
             // Configure DI container
             var serviceProvider = ServiceCollectionExtensions.BuildServiceProvider();
 
-            // Store service provider globally so handlers can access it
-            ServiceProviderAccessor.ServiceProvider = serviceProvider;
-
-            // Build command structure (no execution logic here)
-            var rootCommand = CommandLineBuilder.BuildCommandLine();
+            // Build command structure (command execution delegates to handler that pulls from DI)
+            var rootCommand = CommandLineBuilder.BuildCommandLine(serviceProvider); 
+            //is it ok to pass in service provider? I thought it better than globally store ServiceProviderAccessor.ServiceProvider = serviceProvider; ???
 
             // System.CommandLine framework executes the registered handler
             return await rootCommand.InvokeAsync(args);
@@ -24,21 +22,19 @@ class Program
         catch (ConfigurationValidationException ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine($"Configuration error: {ex.Message}");
+            Console.Error.WriteLine($"Error code 2: Configuration error: {ex.Message}");
             Console.ResetColor();
-            return 1;
+            return 2;
         }
         catch (Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine($"Unexpected error: {ex.Message}");
+            Console.Error.WriteLine($"Error code 1: Unexpected error: {ex.Message}");
             Console.ResetColor();
             return 1;
         }
-        finally
-        {
-            // Clean up DI container
-            ServiceProviderAccessor.ServiceProvider?.Dispose();
-        }
     }
 }
+
+
+

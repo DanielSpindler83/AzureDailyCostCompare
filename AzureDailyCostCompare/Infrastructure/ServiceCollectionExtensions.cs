@@ -27,21 +27,22 @@ public static class ServiceCollectionExtensions
     {
 
         // services.AddSingleton<IConfiguration>(configuration); NEEDED OR NOT?
-        var previousDayUtcDataLoadDelayHours = new PreviousDayUtcDataLoadDelayHours(configuration);
+        var previousDayUtcDataLoadDelayHours = new PreviousDayUtcDataLoadDelayHoursUserSetting(configuration);
         services.AddSingleton(previousDayUtcDataLoadDelayHours);
-        // so now i can simply inject previousDayUtcDataLoadDelayHours and use it where it is needed?
-
-        services.AddScoped<ReportGeneratorFactory>();
-
+        // so now i can simply inject previousDayUtcDataLoadDelayHours and use it where it is needed? Yes I think so...
 
         // Register HTTP client
         services.AddHttpClient();
 
-        // Register your business services
+        // Register business services
         services.AddScoped<AuthenticationService>();
         services.AddScoped<BillingService>();
         services.AddScoped<CostService>();
         services.AddScoped<CostComparisonBusinessHandler>();
+        services.AddSingleton<ApplicationUnifiedSettings>();
+        services.AddScoped<CostComparisonDateService>();
+
+        services.AddScoped<ReportGenerator>();
 
         services.AddHttpClient<BillingService>(client =>
         {

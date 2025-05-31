@@ -1,6 +1,7 @@
 
 
 using AzureDailyCostCompare.Application;
+using AzureDailyCostCompare.Infrastructure;
 
 namespace AzureDailyCostCompare.Tests;
 
@@ -19,14 +20,14 @@ public class ProgramTests
         var context = dateService.CreateContextWithOverride(cutoffHourUtc, referenceDate);
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, context);
+        var reportGenerator = new ReportGenerator(context);
 
         // Capture console output
         using var consoleOutput = new StringWriter();
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport(showWeeklyPatterns: false, showDayOfWeekAverages: false);
+        reportGenerator.GenerateDailyCostReport(mockCostData, showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
