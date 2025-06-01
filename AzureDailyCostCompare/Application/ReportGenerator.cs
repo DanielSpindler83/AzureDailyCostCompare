@@ -3,11 +3,8 @@ using AzureDailyCostCompare.Infrastructure;
 
 namespace AzureDailyCostCompare.Application;
 
-public class ReportGenerator(
-    ApplicationUnifiedSettings applicationUnifiedSettings
-    )
+public class ReportGenerator()
 {
-    private readonly ApplicationUnifiedSettings _applicationUnifiedSettings = applicationUnifiedSettings;
     private List<DailyCostData> CurrentMonthCostData { get; set; } = [];
     private List<DailyCostData> PreviousMonthCostData { get; set; } = [];
     private decimal AverageCurrentPartialMonth { get; set; }
@@ -15,11 +12,13 @@ public class ReportGenerator(
     private decimal AveragePreviousFullMonth { get; set; }
     private decimal CurrentToPreviousMonthAveragesCostDelta { get; set; }
 
-    private CostComparisonContext? CostComparisonContext { get; set; } = null;
+    private CostComparisonContext? CostComparisonContext { get; set; }
+
 
     public void GenerateDailyCostReport(List<DailyCostData> costData, CostComparisonContext costComparisonContext, bool showWeeklyPatterns, bool showDayOfWeekAverages)
     {
-        this.CostComparisonContext = costComparisonContext;
+        CostComparisonContext = costComparisonContext; // can not be null here ...I think....
+
         SetCostData(costData);
         var tableData = CreateDailyCostTableData();
         PrintDailyCostTable(tableData);
@@ -126,7 +125,7 @@ public class ReportGenerator(
 
         PrintSectionHeader("Data Reference Information");
         Console.WriteLine($"All costs in USD");
-        Console.WriteLine($"A day's data is considered complete {_applicationUnifiedSettings.PreviousDayUtcDataLoadDelayHours} hours after the end of the day in UTC time.");
+        Console.WriteLine($"A day's data is considered complete {CostComparisonContext.DataLoadDelayHours} hours after the end of the day in UTC time.");
         PrintDataReferenceDetails(CostComparisonContext.ReferenceDate, localDataReferenceDay, localTimeZone);
     }
 
