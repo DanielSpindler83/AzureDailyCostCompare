@@ -128,7 +128,7 @@ public class SpectreReportRenderer : IReportRenderer
 
         var table = new Table()
             .AddColumn("Description")
-            .AddColumn("[right]Amount (USD)[/]");
+            .AddColumn(new TableColumn("Amount (USD)").RightAligned());
 
         table.AddRow(
             $"{context.ReferenceDate:MMMM} average (for {data.CurrentMonthCostData.Count} days)",
