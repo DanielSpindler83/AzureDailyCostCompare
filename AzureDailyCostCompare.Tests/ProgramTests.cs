@@ -1,9 +1,11 @@
 using AzureDailyCostCompare.Application;
 using AzureDailyCostCompare.Domain;
+using AzureDailyCostCompare.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureDailyCostCompare.Tests;
 
-public class ProgramTests
+public class ProgramTests : ReportGeneratorTestBase
 {
     [Fact]
     public void ReportGenerator_Should_Generate_Expected_Output_Dec2023_Jan2024()
@@ -24,14 +26,14 @@ public class ProgramTests
         );
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator();
+        // we get this from base class - the service collection and report generator
 
         // Capture console output
         using var consoleOutput = new StringWriter();
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
+        base.ReportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
@@ -46,6 +48,7 @@ public class ProgramTests
     [Fact]
     public void ReportGenerator_Should_Generate_Expected_Output_Jan2024_Feb_2024()
     {
+
         // Arrange: Load mock cost data from file
         var mockCostData = TestHelper.LoadMockCostData("mockCostData_jan2024-feb2024.json");
 
@@ -62,14 +65,14 @@ public class ProgramTests
         );
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator();
+        // we get this from base class - the service collection and report generator
 
         // Capture console output
         using var consoleOutput = new StringWriter();
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
+        base.ReportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();

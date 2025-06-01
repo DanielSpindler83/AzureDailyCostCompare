@@ -44,7 +44,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<OverrideDateProcessor>();
         services.AddScoped<MonthCalculationService>();
         services.AddScoped<ComparisonCalculationService>();
-        services.AddScoped<ReportGenerator>();
+
+        services.AddReportingServices();
 
         services.AddHttpClient<BillingService>(client =>
         {
@@ -61,6 +62,17 @@ public static class ServiceCollectionExtensions
             //client.DefaultRequestHeaders.Add("User-Agent", "AzureDailyCostCompare/1.0");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddReportingServices(this IServiceCollection services)
+    {
+        services.AddScoped<ReportGenerator>();
+        services.AddScoped<CostDataProcessor>();
+        services.AddScoped<IReportRenderer,SpectreReportRenderer>();
+        services.AddScoped<DailyCostTableBuilder>();
+        services.AddScoped<WeeklyAnalysisService>();
 
         return services;
     }
