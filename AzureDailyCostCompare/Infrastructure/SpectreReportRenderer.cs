@@ -145,7 +145,7 @@ public class SpectreReportRenderer : IReportRenderer
             data.AverageCurrentPartialMonth.ToString("F2"));
 
         table.AddRow(
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.CurrentMonthCostData.Count} days)",
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.PreviousMonthCostData.Count} days)",
             data.AveragePreviousPartialMonth.ToString("F2"));
 
         var deltaColor = data.CurrentToPreviousMonthAveragesCostDelta > 0 ? "red" :
