@@ -38,13 +38,12 @@ public class SpectreReportRenderer : IReportRenderer
                 row.CostDifference.ToString("F2")
             );
         }
-
+        AnsiConsole.WriteLine();
         AnsiConsole.Write(table);
     }
 
     public void RenderWeeklyComparisons(ProcessedCostData data, CostComparisonContext context)
     {
-        AnsiConsole.WriteLine();
         AnsiConsole.WriteLine();
         AnsiConsole.Write(new Rule("[yellow]Weekly Pattern Analysis (UTC)[/]").RuleStyle("grey").LeftJustified());
         AnsiConsole.WriteLine();
@@ -85,7 +84,6 @@ public class SpectreReportRenderer : IReportRenderer
 
     public void RenderDayOfWeekAverages(ProcessedCostData data, CostComparisonContext context)
     {
-        AnsiConsole.WriteLine();
         AnsiConsole.WriteLine();
         AnsiConsole.Write(new Rule("[yellow]Day of Week Averages (UTC)[/]").RuleStyle("grey").LeftJustified());
         AnsiConsole.WriteLine();
@@ -132,7 +130,6 @@ public class SpectreReportRenderer : IReportRenderer
     private void RenderMonthlyAveragesTable(ProcessedCostData data, CostComparisonContext context)
     {
         AnsiConsole.WriteLine();
-        AnsiConsole.WriteLine();
         AnsiConsole.Write(new Rule("[yellow]Monthly Cost Averages[/]").RuleStyle("grey").LeftJustified());
         AnsiConsole.WriteLine();
 
@@ -164,7 +161,6 @@ public class SpectreReportRenderer : IReportRenderer
 
     private void RenderDataReferenceInfo(CostComparisonContext context)
     {
-        AnsiConsole.WriteLine();
         AnsiConsole.WriteLine();
         AnsiConsole.Write(new Rule("[yellow]Data Reference Information[/]").RuleStyle("grey").LeftJustified());
         AnsiConsole.WriteLine();
