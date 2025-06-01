@@ -40,25 +40,20 @@ public class CostComparisonBusinessHandler(
         DateTime? date,
         int previousDayUtcDataLoadDelayHours)
     {
-        // Get authentication token
         var accessToken = await _authService.GetAccessToken();
 
-        // Get billing account ID
         var billingAccountId = await _billingService.GetBillingAccountIdAsync(accessToken);
 
-        // Create comparison costComparisonContext (replaces dateHelper creation)
         var costComparisonContext = date.HasValue
             ? _costComparisonDateService.CreateContextWithOverride(previousDayUtcDataLoadDelayHours, date.Value)
             : _costComparisonDateService.CreateContext(previousDayUtcDataLoadDelayHours);
 
-        // Query cost data (updated property names)
         var costData = await _costService.QueryCostManagementAPI(
             accessToken,
             billingAccountId,
-            costComparisonContext.PreviousMonthStart,  // was dateHelper.PreviousMonthStartDate
-            costComparisonContext.ReferenceDate);      // was dateHelper.CostDataReferenceDate
+            costComparisonContext.PreviousMonthStart,
+            costComparisonContext.ReferenceDate);
 
-        // Generate report
         _reportGenerator.GenerateDailyCostReport(costData, costComparisonContext, _applicationUnifiedSettings.ShowWeeklyPatterns, _applicationUnifiedSettings.ShowDayOfWeekAverages);
     }
 
