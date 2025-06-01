@@ -44,8 +44,12 @@ public class SpectreReportRenderer : IReportRenderer
 
     public void RenderWeeklyComparisons(ProcessedCostData data, CostComparisonContext context)
     {
-        AnsiConsole.Write(new Rule("[yellow]Weekly Pattern Analysis (UTC)[/]").RuleStyle("grey"));
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Rule("[yellow]Weekly Pattern Analysis (UTC)[/]").RuleStyle("grey").LeftJustified());
+        AnsiConsole.WriteLine();
         AnsiConsole.WriteLine("Comparing corresponding weeks (1st Monday to 1st Monday, etc.)\n");
+        AnsiConsole.WriteLine();
 
         var comparisons = _weeklyAnalysisService.GetWeeklyComparisons(data, context);
 
@@ -81,7 +85,10 @@ public class SpectreReportRenderer : IReportRenderer
 
     public void RenderDayOfWeekAverages(ProcessedCostData data, CostComparisonContext context)
     {
-        AnsiConsole.Write(new Rule("[yellow]Day of Week Averages (UTC)[/]").RuleStyle("grey"));
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Rule("[yellow]Day of Week Averages (UTC)[/]").RuleStyle("grey").LeftJustified());
+        AnsiConsole.WriteLine();
 
         var averages = _weeklyAnalysisService.CalculateDayOfWeekAverages(data, context);
 
@@ -124,7 +131,10 @@ public class SpectreReportRenderer : IReportRenderer
 
     private void RenderMonthlyAveragesTable(ProcessedCostData data, CostComparisonContext context)
     {
-        AnsiConsole.Write(new Rule("[yellow]Monthly Cost Averages[/]").RuleStyle("grey"));
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Rule("[yellow]Monthly Cost Averages[/]").RuleStyle("grey").LeftJustified());
+        AnsiConsole.WriteLine();
 
         var table = new Table()
             .AddColumn("Description")
@@ -154,7 +164,10 @@ public class SpectreReportRenderer : IReportRenderer
 
     private void RenderDataReferenceInfo(CostComparisonContext context)
     {
-        AnsiConsole.Write(new Rule("[yellow]Data Reference Information[/]").RuleStyle("grey"));
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Rule("[yellow]Data Reference Information[/]").RuleStyle("grey").LeftJustified());
+        AnsiConsole.WriteLine();
 
         var localTimeZone = TimeZoneInfo.Local;
         var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(context.ReferenceDate, localTimeZone);
