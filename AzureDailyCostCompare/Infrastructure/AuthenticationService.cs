@@ -1,13 +1,13 @@
 ﻿using Azure.Core;
 using Azure.Identity;
 
-namespace AzureDailyCostCompare;
+namespace AzureDailyCostCompare.Infrastructure;
 
-static class AuthenticationService
+public class AuthenticationService
 {
     internal static readonly string[] scopes = ["https://management.azure.com/.default"];
 
-    public static async Task<string> GetAccessToken()
+    public async Task<string> GetAccessToken()
     {
         var credential = new AzureCliCredential();
         var tokenRequestContext = new TokenRequestContext(scopes);

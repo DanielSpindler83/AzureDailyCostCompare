@@ -1,8 +1,11 @@
-
+using AzureDailyCostCompare.Application;
+using AzureDailyCostCompare.Domain;
+using AzureDailyCostCompare.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AzureDailyCostCompare.Tests;
 
-public class ProgramTests
+public class ProgramTests : ReportGeneratorTestBase
 {
     [Fact]
     public void ReportGenerator_Should_Generate_Expected_Output_Dec2023_Jan2024()
@@ -10,20 +13,27 @@ public class ProgramTests
         // Arrange: Load mock cost data from file
         var mockCostData = TestHelper.LoadMockCostData("mockCostData_dec2023-jan2024.json");
 
-        // Arrange: Use a fixed reference date
-        var referenceDate = new DateTime(2024, 01, 01);
-        var cutoffHourUtc = 4;
-        var dateHelperService = new DateHelperService(cutoffHourUtc, referenceDate);
+        // Arrange: Setup cost comparision context
+        var costComparisonContext = new CostComparisonContext(
+            ReferenceDate: new DateTime(2024, 01, 01),
+            ComparisonType: ComparisonType.FullMonth,
+            CurrentMonthStart: new DateTime(2024, 1, 1),   // January 1st
+            PreviousMonthStart: new DateTime(2023, 12, 1), // December 1st
+            CurrentMonthDayCount: 31,  // Only 1 day in current month (Jan 1st)
+            PreviousMonthDayCount: 31, // Full December (31 days)
+            ComparisonTableDayCount: 31, // Compare against 31 days
+            DataLoadDelayHours: 4
+        );
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, dateHelperService);
+        // we get this from base class - the service collection and report generator
 
         // Capture console output
         using var consoleOutput = new StringWriter();
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport(showWeeklyPatterns: false, showDayOfWeekAverages: false);
+        base.ReportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
@@ -38,23 +48,31 @@ public class ProgramTests
     [Fact]
     public void ReportGenerator_Should_Generate_Expected_Output_Jan2024_Feb_2024()
     {
+
         // Arrange: Load mock cost data from file
         var mockCostData = TestHelper.LoadMockCostData("mockCostData_jan2024-feb2024.json");
 
-        // Arrange: Use a fixed reference date
-        var referenceDate = new DateTime(2024, 02, 10);
-        var cutoffHourUtc = 4;
-        var dateHelperService = new DateHelperService(cutoffHourUtc, referenceDate);
+        // Arrange: Setup cost comparision context
+        var costComparisonContext = new CostComparisonContext(
+            ReferenceDate: new DateTime(2024, 02, 10),
+            ComparisonType: ComparisonType.FullMonth,
+            CurrentMonthStart: new DateTime(2024, 2, 1),   
+            PreviousMonthStart: new DateTime(2024, 1, 1), 
+            CurrentMonthDayCount: 29, // Feb in a leap year  
+            PreviousMonthDayCount: 31, // Jan
+            ComparisonTableDayCount: 31, // Compare against 31 days
+            DataLoadDelayHours: 4
+        );
 
         // Arrange: Initialize the report generator
-        var reportGenerator = new ReportGenerator(mockCostData, dateHelperService);
+        // we get this from base class - the service collection and report generator
 
         // Capture console output
         using var consoleOutput = new StringWriter();
         Console.SetOut(consoleOutput);
 
         // Act: Generate report
-        reportGenerator.GenerateDailyCostReport(showWeeklyPatterns: false, showDayOfWeekAverages: false);
+        base.ReportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
