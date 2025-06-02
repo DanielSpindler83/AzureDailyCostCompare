@@ -171,7 +171,7 @@ public class SpectreReportRenderer : IReportRenderer
         var panel = new Panel(new Markup(
             $"[bold]All costs in USD[/]\n\n" +
             $"A day's data is considered complete [cyan]{context.DataLoadDelayHours} hours[/] after the end of the day in UTC time.\n\n" +
-            $"Daily cost data is complete up to end of the day [cyan]{context.ReferenceDate:yyyy-MM-dd}[/] in UTC timezone\n" +
+            $"Daily cost data is complete up to end of the day [cyan]{context.ReferenceDate}[/] in UTC timezone\n" +
             $"The end of the day in UTC time is [cyan]{localDataReferenceDay}[/] in local timezone of [cyan]{localTimeZone.DisplayName}[/]\n\n" +
             $"This report was generated at [cyan]{DateTime.Now}[/] {localTimeZone.DisplayName}\n" +
             $"This report was generated at [cyan]{DateTime.UtcNow}[/] UTC"))
