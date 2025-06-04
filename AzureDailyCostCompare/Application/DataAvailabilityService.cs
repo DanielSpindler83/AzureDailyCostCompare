@@ -16,8 +16,8 @@ public class DataAvailabilityService
     /// <returns>Latest date with complete cost data</returns>
     public DateTime GetLatestAvailableDataDate(DateTime currentDateTime, int previousDayUtcDataLoadDelayHours)
     {
-        // Before cutoff: we don't have complete data for today, so last complete day is 2 days ago
-        // After cutoff: yesterday's data should be complete
+        // Before cutoff: we don't have complete data for yesterday, so last complete day is day before yesterday(2 days ago)
+        // After cutoff: yesterday's data is considered complete
         return currentDateTime.Hour < previousDayUtcDataLoadDelayHours
             ? currentDateTime.Date.AddDays(-2)
             : currentDateTime.Date.AddDays(-1);

@@ -1,0 +1,244 @@
+{
+  "mockCostData": [
+    {
+      "dateString": "2024-02-01",
+      "cost": 120.50
+    },
+    {
+      "dateString": "2024-02-02",
+      "cost": 130.75
+    },
+    {
+      "dateString": "2024-02-03",
+      "cost": 141.25
+    },
+    {
+      "dateString": "2024-02-04",
+      "cost": 152.60
+    },
+    {
+      "dateString": "2024-02-05",
+      "cost": 163.95
+    },
+    {
+      "dateString": "2024-02-06",
+      "cost": 175.30
+    },
+    {
+      "dateString": "2024-02-07",
+      "cost": 186.65
+    },
+    {
+      "dateString": "2024-02-08",
+      "cost": 198.00
+    },
+    {
+      "dateString": "2024-02-09",
+      "cost": 209.35
+    },
+    {
+      "dateString": "2024-02-10",
+      "cost": 220.70
+    },
+    {
+      "dateString": "2024-02-11",
+      "cost": 232.05
+    },
+    {
+      "dateString": "2024-02-12",
+      "cost": 243.40
+    },
+    {
+      "dateString": "2024-02-13",
+      "cost": 254.75
+    },
+    {
+      "dateString": "2024-02-14",
+      "cost": 266.10
+    },
+    {
+      "dateString": "2024-02-15",
+      "cost": 277.45
+    },
+    {
+      "dateString": "2024-02-16",
+      "cost": 288.80
+    },
+    {
+      "dateString": "2024-02-17",
+      "cost": 300.15
+    },
+    {
+      "dateString": "2024-02-18",
+      "cost": 311.50
+    },
+    {
+      "dateString": "2024-02-19",
+      "cost": 322.85
+    },
+    {
+      "dateString": "2024-02-20",
+      "cost": 334.20
+    },
+    {
+      "dateString": "2024-02-21",
+      "cost": 345.55
+    },
+    {
+      "dateString": "2024-02-22",
+      "cost": 356.90
+    },
+    {
+      "dateString": "2024-02-23",
+      "cost": 368.25
+    },
+    {
+      "dateString": "2024-02-24",
+      "cost": 379.60
+    },
+    {
+      "dateString": "2024-02-25",
+      "cost": 390.95
+    },
+    {
+      "dateString": "2024-02-26",
+      "cost": 402.30
+    },
+    {
+      "dateString": "2024-02-27",
+      "cost": 413.65
+    },
+    {
+      "dateString": "2024-02-28",
+      "cost": 425.00
+    },
+    {
+      "dateString": "2024-02-29",
+      "cost": 436.35
+    },
+    {
+      "dateString": "2024-03-01",
+      "cost": 447.70
+    },
+    {
+      "dateString": "2024-03-02",
+      "cost": 459.05
+    },
+    {
+      "dateString": "2024-03-03",
+      "cost": 470.40
+    },
+    {
+      "dateString": "2024-03-04",
+      "cost": 481.75
+    },
+    {
+      "dateString": "2024-03-05",
+      "cost": 493.10
+    },
+    {
+      "dateString": "2024-03-06",
+      "cost": 504.45
+    },
+    {
+      "dateString": "2024-03-07",
+      "cost": 515.80
+    },
+    {
+      "dateString": "2024-03-08",
+      "cost": 527.15
+    },
+    {
+      "dateString": "2024-03-09",
+      "cost": 538.50
+    },
+    {
+      "dateString": "2024-03-10",
+      "cost": 549.85
+    },
+    {
+      "dateString": "2024-03-11",
+      "cost": 561.20
+    },
+    {
+      "dateString": "2024-03-12",
+      "cost": 572.55
+    },
+    {
+      "dateString": "2024-03-13",
+      "cost": 583.90
+    },
+    {
+      "dateString": "2024-03-14",
+      "cost": 595.25
+    },
+    {
+      "dateString": "2024-03-15",
+      "cost": 606.60
+    },
+    {
+      "dateString": "2024-03-16",
+      "cost": 617.95
+    },
+    {
+      "dateString": "2024-03-17",
+      "cost": 629.30
+    },
+    {
+      "dateString": "2024-03-18",
+      "cost": 640.65
+    },
+    {
+      "dateString": "2024-03-19",
+      "cost": 652.00
+    },
+    {
+      "dateString": "2024-03-20",
+      "cost": 663.35
+    },
+    {
+      "dateString": "2024-03-21",
+      "cost": 674.70
+    },
+    {
+      "dateString": "2024-03-22",
+      "cost": 686.05
+    },
+    {
+      "dateString": "2024-03-23",
+      "cost": 697.40
+    },
+    {
+      "dateString": "2024-03-24",
+      "cost": 708.75
+    },
+    {
+      "dateString": "2024-03-25",
+      "cost": 720.10
+    },
+    {
+      "dateString": "2024-03-26",
+      "cost": 731.45
+    },
+    {
+      "dateString": "2024-03-27",
+      "cost": 742.80
+    },
+    {
+      "dateString": "2024-03-28",
+      "cost": 754.15
+    },
+    {
+      "dateString": "2024-03-29",
+      "cost": 765.50
+    },
+    {
+      "dateString": "2024-03-30",
+      "cost": 776.85
+    },
+    {
+      "dateString": "2024-03-31",
+      "cost": 788.20
+    }
+  ]
+}

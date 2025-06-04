@@ -6,18 +6,12 @@ using Rule = Spectre.Console.Rule;
 
 namespace AzureDailyCostCompare.Infrastructure;
 
-public class SpectreReportRenderer : IReportRenderer
+public class SpectreReportRenderer(
+    DailyCostTableBuilder dailyCostTableBuilder,
+    WeeklyAnalysisService weeklyAnalysisService) : IReportRenderer
 {
-    private readonly DailyCostTableBuilder _dailyCostTableBuilder;
-    private readonly WeeklyAnalysisService _weeklyAnalysisService;
-
-    public SpectreReportRenderer(
-        DailyCostTableBuilder dailyCostTableBuilder,
-        WeeklyAnalysisService weeklyAnalysisService)
-    {
-        _dailyCostTableBuilder = dailyCostTableBuilder;
-        _weeklyAnalysisService = weeklyAnalysisService;
-    }
+    private readonly DailyCostTableBuilder _dailyCostTableBuilder = dailyCostTableBuilder;
+    private readonly WeeklyAnalysisService _weeklyAnalysisService = weeklyAnalysisService;
 
     public void RenderDailyCostTable(ProcessedCostData data, CostComparisonContext context)
     {
@@ -127,10 +121,62 @@ public class SpectreReportRenderer : IReportRenderer
         RenderDataReferenceInfo(context);
     }
 
-    private void RenderMonthlyAveragesTable(ProcessedCostData data, CostComparisonContext context)
+    private static void RenderMonthlyAveragesTable(ProcessedCostData data, CostComparisonContext context)
     {
+        var comparison = data.MonthComparison;
+
         AnsiConsole.WriteLine();
         AnsiConsole.Write(new Rule("[yellow]Monthly Cost Averages[/]").RuleStyle("grey").LeftJustified());
+        AnsiConsole.WriteLine();
+
+        if (comparison.IsUnevenComparison)
+        {
+            // Show split sections when day counts differ
+            RenderLikeForLikeComparison(data, context);
+            RenderFullMonthComparison(data, context);
+        }
+        else
+        {
+            // Show original single section when day counts are the same
+            RenderStandardComparison(data, context);
+        }
+    }
+
+    private static void RenderStandardComparison(ProcessedCostData data, CostComparisonContext context)
+    {
+        var comparison = data.MonthComparison;
+
+        var table = new Table()
+            .AddColumn("Description")
+            .AddColumn(new TableColumn("Amount (USD)").RightAligned());
+
+        table.AddRow(
+            $"{context.ReferenceDate:MMMM} average (for {comparison.CurrentDayCount} days)",
+            comparison.CurrentFullAverage.ToString("F2"));
+
+        table.AddRow(
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {comparison.LikeForLikeDays} days)",
+            comparison.PreviousLikeForLikeAverage.ToString("F2"));
+
+        var deltaColor = comparison.FullComparisonDelta > 0 ? "red" :
+                        comparison.FullComparisonDelta < 0 ? "green" : "white";
+
+        table.AddRow(
+            $"Month averages cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
+            $"[{deltaColor}]{comparison.FullComparisonDelta:F2}[/]");
+
+        table.AddRow(
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average ({comparison.PreviousMonthTotalDays} days)",
+            comparison.PreviousFullAverage.ToString("F2"));
+
+        AnsiConsole.Write(table);
+    }
+
+    private static void RenderLikeForLikeComparison(ProcessedCostData data, CostComparisonContext context)
+    {
+        var comparison = data.MonthComparison;
+
+        AnsiConsole.Write(new Markup("[bold cyan]Comparison for Same Number of Days[/]\n"));
         AnsiConsole.WriteLine();
 
         var table = new Table()
@@ -138,28 +184,58 @@ public class SpectreReportRenderer : IReportRenderer
             .AddColumn(new TableColumn("Amount (USD)").RightAligned());
 
         table.AddRow(
-            $"{context.ReferenceDate:MMMM} average (for {data.CurrentMonthCostData.Count} days)",
-            data.AverageCurrentPartialMonth.ToString("F2"));
+            $"{context.ReferenceDate:MMMM} average ({comparison.LikeForLikeDays} days)",
+            comparison.CurrentLikeForLikeAverage.ToString("F2"));
 
         table.AddRow(
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.PreviousMonthCostData.Count} days)",
-            data.AveragePreviousPartialMonth.ToString("F2"));
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average ({comparison.LikeForLikeDays} days)",
+            comparison.PreviousLikeForLikeAverage.ToString("F2"));
 
-        var deltaColor = data.CurrentToPreviousMonthAveragesCostDelta > 0 ? "red" :
-                        data.CurrentToPreviousMonthAveragesCostDelta < 0 ? "green" : "white";
-
-        table.AddRow(
-            $"Month averages cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
-            $"[{deltaColor}]{data.CurrentToPreviousMonthAveragesCostDelta:F2}[/]");
+        var deltaColor = comparison.LikeForLikeDelta > 0 ? "red" :
+                        comparison.LikeForLikeDelta < 0 ? "green" : "white";
 
         table.AddRow(
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
-            data.AveragePreviousFullMonth.ToString("F2"));
+            $"Cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM} - both same number of days.)",
+            $"[{deltaColor}]{comparison.LikeForLikeDelta:F2}[/]");
 
         AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
     }
 
-    private void RenderDataReferenceInfo(CostComparisonContext context)
+    private static void RenderFullMonthComparison(ProcessedCostData data, CostComparisonContext context)
+    {
+        var comparison = data.MonthComparison;
+
+        AnsiConsole.Write(new Markup("[bold cyan]Running Average[/]\n"));
+        AnsiConsole.WriteLine();
+
+        var table = new Table()
+            .AddColumn("Description")
+            .AddColumn(new TableColumn("Amount (USD)").RightAligned());
+
+        table.AddRow(
+            $"{context.ReferenceDate:MMMM} average ({comparison.CurrentDayCount} days)",
+            comparison.CurrentFullAverage.ToString("F2"));
+
+        table.AddRow(
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average ({comparison.PreviousMonthTotalDays} days)",
+            comparison.PreviousFullAverage.ToString("F2"));
+
+        var deltaColor = comparison.FullComparisonDelta > 0 ? "red" :
+                        comparison.FullComparisonDelta < 0 ? "green" : "white";
+
+        table.AddRow(
+            $"Cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
+            $"[{deltaColor}]{comparison.FullComparisonDelta:F2}[/]");
+
+        AnsiConsole.Write(table);
+
+        // Add note for uneven comparison
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(new Markup($"[italic yellow]Note: Comparing {comparison.CurrentDayCount} current days vs {comparison.PreviousMonthTotalDays}-day {context.ReferenceDate.AddMonths(-1):MMMM} total[/]"));
+    }
+
+    private static void RenderDataReferenceInfo(CostComparisonContext context)
     {
         AnsiConsole.WriteLine();
         AnsiConsole.Write(new Rule("[yellow]Data Reference Information[/]").RuleStyle("grey").LeftJustified());

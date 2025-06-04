@@ -27,7 +27,10 @@ public static class CommandLineBuilder
             {
                 // Get the singleton applicationUnifiedSettingsService instance and populate it
                 var applicationUnifiedSettingsService = serviceProvider.GetRequiredService<ApplicationUnifiedSettings>();
-                applicationUnifiedSettingsService.Date = date;
+
+                applicationUnifiedSettingsService.Date = date; // refactor oppotunity - we set date here if its null: applicationUnifiedSettingsService.Date = date ?? DateTime.UtcNow;
+                // we then eliminate the need for override date and normal date logic seperation in CostComparisonDateService as we just validate it via same logic path from here on
+
                 applicationUnifiedSettingsService.ShowWeeklyPatterns = showWeeklyPatterns;
                 applicationUnifiedSettingsService.ShowDayOfWeekAverages = showDayOfWeekAverages;
                 applicationUnifiedSettingsService.PreviousDayUtcDataLoadDelayHoursCommandLine = previousDayUtcDataLoadDelayHours;

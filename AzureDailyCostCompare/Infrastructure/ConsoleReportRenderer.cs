@@ -96,24 +96,85 @@ public class ConsoleReportRenderer : IReportRenderer
 
     private void RenderMonthlyAveragesTable(ProcessedCostData data, CostComparisonContext context)
     {
+        var comparison = data.MonthComparison;
+
         Console.WriteLine("\n{0,-70} {1,10}", "Monthly Cost Averages", "Amount (USD)");
         Console.WriteLine(new string('-', 82));
 
-        Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{context.ReferenceDate:MMMM} average (for {data.CurrentMonthCostData.Count} days)",
-            data.AverageCurrentPartialMonth);
+        if (comparison.IsUnevenComparison)
+        {
+            // Show split sections when day counts differ
+            RenderLikeForLikeComparisonConsole(data, context);
+            RenderFullMonthComparisonConsole(data, context);
+        }
+        else
+        {
+            // Show original single section when day counts are the same
+            RenderStandardComparisonConsole(data, context);
+        }
+    }
+
+    private void RenderStandardComparisonConsole(ProcessedCostData data, CostComparisonContext context)
+    {
+        var comparison = data.MonthComparison;
 
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.CurrentMonthCostData.Count} days)",
-            data.AveragePreviousPartialMonth);
+            $"{context.ReferenceDate:MMMM} average (for {comparison.CurrentDayCount} days)",
+            comparison.CurrentFullAverage);
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {comparison.LikeForLikeDays} days)",
+            comparison.PreviousLikeForLikeAverage);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
             $"Month averages cost delta ({context.ReferenceDate:MMMM} average minus {context.ReferenceDate.AddMonths(-1):MMMM} average)",
-            data.CurrentToPreviousMonthAveragesCostDelta);
+            comparison.FullComparisonDelta);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
-            data.AveragePreviousFullMonth);
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average ({comparison.PreviousMonthTotalDays} days)",
+            comparison.PreviousFullAverage);
+    }
+
+    private void RenderLikeForLikeComparisonConsole(ProcessedCostData data, CostComparisonContext context)
+    {
+        var comparison = data.MonthComparison;
+
+        Console.WriteLine("\nLike-for-Like Comparison (Same Days)");
+        Console.WriteLine(new string('-', 40));
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{context.ReferenceDate:MMMM} average ({comparison.LikeForLikeDays} days)",
+            comparison.CurrentLikeForLikeAverage);
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average ({comparison.LikeForLikeDays} days)",
+            comparison.PreviousLikeForLikeAverage);
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"Like-for-like cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
+            comparison.LikeForLikeDelta);
+    }
+
+    private void RenderFullMonthComparisonConsole(ProcessedCostData data, CostComparisonContext context)
+    {
+        var comparison = data.MonthComparison;
+
+        Console.WriteLine("\nFull Current Month vs Previous Full Month");
+        Console.WriteLine(new string('-', 42));
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{context.ReferenceDate:MMMM} average ({comparison.CurrentDayCount} days)",
+            comparison.CurrentFullAverage);
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average ({comparison.PreviousMonthTotalDays} days)",
+            comparison.PreviousFullAverage);
+
+        Console.WriteLine("{0,-70} {1,10:F2}",
+            $"Cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
+            comparison.FullComparisonDelta);
+
+        Console.WriteLine($"\nNote: Comparing {comparison.CurrentDayCount} current days vs {comparison.PreviousMonthTotalDays}-day {context.ReferenceDate.AddMonths(-1):MMMM} total");
     }
 
     private void RenderDataReferenceInfo(CostComparisonContext context)

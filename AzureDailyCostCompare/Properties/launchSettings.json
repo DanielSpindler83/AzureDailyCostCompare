@@ -10,6 +10,10 @@
     "version": {
       "commandName": "Project",
       "commandLineArgs": "--version"
+    },
+    "--date": {
+      "commandName": "Project",
+      "commandLineArgs": "--date 01/12/9999"
     }
   }
 }
