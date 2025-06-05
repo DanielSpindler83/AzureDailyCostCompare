@@ -100,20 +100,20 @@ public class ConsoleReportRenderer : IReportRenderer
         Console.WriteLine(new string('-', 82));
 
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{context.ReferenceDate:MMMM} average (for {data.CurrentMonthCostData.Count} days)",
-            data.AverageCurrentPartialMonth);
+            $"{context.ReferenceDate:MMMM} average (for {data.LikeForLikeDayCount} days)",
+            data.CurrentMonthLikeForLikeAverage);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.CurrentMonthCostData.Count} days)",
-            data.AveragePreviousPartialMonth);
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.LikeForLikeDayCount} days)",
+            data.PreviousMonthLikeForLikeAverage);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
             $"Month averages cost delta ({context.ReferenceDate:MMMM} average minus {context.ReferenceDate.AddMonths(-1):MMMM} average)",
-            data.CurrentToPreviousMonthAveragesCostDelta);
+            data.LikeForLikeDailyAverageDelta);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
             $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
-            data.AveragePreviousFullMonth);
+            data.PreviousMonthFullAverage);
     }
 
     private void RenderDataReferenceInfo(CostComparisonContext context)

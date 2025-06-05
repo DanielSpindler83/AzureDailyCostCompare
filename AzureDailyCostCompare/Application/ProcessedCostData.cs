@@ -4,10 +4,33 @@ namespace AzureDailyCostCompare.Application;
 
 public class ProcessedCostData
 {
-    public List<DailyCostData> CurrentMonthCostData { get; set; } = [];
-    public List<DailyCostData> PreviousMonthCostData { get; set; } = [];
-    public decimal AverageCurrentPartialMonth { get; set; }
-    public decimal AveragePreviousPartialMonth { get; set; }
-    public decimal AveragePreviousFullMonth { get; set; }
-    public decimal CurrentToPreviousMonthAveragesCostDelta { get; set; }
+    // Raw data
+    public List<DailyCostData> CurrentMonthDailyCosts { get; set; } = new();
+    public List<DailyCostData> PreviousMonthDailyCosts { get; set; } = new();
+
+    // Day counts (for transparency and validation)
+    public int CurrentMonthDayCount { get; set; }
+    public int PreviousMonthDayCount { get; set; }
+    public int LikeForLikeDayCount { get; set; }
+
+    // Like-for-like comparison (apples to apples)
+    public decimal CurrentMonthLikeForLikeAverage { get; set; }
+    public decimal PreviousMonthLikeForLikeAverage { get; set; }
+    public decimal LikeForLikeDailyAverageDelta { get; set; }
+
+    // Full previous month context (always complete month)
+    public decimal PreviousMonthFullAverage { get; set; }
+
+    // Extra days analysis (null if not applicable)
+    public decimal? CurrentMonthExtraDaysAverage { get; set; }
 }
+
+//public class ProcessedCostData
+//{
+//    public List<DailyCostData> CurrentMonthCostData { get; set; } = [];
+//    public List<DailyCostData> PreviousMonthCostData { get; set; } = [];
+//    public decimal AverageCurrentPartialMonth { get; set; }
+//    public decimal AveragePreviousPartialMonth { get; set; }
+//    public decimal AveragePreviousFullMonth { get; set; }
+//    public decimal CurrentToPreviousMonthAveragesCostDelta { get; set; }
+//}

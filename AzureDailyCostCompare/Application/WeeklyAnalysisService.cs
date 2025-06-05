@@ -23,8 +23,8 @@ public class WeeklyAnalysisService
                 var prevDate = previousWeeks[weekNum];
                 var currDate = currentWeeks[weekNum];
 
-                var prevCost = data.PreviousMonthCostData.FirstOrDefault(d => d.DateString.Day == prevDate.Day)?.Cost;
-                var currCost = data.CurrentMonthCostData.FirstOrDefault(d => d.DateString.Day == currDate.Day)?.Cost;
+                var prevCost = data.PreviousMonthDailyCosts.FirstOrDefault(d => d.DateString.Day == prevDate.Day)?.Cost;
+                var currCost = data.CurrentMonthDailyCosts.FirstOrDefault(d => d.DateString.Day == currDate.Day)?.Cost;
 
                 if (prevCost.HasValue && currCost.HasValue)
                 {
@@ -50,12 +50,12 @@ public class WeeklyAnalysisService
 
         foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
-            var previousDays = data.PreviousMonthCostData
+            var previousDays = data.PreviousMonthDailyCosts
                 .Where(d => d.DateString.DayOfWeek == day &&
                            d.DateString <= DateOnly.FromDateTime(context.ReferenceDate))
                 .ToList();
 
-            var currentDays = data.CurrentMonthCostData
+            var currentDays = data.CurrentMonthDailyCosts
                 .Where(d => d.DateString.DayOfWeek == day &&
                            d.DateString <= DateOnly.FromDateTime(context.ReferenceDate))
                 .ToList();

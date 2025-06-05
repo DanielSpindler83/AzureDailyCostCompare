@@ -8,8 +8,8 @@ public class DailyCostTableBuilder
     public IEnumerable<DailyCostRow> BuildDailyCostTableData(ProcessedCostData data, CostComparisonContext context)
     {
         return from day in Enumerable.Range(1, context.ComparisonTableDayCount)
-               let currentDay = FindDayInCurrentMonth(data.CurrentMonthCostData, day)
-               let previousDay = FindDayInPreviousMonth(data.PreviousMonthCostData, day)
+               let currentDay = FindDayInCurrentMonth(data.CurrentMonthDailyCosts, day)
+               let previousDay = FindDayInPreviousMonth(data.PreviousMonthDailyCosts, day)
                select new DailyCostRow
                {
                    DayOfMonth = day,

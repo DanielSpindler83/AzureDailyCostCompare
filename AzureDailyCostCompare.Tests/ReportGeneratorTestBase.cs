@@ -15,7 +15,7 @@ public abstract class ReportGeneratorTestBase : IDisposable
         var services = new ServiceCollection();
         services.AddReportingServices();
 
-        // For tests, you might want to use the console renderer instead of Spectre
+        // For tests use the console renderer instead of Spectre
         services.Replace(ServiceDescriptor.Scoped<IReportRenderer, ConsoleReportRenderer>());
 
         ServiceProvider = services.BuildServiceProvider();

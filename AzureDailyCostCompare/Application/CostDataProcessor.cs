@@ -6,58 +6,66 @@ public class CostDataProcessor
 {
     public ProcessedCostData ProcessCostData(List<DailyCostData> costData, CostComparisonContext context)
     {
-        var currentMonthData = costData
+        // Filter and sort data for each month
+        var currentMonthDailyCosts = costData
             .Where(dc => dc.DateString.Month == context.CurrentMonthStart.Month &&
                    dc.DateString.Year == context.CurrentMonthStart.Year)
+            .OrderBy(dc => dc.DateString)
             .ToList();
 
-        var previousMonthData = costData
+        var previousMonthDailyCosts = costData
             .Where(dc => dc.DateString.Month == context.PreviousMonthStart.Month &&
                    dc.DateString.Year == context.PreviousMonthStart.Year)
+            .OrderBy(dc => dc.DateString)
             .ToList();
 
-        var averageCurrentMonth = currentMonthData
-            .Take(currentMonthData.Count)
+        // Calculate day counts
+        var currentMonthDayCount = currentMonthDailyCosts.Count;
+        var previousMonthDayCount = previousMonthDailyCosts.Count; // Always full month
+        var likeForLikeDayCount = Math.Min(currentMonthDayCount, previousMonthDayCount);
+
+        // Calculate averages for like-for-like comparison (same number of days)
+        var currentMonthLikeForLikeAverage = currentMonthDailyCosts
+            .Take(likeForLikeDayCount)
             .Average(dc => dc.Cost);
 
+        var previousMonthLikeForLikeAverage = previousMonthDailyCosts
+            .Take(likeForLikeDayCount)
+            .Average(dc => dc.Cost);
 
-        // For like-for-like comparison, use the same number of days from each month
-        var daysToCompare = Math.Min(currentMonthData.Count, previousMonthData.Count);
-        var averagePreviousMonthForSameDayCount = daysToCompare > 0 ?
-            previousMonthData.Take(daysToCompare).Average(dc => dc.Cost) : 0;
+        // Always calculate full previous month average (complete month data)
+        var previousMonthFullAverage = previousMonthDailyCosts.Average(dc => dc.Cost);
 
-        /*
-        If current month = Jan (31 days)
-            then previous month = Dec (30 days)
-            our average for averagePreviousMonthForSameDayCount is skewed and incorrect as month is 30days but divided by 31.... only wrong on that last day? I think....
-
-        If current month = Feb (28 days)
-            then previous month = Jan (31 days)
-            our average for averagePreviousMonthForSameDayCount is fine as we only ever calc up to 28 days - so kinda like for like to current month(but its not the full previous month(but we show that seperatley)
-
-        so shit gets messy
-
-        when current month is longer we need to change the output and show correct data
-            maybe cap it to the lower of the two numbers for the running day comparison (only ever affects partial month - wchich is current not historical)
-            BUT we also then need to show the current month average for the current number of days (i.e show the 31 days average for Jan)
-
-        when current month is shorter i think we are ok as long as we show the full previous month average correctly as well the user sees both and its correct data
-
-        */
-
-        var averagePreviousFullMonth = previousMonthData.Average(dc => dc.Cost); //always a full month 
+        // Calculate extra days average ONLY if current month has more days than previous
+        decimal? currentMonthExtraDaysAverage = null;
+        if (currentMonthDayCount > previousMonthDayCount)
+        {
+            currentMonthExtraDaysAverage = currentMonthDailyCosts
+                .Skip(previousMonthDayCount) // Skip the days already compared
+                .Average(dc => dc.Cost);
+        }
 
         return new ProcessedCostData
         {
-            CurrentMonthCostData = currentMonthData,
-            PreviousMonthCostData = previousMonthData,
+            // Raw data
+            CurrentMonthDailyCosts = currentMonthDailyCosts,
+            PreviousMonthDailyCosts = previousMonthDailyCosts,
 
-            AverageCurrentPartialMonth = averageCurrentMonth,
-            AveragePreviousPartialMonth = averagePreviousMonthForSameDayCount,
+            // Day counts for transparency
+            CurrentMonthDayCount = currentMonthDayCount,
+            PreviousMonthDayCount = previousMonthDayCount,
+            LikeForLikeDayCount = likeForLikeDayCount,
 
-            AveragePreviousFullMonth = averagePreviousFullMonth,
+            // Like-for-like comparison (same number of days from each month)
+            CurrentMonthLikeForLikeAverage = currentMonthLikeForLikeAverage,
+            PreviousMonthLikeForLikeAverage = previousMonthLikeForLikeAverage,
+            LikeForLikeDailyAverageDelta = currentMonthLikeForLikeAverage - previousMonthLikeForLikeAverage,
 
-            CurrentToPreviousMonthAveragesCostDelta = averageCurrentMonth - averagePreviousMonthForSameDayCount
+            // Full previous month context (always complete)
+            PreviousMonthFullAverage = previousMonthFullAverage,
+
+            // Extra days analysis (only when current month is longer)
+            CurrentMonthExtraDaysAverage = currentMonthExtraDaysAverage
         };
     }
 }

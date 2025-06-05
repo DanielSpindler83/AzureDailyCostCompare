@@ -138,23 +138,23 @@ public class SpectreReportRenderer : IReportRenderer
             .AddColumn(new TableColumn("Amount (USD)").RightAligned());
 
         table.AddRow(
-            $"{context.ReferenceDate:MMMM} average (for {data.CurrentMonthCostData.Count} days)",
-            data.AverageCurrentPartialMonth.ToString("F2"));
+            $"{context.ReferenceDate:MMMM} average (for {data.LikeForLikeDayCount} days)",
+            data.CurrentMonthLikeForLikeAverage.ToString("F2"));
 
         table.AddRow(
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.PreviousMonthCostData.Count} days)",
-            data.AveragePreviousPartialMonth.ToString("F2"));
+            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.LikeForLikeDayCount} days)",
+            data.PreviousMonthLikeForLikeAverage.ToString("F2"));
 
-        var deltaColor = data.CurrentToPreviousMonthAveragesCostDelta > 0 ? "red" :
-                        data.CurrentToPreviousMonthAveragesCostDelta < 0 ? "green" : "white";
+        var deltaColor = data.LikeForLikeDailyAverageDelta > 0 ? "red" :
+                        data.LikeForLikeDailyAverageDelta < 0 ? "green" : "white";
 
         table.AddRow(
             $"Month averages cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
-            $"[{deltaColor}]{data.CurrentToPreviousMonthAveragesCostDelta:F2}[/]");
+            $"[{deltaColor}]{data.LikeForLikeDailyAverageDelta:F2}[/]");
 
         table.AddRow(
             $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
-            data.AveragePreviousFullMonth.ToString("F2"));
+            data.PreviousMonthFullAverage.ToString("F2"));
 
         AnsiConsole.Write(table);
     }
