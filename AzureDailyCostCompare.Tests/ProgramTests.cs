@@ -83,4 +83,44 @@ public class ProgramTests : ReportGeneratorTestBase
         Assert.Contains("31", output);
         Assert.Contains("for 29 days", output);
     }
+
+    [Fact]
+    public void ReportGenerator_Should_Generate_Expected_Output_Feb_2024_Mar2024_Partial_Month()
+    {
+
+        // Arrange: Load mock cost data from file
+        var mockCostData = TestHelper.LoadMockCostData("mockCostData_feb2024-mar2024.json");
+
+        // Arrange: Setup cost comparision context
+        var costComparisonContext = new CostComparisonContext(
+            ReferenceDate: new DateTime(2024, 03, 30),
+            ComparisonType: ComparisonType.PartialMonth,
+            CurrentMonthStart: new DateTime(2024, 3, 1),
+            PreviousMonthStart: new DateTime(2024, 2, 1),
+            CurrentMonthDayCount: 31, // March
+            PreviousMonthDayCount: 29, // Feb in a leap year 
+            ComparisonTableDayCount: 31, // Compare against 31 days
+            DataLoadDelayHours: 4
+        );
+
+        // Arrange: Initialize the report generator
+        // we get this from base class - the service collection and report generator
+
+        // Capture console output
+        using var consoleOutput = new StringWriter();
+        Console.SetOut(consoleOutput);
+
+        // Act: Generate report
+        base.ReportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
+
+        // Assert: Validate expected report output
+        var output = consoleOutput.ToString();
+        Assert.Contains("February", output);
+        Assert.Contains("March", output);
+        Assert.Contains("277.55", output);
+        Assert.Contains("617.95", output);
+        Assert.Contains("31", output);
+        Assert.Contains("29 days", output); // failing here as we show Feb has 31 days.....which is WRONG
+    }
+
 }

@@ -27,6 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="mockCostData_feb2024-mar2024.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="mockCostData_jan2024-feb2024.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
