@@ -41,7 +41,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ApplicationUnifiedSettings>();
         services.AddScoped<CostComparisonDateService>();
         services.AddScoped<DataAvailabilityService>();
-        services.AddScoped<OverrideDateProcessor>();
         services.AddScoped<MonthCalculationService>();
         services.AddScoped<ComparisonCalculationService>();
 

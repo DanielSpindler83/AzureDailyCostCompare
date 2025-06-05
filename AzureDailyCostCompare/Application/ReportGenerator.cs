@@ -6,7 +6,7 @@ namespace AzureDailyCostCompare.Application;
 public class ReportGenerator
 {
     private readonly CostDataProcessor _costDataProcessor;
-    private readonly IReportRenderer _reportRenderer;
+    private readonly IReportRenderer _reportRenderer; // interface used as testing needs a different implementation - this isnt great as testing could pass but app render fail....answer is to unit test the data not the output?
 
     public ReportGenerator(CostDataProcessor costDataProcessor, IReportRenderer reportRenderer)
     {

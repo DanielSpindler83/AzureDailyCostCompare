@@ -27,7 +27,7 @@ public static class CommandLineBuilder
             {
                 // Get the singleton applicationUnifiedSettingsService instance and populate it
                 var applicationUnifiedSettingsService = serviceProvider.GetRequiredService<ApplicationUnifiedSettings>();
-                applicationUnifiedSettingsService.Date = date;
+                applicationUnifiedSettingsService.Date = date ?? DateTime.UtcNow; // Date is never null from here on and we work with it in the same way in the logic(no distiction between override date and no date passed in)
                 applicationUnifiedSettingsService.ShowWeeklyPatterns = showWeeklyPatterns;
                 applicationUnifiedSettingsService.ShowDayOfWeekAverages = showDayOfWeekAverages;
                 applicationUnifiedSettingsService.PreviousDayUtcDataLoadDelayHoursCommandLine = previousDayUtcDataLoadDelayHours;

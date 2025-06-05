@@ -8,12 +8,15 @@ namespace AzureDailyCostCompare.Application;
 /// </summary>
 public class ComparisonCalculationService
 {
+
+    private DateTime CurrentDateTimeUtc { get; init; } = DateTime.UtcNow;
+
     /// <summary>
     /// Determines the type of comparison based on override and current dates
     /// </summary>
-    public ComparisonType DetermineComparisonType(DateTime overrideDate, DateTime currentDate)
+    public ComparisonType DetermineComparisonType(DateTime date)
     {
-        return overrideDate.Month == currentDate.Month && overrideDate.Year == currentDate.Year
+        return date.Month == CurrentDateTimeUtc.Month && date.Year == CurrentDateTimeUtc.Year
             ? ComparisonType.PartialMonth
             : ComparisonType.FullMonth;
     }
@@ -25,25 +28,35 @@ public class ComparisonCalculationService
     /// <param name="currentDate">Current date</param>
     /// <param name="referenceDate">Reference date used for calculations</param>
     /// <returns>Number of days for comparison table</returns>
-    public int CalculateComparisonDayCount(DateTime? overrideDate, DateTime currentDate, DateTime referenceDate)
+    public int CalculateComparisonDayCount(DateTime date, ComparisonType comparisonType)
     {
-        // No override date - use current day of month
-        if (!overrideDate.HasValue)
+        if (comparisonType == ComparisonType.PartialMonth)
         {
-            return referenceDate.Day;
+            return date.Day;
         }
 
-        // Override date in current month - use current day of month  
-        if (overrideDate.Value.Month == currentDate.Month && overrideDate.Value.Year == currentDate.Year)
-        {
-            return currentDate.Day;
-        }
-
-        // Historical month comparisons - use maximum days to show full comparison
-        int overrideMonthDays = DateTime.DaysInMonth(overrideDate.Value.Year, overrideDate.Value.Month);
-        DateTime previousMonth = overrideDate.Value.AddMonths(-1);
+        // Historical month comparisons - use maximum days to show comparison of ALL days in the month (even though user may have asked for a specific date)
+        int overrideMonthDays = DateTime.DaysInMonth(date.Year, date.Month);
+        DateTime previousMonth = date.AddMonths(-1);
         int previousMonthDays = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
 
         return Math.Max(overrideMonthDays, previousMonthDays);
+    }
+
+    public DateTime AdjustForHistoricalDate(DateTime date)
+    {
+        // If the date represents a complete month in the past,
+        // adjust it to the last day of that month for full month comparison
+        bool isCompleteMonthInPast = date < CurrentDateTimeUtc &&
+                                   date.Month != CurrentDateTimeUtc.Month &&
+                                   date.Year <= CurrentDateTimeUtc.Year;
+
+        if (isCompleteMonthInPast)
+        {
+            return new DateTime(date.Year, date.Month,
+                              DateTime.DaysInMonth(date.Year, date.Month));
+        }
+
+        return date;
     }
 }
