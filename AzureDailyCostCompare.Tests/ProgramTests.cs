@@ -93,7 +93,7 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ReferenceDate: new DateTime(2024, 03, 30),
+            ReferenceDate: new DateTime(2024, 03, 31),
             ComparisonType: ComparisonType.PartialMonth,
             CurrentMonthStart: new DateTime(2024, 3, 1),
             PreviousMonthStart: new DateTime(2024, 2, 1),

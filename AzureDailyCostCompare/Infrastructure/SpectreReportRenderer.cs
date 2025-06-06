@@ -156,6 +156,13 @@ public class SpectreReportRenderer : IReportRenderer
             $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
             data.PreviousMonthFullAverage.ToString("F2"));
 
+        if (data.CurrentMonthExtraDaysAverage is not null)
+        {
+            table.AddRow(
+                $"{context.ReferenceDate:MMMM} average (for {context.ComparisonTableDayCount} days)",
+                data.CurrentMonthExtraDaysAverage.Value.ToString("F2"));
+        }
+
         AnsiConsole.Write(table);
     }
 
@@ -171,7 +178,7 @@ public class SpectreReportRenderer : IReportRenderer
         var panel = new Panel(new Markup(
             $"[bold]All costs in USD[/]\n\n" +
             $"A day's data is considered complete [cyan]{context.DataLoadDelayHours} hours[/] after the end of the day in UTC time.\n\n" +
-            $"Daily cost data is complete up to end of the day [cyan]{context.ReferenceDate}[/] in UTC timezone\n" +
+            $"Daily cost data is complete up to end of the day [cyan]{context.ReferenceDate:dd/MM/yyyy}[/] in UTC timezone\n" +
             $"The end of the day in UTC time is [cyan]{localDataReferenceDay}[/] in local timezone of [cyan]{localTimeZone.DisplayName}[/]\n\n" +
             $"This report was generated at [cyan]{DateTime.Now}[/] {localTimeZone.DisplayName}\n" +
             $"This report was generated at [cyan]{DateTime.UtcNow}[/] UTC"))

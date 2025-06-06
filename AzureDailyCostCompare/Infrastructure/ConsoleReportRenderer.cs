@@ -108,12 +108,19 @@ public class ConsoleReportRenderer : IReportRenderer
             data.PreviousMonthLikeForLikeAverage);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
-            $"Month averages cost delta ({context.ReferenceDate:MMMM} average minus {context.ReferenceDate.AddMonths(-1):MMMM} average)",
+            $"Month averages same day count cost delta ({context.ReferenceDate:MMMM} avg - {context.ReferenceDate.AddMonths(-1):MMMM} avg)",
             data.LikeForLikeDailyAverageDelta);
 
         Console.WriteLine("{0,-70} {1,10:F2}",
             $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
             data.PreviousMonthFullAverage);
+
+        if (data.CurrentMonthExtraDaysAverage is not null)
+        {
+            Console.WriteLine("{0,-70} {1,10:F2}",
+                $"{context.ReferenceDate:MMMM} average (for {context.ComparisonTableDayCount} days)",
+                data.CurrentMonthExtraDaysAverage);
+        }
     }
 
     private void RenderDataReferenceInfo(CostComparisonContext context)
@@ -125,7 +132,7 @@ public class ConsoleReportRenderer : IReportRenderer
 
         Console.WriteLine($"All costs in USD");
         Console.WriteLine($"A day's data is considered complete {context.DataLoadDelayHours} hours after the end of the day in UTC time.");
-        Console.WriteLine($"Daily cost data is complete up to end of the day {context.ReferenceDate:yyyy-MM-dd} in UTC timezone");
+        Console.WriteLine($"Daily cost data is complete up to end of the day {context.ReferenceDate:dd/MM/yyyy} in UTC timezone");
         Console.WriteLine($"The end of the day in UTC time is {localDataReferenceDay} in local timezone of {localTimeZone.DisplayName}");
         Console.WriteLine($"\nThis report was generated at {DateTime.Now} {localTimeZone.DisplayName}");
         Console.WriteLine($"This report was generated at {DateTime.UtcNow} UTC\n");
