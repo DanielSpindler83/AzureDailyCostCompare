@@ -179,7 +179,7 @@ public class SpectreReportRenderer : IReportRenderer
             $"[bold]All costs in USD[/]\n\n" +
             $"A day's data is considered complete [cyan]{context.DataLoadDelayHours} hours[/] after the end of the day in UTC time.\n\n" +
             $"Daily cost data is complete up to end of the day [cyan]{context.ReferenceDate:dd/MM/yyyy}[/] in UTC timezone\n" +
-            $"The end of the day in UTC time is [cyan]{localDataReferenceDay}[/] in local timezone of [cyan]{localTimeZone.DisplayName}[/]\n\n" +
+            $"The end of the day in UTC time is [cyan]{localDataReferenceDay}[/] in local timezone of [cyan]{localTimeZone.DisplayName}[/]\n\n" + // BUG HERE the date value is WRONG - review
             $"This report was generated at [cyan]{DateTime.Now}[/] {localTimeZone.DisplayName}\n" +
             $"This report was generated at [cyan]{DateTime.UtcNow}[/] UTC"))
             .Header("Data Reference");

@@ -2,6 +2,7 @@ using AzureDailyCostCompare.Application;
 using AzureDailyCostCompare.Domain;
 using AzureDailyCostCompare.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AzureDailyCostCompare.Tests;
 
@@ -121,6 +122,49 @@ public class ProgramTests : ReportGeneratorTestBase
         Assert.Contains("617.95", output);
         Assert.Contains("31", output);
         Assert.Contains("29 days", output); // failing here as we show Feb has 31 days.....which is WRONG
+    }
+
+    [Fact]
+    public void ReportGenerator_Should_Generate_Expected_Output_CurrentDate()
+    {
+
+        // Arrange: Create dynamic mock data
+        var mockCostData = CurrentDateDynamicCostDataCreator.GenerateCostData();
+
+        var referenceDate = DateTime.UtcNow;
+
+        var previousMonthStart = new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(-1);
+
+        // Arrange: Setup cost comparision context
+        var costComparisonContext = new CostComparisonContext(
+            ReferenceDate: referenceDate,
+            ComparisonType: ComparisonType.PartialMonth,
+            CurrentMonthStart: new DateTime(referenceDate.Year, referenceDate.Month, 1),
+            PreviousMonthStart: previousMonthStart,
+            CurrentMonthDayCount: DateTime.DaysInMonth(referenceDate.Year, referenceDate.Month),
+            PreviousMonthDayCount: DateTime.DaysInMonth(previousMonthStart.Year, previousMonthStart.Month),
+            ComparisonTableDayCount: referenceDate.Day,
+            DataLoadDelayHours: 4
+        );
+
+        // Arrange: Initialize the report generator
+        // we get this from base class - the service collection and report generator
+
+        // Capture console output
+        using var consoleOutput = new StringWriter();
+        Console.SetOut(consoleOutput);
+
+        // Act: Generate report
+        base.ReportGenerator.GenerateDailyCostReport(mockCostData, costComparisonContext, showWeeklyPatterns: false, showDayOfWeekAverages: false);
+
+        // Assert: Validate expected report output
+        var output = consoleOutput.ToString();
+        Assert.Contains(referenceDate.Month.ToString(), output);
+        //Assert.Contains("March", output);
+        //Assert.Contains("277.55", output);
+        //Assert.Contains("617.95", output);
+        //Assert.Contains("31", output);
+        //Assert.Contains("29 days", output); 
     }
 
 }
