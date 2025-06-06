@@ -1,4 +1,6 @@
 ﻿using AzureDailyCostCompare.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine;
 
 namespace AzureDailyCostCompare;
@@ -9,14 +11,17 @@ class Program
     {
         try
         {
-            // Configure DI container
-            var serviceProvider = ServiceCollectionExtensions.BuildServiceProvider();
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .Build();
 
-            // Build command structure (command execution delegates to handler that pulls from DI)
+            var services = new ServiceCollection();
+            services.ConfigureServices(configuration);
+            var serviceProvider = services.BuildServiceProvider();
+
             var rootCommand = CommandLineBuilder.BuildCommandLine(serviceProvider); 
-            //is it ok to pass in service provider? I thought it better than globally store ServiceProviderAccessor.ServiceProvider = serviceProvider; ???
 
-            // System.CommandLine framework executes the registered handler
             return await rootCommand.InvokeAsync(args);
         }
         catch (ConfigurationValidationException ex)

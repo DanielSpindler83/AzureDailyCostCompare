@@ -7,30 +7,11 @@ namespace AzureDailyCostCompare.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
-    public const string ConfigFileName = "appsettings.json";
-
-    public static ServiceProvider BuildServiceProvider()
-    {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile(ConfigFileName, optional: false, reloadOnChange: false)
-            .Build();
-
-
-        var services = new ServiceCollection();
-
-        services.ConfigureServices(configuration);
-
-        return services.BuildServiceProvider();
-    }
-
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
 
-        // services.AddSingleton<IConfiguration>(configuration); NEEDED OR NOT?
         var previousDayUtcDataLoadDelayHours = new PreviousDayUtcDataLoadDelayHoursUserSetting(configuration);
         services.AddSingleton(previousDayUtcDataLoadDelayHours);
-        // so now i can simply inject previousDayUtcDataLoadDelayHours and use it where it is needed? Yes I think so...
 
         // Register business services
         services.AddScoped<AuthenticationService>();
