@@ -4,13 +4,16 @@ using System.Text.Json;
 
 namespace AzureDailyCostCompare.Application;
 
-public class ApplicationUnifiedSettings(
-    PreviousDayUtcDataLoadDelayHoursUserSetting previousDayUtcDataLoadDelayHoursUserSetting
-    )
+public class ApplicationUnifiedSettings
 {
-    private readonly PreviousDayUtcDataLoadDelayHoursUserSetting _previousDayUtcDataLoadDelayUserSetting = previousDayUtcDataLoadDelayHoursUserSetting;
-
     public const string ConfigFileName = "appsettings.json";
+    private readonly PreviousDayUtcDataLoadDelayHoursUserSetting _previousDayUtcDataLoadDelayHoursUserSetting;
+
+    public ApplicationUnifiedSettings(
+        PreviousDayUtcDataLoadDelayHoursUserSetting previousDayUtcDataLoadDelayHoursUserSetting)
+    {
+        _previousDayUtcDataLoadDelayHoursUserSetting = previousDayUtcDataLoadDelayHoursUserSetting;
+    }
 
     public DateTime ComparisonReferenceDate { get; set; } = DateTime.UtcNow;
     public bool ShowWeeklyPatterns { get; set; } = false;
@@ -22,7 +25,7 @@ public class ApplicationUnifiedSettings(
     {
         if (!PreviousDayUtcDataLoadDelayHoursCommandLine.HasValue) // if NO commandline value we use user settings
         {
-            PreviousDayUtcDataLoadDelayHours = _previousDayUtcDataLoadDelayUserSetting.NumberOfHours ?? 4;
+            PreviousDayUtcDataLoadDelayHours = _previousDayUtcDataLoadDelayHoursUserSetting.NumberOfHours ?? 4;
         }
 
         if (PreviousDayUtcDataLoadDelayHoursCommandLine.HasValue)

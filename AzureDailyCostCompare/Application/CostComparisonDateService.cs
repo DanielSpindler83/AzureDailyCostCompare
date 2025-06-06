@@ -7,14 +7,21 @@ namespace AzureDailyCostCompare.Application;
 /// Main orchestrator that coordinates all cost comparison comparisonReferenceDate calculations
 /// APPLICATION: Facade service that orchestrates domain and application services
 /// </summary>
-public class CostComparisonDateService(
-    DataAvailabilityService dataAvailability, //rename this service to something more meaningful
-    MonthCalculationService monthCalculation,
-    ComparisonCalculationService comparisonCalculation)
+public class CostComparisonDateService
 {
-    private readonly DataAvailabilityService _dataAvailability = dataAvailability;
-    private readonly MonthCalculationService _monthCalculation = monthCalculation;
-    private readonly ComparisonCalculationService _comparisonCalculation = comparisonCalculation;
+    private readonly DataAvailabilityService _dataAvailability;
+    private readonly MonthCalculationService _monthCalculation;
+    private readonly ComparisonCalculationService _comparisonCalculation;
+
+    public CostComparisonDateService(
+        DataAvailabilityService dataAvailability,
+        MonthCalculationService monthCalculation,
+        ComparisonCalculationService comparisonCalculation)
+    {
+        _dataAvailability = dataAvailability;
+        _monthCalculation = monthCalculation;
+        _comparisonCalculation = comparisonCalculation;
+    }
 
     /// <summary>
     /// Creates a comparison context using the current comparisonReferenceDate and data availability cutoff

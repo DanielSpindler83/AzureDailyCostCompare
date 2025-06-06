@@ -2,20 +2,30 @@
 
 namespace AzureDailyCostCompare.Application;
 
-public class CostComparisonBusinessHandler(
-    AuthenticationService authService,
-    BillingService billingService,
-    CostService costService,
-    ApplicationUnifiedSettings applicationUnifiedSettings,
-    CostComparisonDateService costComparisonDateService,
-    ReportGenerator reportGenerator)
+public class CostComparisonBusinessHandler
 {
-    private readonly AuthenticationService _authService = authService;
-    private readonly BillingService _billingService = billingService;
-    private readonly CostService _costService = costService;
-    private readonly ApplicationUnifiedSettings _applicationUnifiedSettings = applicationUnifiedSettings;
-    private readonly CostComparisonDateService _costComparisonDateService = costComparisonDateService;
-    private readonly ReportGenerator _reportGenerator = reportGenerator;
+    private readonly AuthenticationService _authService;
+    private readonly BillingService _billingService;
+    private readonly CostService _costService;
+    private readonly ApplicationUnifiedSettings _applicationUnifiedSettings;
+    private readonly CostComparisonDateService _costComparisonDateService;
+    private readonly ReportGenerator _reportGenerator;
+
+    public CostComparisonBusinessHandler(
+        AuthenticationService authService,
+        BillingService billingService,
+        CostService costService,
+        ApplicationUnifiedSettings applicationUnifiedSettings,
+        CostComparisonDateService costComparisonDateService,
+        ReportGenerator reportGenerator)
+    {
+        _authService = authService;
+        _billingService = billingService;
+        _costService = costService;
+        _applicationUnifiedSettings = applicationUnifiedSettings;
+        _costComparisonDateService = costComparisonDateService;
+        _reportGenerator = reportGenerator;
+    }
 
     public async Task RunAsync()
     {
