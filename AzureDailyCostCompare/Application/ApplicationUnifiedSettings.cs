@@ -12,7 +12,7 @@ public class ApplicationUnifiedSettings(
 
     public const string ConfigFileName = "appsettings.json";
 
-    public DateTime Date { get; set; } = DateTime.UtcNow;
+    public DateTime ComparisonReferenceDate { get; set; } = DateTime.UtcNow;
     public bool ShowWeeklyPatterns { get; set; } = false;
     public bool ShowDayOfWeekAverages { get; set; } = false;
     public int? PreviousDayUtcDataLoadDelayHoursCommandLine { get; set; }

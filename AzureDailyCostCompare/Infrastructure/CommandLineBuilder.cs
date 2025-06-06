@@ -13,21 +13,21 @@ public static class CommandLineBuilder
             Name = "azure-daily-cost-compare" 
         };
 
-        var (dateOption, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption) = CreateCommandOptions();
+        var (comparisonReferenceDateOption, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption) = CreateCommandOptions();
 
-        rootCommand.AddOption(dateOption);
+        rootCommand.AddOption(comparisonReferenceDateOption);
         rootCommand.AddOption(showWeeklyPatternsOption);
         rootCommand.AddOption(showDayOfWeekAveragesOption);
         rootCommand.AddOption(previousDayUtcDataLoadDelayHoursOption);
 
         // Command execution handler
-        rootCommand.SetHandler(async (date, showWeeklyPatterns, showDayOfWeekAverages, previousDayUtcDataLoadDelayHours) =>
+        rootCommand.SetHandler(async (comparisonReferenceDate, showWeeklyPatterns, showDayOfWeekAverages, previousDayUtcDataLoadDelayHours) =>
         {
             try
             {
                 // Get the singleton applicationUnifiedSettingsService instance and populate it
                 var applicationUnifiedSettingsService = serviceProvider.GetRequiredService<ApplicationUnifiedSettings>();
-                applicationUnifiedSettingsService.Date = date ?? DateTime.UtcNow; // Date is never null from here on and we work with it in the same way in the logic(no distiction between override date and no date passed in)
+                applicationUnifiedSettingsService.ComparisonReferenceDate = comparisonReferenceDate ?? DateTime.UtcNow; // ComparisonReferenceDate is never null from here on and we work with it in the same way in the logic(no distiction between override comparisonReferenceDate and no comparisonReferenceDate passed in)
                 applicationUnifiedSettingsService.ShowWeeklyPatterns = showWeeklyPatterns;
                 applicationUnifiedSettingsService.ShowDayOfWeekAverages = showDayOfWeekAverages;
                 applicationUnifiedSettingsService.PreviousDayUtcDataLoadDelayHoursCommandLine = previousDayUtcDataLoadDelayHours;
@@ -38,21 +38,21 @@ public static class CommandLineBuilder
             }
             catch (Exception ex) { Console.WriteLine($"Service1 failed: {ex}"); }
 
-        }, dateOption, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption);
+        }, comparisonReferenceDateOption, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption);
 
         return rootCommand;
     }
 
     private static (
-        Option<DateTime?> DateOption,
+        Option<DateTime?> ComparisonReferenceDateOption,
         Option<bool> ShowWeeklyPatternsOptio,
         Option<bool> ShowDayOfWeekAveragesOption,
         Option<int?> PreviousDayUtcDataLoadDelayHoursOption
     ) CreateCommandOptions()
     {
-        var dateOption = new Option<DateTime?>(
+        var comparisonReferenceDate = new Option<DateTime?>(
             "--date",
-            "Optional reference date for the report (format: yyyy-MM-dd). If not provided, current date will be used.")
+            "Optional comparison reference date for the report (format: yyyy-MM-dd). If not provided, current date will be used.")
         {
             ArgumentHelpName = "yyyy-MM-dd"
         };
@@ -72,6 +72,6 @@ public static class CommandLineBuilder
             ArgumentHelpName = "int:0-23"
         };
 
-        return (dateOption, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption);
+        return (comparisonReferenceDate, showWeeklyPatternsOption, showDayOfWeekAveragesOption, previousDayUtcDataLoadDelayHoursOption);
     }
 }

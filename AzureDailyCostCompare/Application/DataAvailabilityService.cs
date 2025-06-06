@@ -23,17 +23,17 @@ public class DataAvailabilityService
         // Before cutoff: we don't have complete data for yesterday, so last complete day is the day before yesterday
         // After cutoff: yesterday's data is considered a full days data
         return CurrentDateTimeUtc.Hour < previousDayUtcDataLoadDelayHours
-            ? CurrentDateTimeUtc.Date.AddDays(-2) // we only use the Date portion of this and never the time - maybe we should return just a Date (with no time)
+            ? CurrentDateTimeUtc.Date.AddDays(-2) // we only use the ComparisonReferenceDate portion of this and never the time - maybe we should return just a ComparisonReferenceDate (with no time)
             : CurrentDateTimeUtc.Date.AddDays(-1);
         //return CurrentDateTimeUtc.Hour < previousDayUtcDataLoadDelayHours
-        //    ? DateOnly.FromDateTime(CurrentDateTimeUtc.Date.AddDays(-2)) // we only use the Date portion of this and never the time - maybe we should return just a Date (with no time)
-        //    : DateOnly.FromDateTime(CurrentDateTimeUtc.Date.AddDays(-1));
+        //    ? DateOnly.FromDateTime(CurrentDateTimeUtc.ComparisonReferenceDate.AddDays(-2)) // we only use the ComparisonReferenceDate portion of this and never the time - maybe we should return just a ComparisonReferenceDate (with no time)
+        //    : DateOnly.FromDateTime(CurrentDateTimeUtc.ComparisonReferenceDate.AddDays(-1));
     }
 
     /// <summary>
     /// Validates that an override date doesn't exceed available data
     /// </summary>
-    /// <param name="overrideDate">Date to validate</param>
+    /// <param name="overrideDate">ComparisonReferenceDate to validate</param>
     /// <param name="currentDateTime">Current date and time</param>
     /// <param name="previousDayUtcDataLoadDelayHours">Hours after UTC midnight to declare previous days data complete enough to load</param>
     /// <returns>Validated date (normalized to date only)</returns>
@@ -44,7 +44,7 @@ public class DataAvailabilityService
         if (date.Date > latestAvailableFullDaysDataDate)
         {
             throw new ArgumentException(
-                $"Date {date:yyyy-MM-dd} exceeds the latest date with complete cost data " +
+                $"ComparisonReferenceDate {date:yyyy-MM-dd} exceeds the latest date with complete cost data " +
                 $"({latestAvailableFullDaysDataDate:yyyy-MM-dd}). Data completeness is determined by the {previousDayUtcDataLoadDelayHours}:00 UTC cutoff.",
                 nameof(date)); // review error message
         }

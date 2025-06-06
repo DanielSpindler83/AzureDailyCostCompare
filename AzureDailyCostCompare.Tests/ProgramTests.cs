@@ -16,7 +16,7 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ReferenceDate: new DateTime(2024, 01, 01),
+            ComparisonReferenceDate: new DateTime(2024, 01, 01),
             ComparisonType: ComparisonType.FullMonth,
             CurrentMonthStart: new DateTime(2024, 1, 1),   // January 1st
             PreviousMonthStart: new DateTime(2023, 12, 1), // December 1st
@@ -55,7 +55,7 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ReferenceDate: new DateTime(2024, 02, 10),
+            ComparisonReferenceDate: new DateTime(2024, 02, 10),
             ComparisonType: ComparisonType.FullMonth,
             CurrentMonthStart: new DateTime(2024, 2, 1),   
             PreviousMonthStart: new DateTime(2024, 1, 1), 
@@ -94,7 +94,7 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ReferenceDate: new DateTime(2024, 03, 31),
+            ComparisonReferenceDate: new DateTime(2024, 03, 31),
             ComparisonType: ComparisonType.PartialMonth,
             CurrentMonthStart: new DateTime(2024, 3, 1),
             PreviousMonthStart: new DateTime(2024, 2, 1),
@@ -137,7 +137,7 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ReferenceDate: referenceDate,
+            ComparisonReferenceDate: referenceDate,
             ComparisonType: ComparisonType.PartialMonth,
             CurrentMonthStart: new DateTime(referenceDate.Year, referenceDate.Month, 1),
             PreviousMonthStart: previousMonthStart,

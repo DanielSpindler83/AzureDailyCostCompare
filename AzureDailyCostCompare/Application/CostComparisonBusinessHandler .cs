@@ -21,7 +21,7 @@ public class CostComparisonBusinessHandler(
     {
         try
         {
-            await RunCostComparisonAsync(_applicationUnifiedSettings.Date, 
+            await RunCostComparisonAsync(_applicationUnifiedSettings.ComparisonReferenceDate, 
                                          _applicationUnifiedSettings.PreviousDayUtcDataLoadDelayHours);
         }
         catch (ConfigurationValidationException ex)
@@ -37,24 +37,20 @@ public class CostComparisonBusinessHandler(
     }
 
     private async Task RunCostComparisonAsync(
-        DateTime date,
+        DateTime comparisonReferenceDate,
         int previousDayUtcDataLoadDelayHours)
     {
         var accessToken = await _authService.GetAccessToken();
 
         var billingAccountId = await _billingService.GetBillingAccountIdAsync(accessToken);
 
-        //var costComparisonContext = date.HasValue
-        //    ? _costComparisonDateService.CreateContextWithOverride(previousDayUtcDataLoadDelayHours, date.Value)
-        //    : _costComparisonDateService.CreateContext(previousDayUtcDataLoadDelayHours);
-
-        var costComparisonContext = _costComparisonDateService.CreateContext(date, previousDayUtcDataLoadDelayHours);
+        var costComparisonContext = _costComparisonDateService.CreateContext(comparisonReferenceDate, previousDayUtcDataLoadDelayHours);
 
         var costData = await _costService.QueryCostManagementAPI(
             accessToken,
             billingAccountId,
-            costComparisonContext.PreviousMonthStart,// start date
-            costComparisonContext.ReferenceDate); // end date
+            costComparisonContext.PreviousMonthStart,
+            costComparisonContext.ComparisonReferenceDate);
 
         _reportGenerator.GenerateDailyCostReport(costData, costComparisonContext, _applicationUnifiedSettings.ShowWeeklyPatterns, _applicationUnifiedSettings.ShowDayOfWeekAverages);
     }

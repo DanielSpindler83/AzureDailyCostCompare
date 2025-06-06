@@ -11,11 +11,11 @@ public class WeeklyAnalysisService
         foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
             var previousWeeks = GetWeeksForDay(day, context.PreviousMonthStart)
-                .Where(d => d <= context.ReferenceDate)
+                .Where(d => d <= context.ComparisonReferenceDate)
                 .ToList();
 
             var currentWeeks = GetWeeksForDay(day, context.CurrentMonthStart)
-                .Where(d => d <= context.ReferenceDate)
+                .Where(d => d <= context.ComparisonReferenceDate)
                 .ToList();
 
             for (int weekNum = 0; weekNum < Math.Min(previousWeeks.Count, currentWeeks.Count); weekNum++)
@@ -52,12 +52,12 @@ public class WeeklyAnalysisService
         {
             var previousDays = data.PreviousMonthDailyCosts
                 .Where(d => d.DateString.DayOfWeek == day &&
-                           d.DateString <= DateOnly.FromDateTime(context.ReferenceDate))
+                           d.DateString <= DateOnly.FromDateTime(context.ComparisonReferenceDate))
                 .ToList();
 
             var currentDays = data.CurrentMonthDailyCosts
                 .Where(d => d.DateString.DayOfWeek == day &&
-                           d.DateString <= DateOnly.FromDateTime(context.ReferenceDate))
+                           d.DateString <= DateOnly.FromDateTime(context.ComparisonReferenceDate))
                 .ToList();
 
             if (previousDays.Count != 0 || currentDays.Count != 0)

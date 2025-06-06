@@ -4,7 +4,7 @@
 namespace AzureDailyCostCompare.Application;
 
 /// <summary>
-/// Main orchestrator that coordinates all cost comparison date calculations
+/// Main orchestrator that coordinates all cost comparison comparisonReferenceDate calculations
 /// APPLICATION: Facade service that orchestrates domain and application services
 /// </summary>
 public class CostComparisonDateService(
@@ -17,26 +17,26 @@ public class CostComparisonDateService(
     private readonly ComparisonCalculationService _comparisonCalculation = comparisonCalculation;
 
     /// <summary>
-    /// Creates a comparison context using the current date and data availability cutoff
+    /// Creates a comparison context using the current comparisonReferenceDate and data availability cutoff
     /// </summary>
     /// <param name="previousDayUtcDataLoadDelayHours">UTC hour after which previous day's data is complete</param>
-    /// <param name="dateProvider">Optional date provider for testing</param>
-    public CostComparisonContext CreateContext(DateTime date, int previousDayUtcDataLoadDelayHours)
+    /// <param name="dateProvider">Optional comparisonReferenceDate provider for testing</param>
+    public CostComparisonContext CreateContext(DateTime comparisonReferenceDate, int previousDayUtcDataLoadDelayHours)
     {
-        // we assume the date is a valid date once it gets here as its either passed (has a check) or we created the date
+        // we assume the comparisonReferenceDate is a valid comparisonReferenceDate once it gets here as its either passed (has a check) or we created the comparisonReferenceDate
 
-        // work out the latest date that has full data
-        // check our date is NOT later than latest full data date - EXCEPTION if it is
-        // is date current month? true or false?
+        // work out the latest comparisonReferenceDate that has full data
+        // check our comparisonReferenceDate is NOT later than latest full data comparisonReferenceDate - EXCEPTION if it is
+        // is comparisonReferenceDate current month? true or false?
         // work out number of days to show in the comparison difference for partial vs full historical month
         // calculate the month boundaries and number of days
-        // adjust date if the date is historical (so we compare full month) - changes date to last day of the month for full months only
+        // adjust comparisonReferenceDate if the comparisonReferenceDate is historical (so we compare full month) - changes comparisonReferenceDate to last day of the month for full months only
 
         var latestAvailableFullDaysDataDate = _dataAvailability.GetLatestAvailableFullDaysDataDate(previousDayUtcDataLoadDelayHours);
-        var validatedDate = _dataAvailability.ValidateDate(date, latestAvailableFullDaysDataDate, previousDayUtcDataLoadDelayHours);
-        var comparisonType = _comparisonCalculation.DetermineComparisonType(date);
-        var comparisonDayCount = _comparisonCalculation.CalculateComparisonDayCount(date, comparisonType);
-        var (currentStart, previousStart, currentDays, previousDays) = _monthCalculation.CalculateMonthBoundaries(date);
+        var validatedDate = _dataAvailability.ValidateDate(comparisonReferenceDate, latestAvailableFullDaysDataDate, previousDayUtcDataLoadDelayHours);
+        var comparisonType = _comparisonCalculation.DetermineComparisonType(comparisonReferenceDate);
+        var comparisonDayCount = _comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate, comparisonType);
+        var (currentStart, previousStart, currentDays, previousDays) = _monthCalculation.CalculateMonthBoundaries(comparisonReferenceDate);
         var processedDate = _comparisonCalculation.AdjustForHistoricalDate(validatedDate); //sloppy as we may not need to do this check if the month is partial?
 
         // i feel this is all working now but it can be improved - capture state within the services? and only return what we need?
@@ -60,7 +60,7 @@ public class CostComparisonDateService(
     /// <param name="dateProvider">Optional date provider for testing</param>
     //public CostComparisonContext CreateContextWithTodaysDate(int previousDayUtcDataLoadDelayHours)
     //{
-    //    // we assume the date is a valid date once it gets here as its either passed (has a check) or we created the date
+    //    // we assume the comparisonReferenceDate is a valid comparisonReferenceDate once it gets here as its either passed (has a check) or we created the comparisonReferenceDate
 
     //    DateOnly latestAvailableDate = _dataAvailability.GetLatestAvailableFullDaysDataDate(CurrentDateTimeUtc, previousDayUtcDataLoadDelayHours);
 

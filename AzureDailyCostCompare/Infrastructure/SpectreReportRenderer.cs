@@ -138,28 +138,28 @@ public class SpectreReportRenderer : IReportRenderer
             .AddColumn(new TableColumn("Amount (USD)").RightAligned());
 
         table.AddRow(
-            $"{context.ReferenceDate:MMMM} average (for {data.LikeForLikeDayCount} days)",
+            $"{context.ComparisonReferenceDate:MMMM} average (for {data.LikeForLikeDayCount} days)",
             data.CurrentMonthLikeForLikeAverage.ToString("F2"));
 
         table.AddRow(
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} average (for {data.LikeForLikeDayCount} days)",
+            $"{context.ComparisonReferenceDate.AddMonths(-1):MMMM} average (for {data.LikeForLikeDayCount} days)",
             data.PreviousMonthLikeForLikeAverage.ToString("F2"));
 
         var deltaColor = data.LikeForLikeDailyAverageDelta > 0 ? "red" :
                         data.LikeForLikeDailyAverageDelta < 0 ? "green" : "white";
 
         table.AddRow(
-            $"Month averages cost delta ({context.ReferenceDate:MMMM} minus {context.ReferenceDate.AddMonths(-1):MMMM})",
+            $"Month averages cost delta ({context.ComparisonReferenceDate:MMMM} minus {context.ComparisonReferenceDate.AddMonths(-1):MMMM})",
             $"[{deltaColor}]{data.LikeForLikeDailyAverageDelta:F2}[/]");
 
         table.AddRow(
-            $"{context.ReferenceDate.AddMonths(-1):MMMM} full month average",
+            $"{context.ComparisonReferenceDate.AddMonths(-1):MMMM} full month average",
             data.PreviousMonthFullAverage.ToString("F2"));
 
         if (data.CurrentMonthExtraDaysAverage is not null)
         {
             table.AddRow(
-                $"{context.ReferenceDate:MMMM} average (for {context.ComparisonTableDayCount} days)",
+                $"{context.ComparisonReferenceDate:MMMM} average (for {context.ComparisonTableDayCount} days)",
                 data.CurrentMonthExtraDaysAverage.Value.ToString("F2"));
         }
 
@@ -173,12 +173,12 @@ public class SpectreReportRenderer : IReportRenderer
         AnsiConsole.WriteLine();
 
         var localTimeZone = TimeZoneInfo.Local;
-        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(context.ReferenceDate, localTimeZone);
+        var localDataReferenceDay = TimeZoneInfo.ConvertTimeFromUtc(context.ComparisonReferenceDate, localTimeZone);
 
         var panel = new Panel(new Markup(
             $"[bold]All costs in USD[/]\n\n" +
             $"A day's data is considered complete [cyan]{context.DataLoadDelayHours} hours[/] after the end of the day in UTC time.\n\n" +
-            $"Daily cost data is complete up to end of the day [cyan]{context.ReferenceDate:dd/MM/yyyy}[/] in UTC timezone\n" +
+            $"Daily cost data is complete up to end of the day [cyan]{context.ComparisonReferenceDate:dd/MM/yyyy}[/] in UTC timezone\n" +
             $"The end of the day in UTC time is [cyan]{localDataReferenceDay}[/] in local timezone of [cyan]{localTimeZone.DisplayName}[/]\n\n" + // BUG HERE the date value is WRONG - review
             $"This report was generated at [cyan]{DateTime.Now}[/] {localTimeZone.DisplayName}\n" +
             $"This report was generated at [cyan]{DateTime.UtcNow}[/] UTC"))

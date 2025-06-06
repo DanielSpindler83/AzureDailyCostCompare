@@ -5,7 +5,7 @@
 /// DOMAIN: Aggregate root containing all comparison context data
 /// </summary>
 public record CostComparisonContext(
-    DateTime ReferenceDate,
+    DateTime ComparisonReferenceDate,
     ComparisonType ComparisonType,
     DateTime CurrentMonthStart,
     DateTime PreviousMonthStart,
@@ -25,10 +25,10 @@ public record CostComparisonContext(
     public DateRange GetCurrentMonthRange()
     {
         var monthEndDate = CurrentMonthStart.AddMonths(1).AddDays(-1);
-        var endDate = ReferenceDate < monthEndDate ? ReferenceDate : monthEndDate;
+        var endDate = ComparisonReferenceDate < monthEndDate ? ComparisonReferenceDate : monthEndDate;
         return new DateRange(CurrentMonthStart, endDate);
     }
 
     /// <summary>Determines if cost data is available for a given date</summary>
-    public bool IsCostDataAvailable(DateTime date) => date.Date <= ReferenceDate.Date;
+    public bool IsCostDataAvailable(DateTime date) => date.Date <= ComparisonReferenceDate.Date;
 }
