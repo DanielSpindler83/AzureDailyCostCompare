@@ -20,9 +20,9 @@ class Program
             services.ConfigureServices(configuration);
             var serviceProvider = services.BuildServiceProvider();
 
-            var rootCommand = CommandLineBuilder.BuildCommandLine(serviceProvider); 
+            var rootCommand = serviceProvider.GetRequiredService<CommandLineBuilder>();
 
-            return await rootCommand.InvokeAsync(args);
+            return await rootCommand.BuildCommandLine().InvokeAsync(args);
         }
         catch (ConfigurationValidationException ex)
         {

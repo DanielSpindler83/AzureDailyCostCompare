@@ -4,25 +4,25 @@ namespace AzureDailyCostCompare.Application;
 
 public class CostComparisonBusinessHandler
 {
+    private readonly ApplicationUnifiedSettings _applicationUnifiedSettings;
     private readonly AuthenticationService _authService;
     private readonly BillingService _billingService;
     private readonly CostService _costService;
-    private readonly ApplicationUnifiedSettings _applicationUnifiedSettings;
     private readonly CostComparisonDateService _costComparisonDateService;
     private readonly ReportGenerator _reportGenerator;
 
     public CostComparisonBusinessHandler(
+        ApplicationUnifiedSettings applicationUnifiedSettings,
         AuthenticationService authService,
         BillingService billingService,
         CostService costService,
-        ApplicationUnifiedSettings applicationUnifiedSettings,
         CostComparisonDateService costComparisonDateService,
         ReportGenerator reportGenerator)
     {
+        _applicationUnifiedSettings = applicationUnifiedSettings;
         _authService = authService;
         _billingService = billingService;
         _costService = costService;
-        _applicationUnifiedSettings = applicationUnifiedSettings;
         _costComparisonDateService = costComparisonDateService;
         _reportGenerator = reportGenerator;
     }

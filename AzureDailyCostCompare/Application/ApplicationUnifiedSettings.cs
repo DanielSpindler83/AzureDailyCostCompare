@@ -15,31 +15,41 @@ public class ApplicationUnifiedSettings
         _previousDayUtcDataLoadDelayHoursUserSetting = previousDayUtcDataLoadDelayHoursUserSetting;
     }
 
-    public DateTime ComparisonReferenceDate { get; set; } = DateTime.UtcNow;
-    public bool ShowWeeklyPatterns { get; set; } = false;
-    public bool ShowDayOfWeekAverages { get; set; } = false;
-    public int? PreviousDayUtcDataLoadDelayHoursCommandLine { get; set; }
+    public DateTime ComparisonReferenceDate { get; private set; } = DateTime.UtcNow;
+    public bool ShowWeeklyPatterns { get; private set; } = false;
+    public bool ShowDayOfWeekAverages { get; private set; } = false;
+    public int? PreviousDayUtcDataLoadDelayHoursFromCommandLine { get; private set; } = null;
     public int PreviousDayUtcDataLoadDelayHours { get; private set; } = 4; // default value of 4 - but should always be set via file config or command line
 
-    public void DeterminePreviousDayUtcDataLoadDelayHours()
+    public void SetApplicationUnifiedSettings(DateTime? comparisonReferenceDateFromCommandLine, bool showWeeklyPatterns, bool showDayOfWeekAverages, int? previousDayUtcDataLoadDelayHoursFromCommandLine)
     {
-        if (!PreviousDayUtcDataLoadDelayHoursCommandLine.HasValue) // if NO commandline value we use user settings
+        if (comparisonReferenceDateFromCommandLine is not null) // if a date was passed in via command line we use it
+        { 
+            ComparisonReferenceDate = (DateTime)comparisonReferenceDateFromCommandLine; 
+        }
+
+        if (comparisonReferenceDateFromCommandLine is null) // if no date passed in we use the current UTC date time
+        {
+            ComparisonReferenceDate = DateTime.UtcNow;
+        }
+
+        ShowWeeklyPatterns = showWeeklyPatterns;
+        ShowDayOfWeekAverages = showDayOfWeekAverages;
+
+        if (previousDayUtcDataLoadDelayHoursFromCommandLine is null) // if NO commandline value we use user settings
         {
             PreviousDayUtcDataLoadDelayHours = _previousDayUtcDataLoadDelayHoursUserSetting.NumberOfHours ?? 4;
         }
 
-        if (PreviousDayUtcDataLoadDelayHoursCommandLine.HasValue)
+        if (previousDayUtcDataLoadDelayHoursFromCommandLine is not null) // commandline passed in value for PreviousDayUtcDataLoadDelayHours and we should use it and store it in user settings(app settings for now)
         {
-            // commandline passed in value for PreviousDayUtcDataLoadDelayHours and we should use it and store it in user settings(app settings for now)
-            //QUESTION - has command line value been validated? I dont think so...
-            ValidatePreviousDayUtcDataLoadDelayHoursValue(PreviousDayUtcDataLoadDelayHoursCommandLine);
-            PreviousDayUtcDataLoadDelayHours = PreviousDayUtcDataLoadDelayHoursCommandLine ?? 4;
+            ValidatePreviousDayUtcDataLoadDelayHoursValue(PreviousDayUtcDataLoadDelayHoursFromCommandLine);
+            PreviousDayUtcDataLoadDelayHours = PreviousDayUtcDataLoadDelayHoursFromCommandLine ?? 4;
             LoadConfiguration();
             UpdatePreviousDayUtcDataLoadDelayHours(PreviousDayUtcDataLoadDelayHours);
 
             DisplaySuccess($"PreviousDayUtcDataLoadDelayHoursUserSetting value successfully updated to {PreviousDayUtcDataLoadDelayHours} " +
               $"in {ConfigFileName}. New value will be used now and for subsequent executions.");
-
         }
     }
 

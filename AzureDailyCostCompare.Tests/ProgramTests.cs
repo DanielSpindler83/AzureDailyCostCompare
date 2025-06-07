@@ -1,8 +1,4 @@
-using AzureDailyCostCompare.Application;
 using AzureDailyCostCompare.Domain;
-using AzureDailyCostCompare.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AzureDailyCostCompare.Tests;
 
@@ -16,14 +12,14 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ComparisonReferenceDate: new DateTime(2024, 01, 01),
-            ComparisonType: ComparisonType.FullMonth,
-            CurrentMonthStart: new DateTime(2024, 1, 1),   // January 1st
-            PreviousMonthStart: new DateTime(2023, 12, 1), // December 1st
-            CurrentMonthDayCount: 31,  // Only 1 day in current month (Jan 1st)
-            PreviousMonthDayCount: 31, // Full December (31 days)
-            ComparisonTableDayCount: 31, // Compare against 31 days
-            DataLoadDelayHours: 4
+            comparisonReferenceDate: new DateTime(2024, 01, 01),
+            comparisonType: ComparisonType.FullMonth,
+            currentMonthStart: new DateTime(2024, 1, 1),   // January 1st
+            previousMonthStart: new DateTime(2023, 12, 1), // December 1st
+            currentMonthDayCount: 31,  // Only 1 day in current month (Jan 1st)
+            previousMonthDayCount: 31, // Full December (31 days)
+            comparisonTableDayCount: 31, // Compare against 31 days
+            dataLoadDelayHours: 4
         );
 
         // Arrange: Initialize the report generator
@@ -55,14 +51,14 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ComparisonReferenceDate: new DateTime(2024, 02, 10),
-            ComparisonType: ComparisonType.FullMonth,
-            CurrentMonthStart: new DateTime(2024, 2, 1),   
-            PreviousMonthStart: new DateTime(2024, 1, 1), 
-            CurrentMonthDayCount: 29, // Feb in a leap year  
-            PreviousMonthDayCount: 31, // Jan
-            ComparisonTableDayCount: 31, // Compare against 31 days
-            DataLoadDelayHours: 4
+            comparisonReferenceDate: new DateTime(2024, 02, 10),
+            comparisonType: ComparisonType.FullMonth,
+            currentMonthStart: new DateTime(2024, 2, 1),   
+            previousMonthStart: new DateTime(2024, 1, 1), 
+            currentMonthDayCount: 29, // Feb in a leap year  
+            previousMonthDayCount: 31, // Jan
+            comparisonTableDayCount: 31, // Compare against 31 days
+            dataLoadDelayHours: 4
         );
 
         // Arrange: Initialize the report generator
@@ -94,14 +90,14 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ComparisonReferenceDate: new DateTime(2024, 03, 31),
-            ComparisonType: ComparisonType.PartialMonth,
-            CurrentMonthStart: new DateTime(2024, 3, 1),
-            PreviousMonthStart: new DateTime(2024, 2, 1),
-            CurrentMonthDayCount: 31, // March
-            PreviousMonthDayCount: 29, // Feb in a leap year 
-            ComparisonTableDayCount: 31, // Compare against 31 days
-            DataLoadDelayHours: 4
+            comparisonReferenceDate: new DateTime(2024, 03, 31),
+            comparisonType: ComparisonType.PartialMonth,
+            currentMonthStart: new DateTime(2024, 3, 1),
+            previousMonthStart: new DateTime(2024, 2, 1),
+            currentMonthDayCount: 31, // March
+            previousMonthDayCount: 29, // Feb in a leap year 
+            comparisonTableDayCount: 31, // Compare against 31 days
+            dataLoadDelayHours: 4
         );
 
         // Arrange: Initialize the report generator
@@ -137,14 +133,14 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Arrange: Setup cost comparision context
         var costComparisonContext = new CostComparisonContext(
-            ComparisonReferenceDate: referenceDate,
-            ComparisonType: ComparisonType.PartialMonth,
-            CurrentMonthStart: new DateTime(referenceDate.Year, referenceDate.Month, 1),
-            PreviousMonthStart: previousMonthStart,
-            CurrentMonthDayCount: DateTime.DaysInMonth(referenceDate.Year, referenceDate.Month),
-            PreviousMonthDayCount: DateTime.DaysInMonth(previousMonthStart.Year, previousMonthStart.Month),
-            ComparisonTableDayCount: referenceDate.Day,
-            DataLoadDelayHours: 4
+            comparisonReferenceDate: referenceDate,
+            comparisonType: ComparisonType.PartialMonth,
+            currentMonthStart: new DateTime(referenceDate.Year, referenceDate.Month, 1),
+            previousMonthStart: previousMonthStart,
+            currentMonthDayCount: DateTime.DaysInMonth(referenceDate.Year, referenceDate.Month),
+            previousMonthDayCount: DateTime.DaysInMonth(previousMonthStart.Year, previousMonthStart.Month),
+            comparisonTableDayCount: referenceDate.Day,
+            dataLoadDelayHours: 4
         );
 
         // Arrange: Initialize the report generator

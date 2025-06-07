@@ -13,18 +13,25 @@ public static class ServiceCollectionExtensions
         var previousDayUtcDataLoadDelayHours = new PreviousDayUtcDataLoadDelayHoursUserSetting(configuration);
         services.AddSingleton(previousDayUtcDataLoadDelayHours);
 
-        // Register business services
+        // Composition Root
+        services.AddScoped<CommandLineBuilder>();
+
+        // CommandLineBuilder - Executes main business handler
+        services.AddScoped<ApplicationUnifiedSettings>();
+        services.AddScoped<CostComparisonBusinessHandler>();
+
+        // CostComparisonBusinessHandler - main business logic
         services.AddScoped<AuthenticationService>();
         services.AddScoped<BillingService>();
         services.AddScoped<CostService>();
-        services.AddScoped<CostComparisonBusinessHandler>();
-        services.AddScoped<CostComparisonContext>();
-        services.AddScoped<ApplicationUnifiedSettings>();
         services.AddScoped<CostComparisonDateService>();
+
+        // CostComparisonDateService - Date business logic 
         services.AddScoped<DataAvailabilityService>();
         services.AddScoped<MonthCalculationService>();
         services.AddScoped<ComparisonCalculationService>();
 
+        // Reporting dependencies
         services.AddReportingServices();
 
         services.AddHttpClient<BillingService>(client =>
