@@ -51,10 +51,7 @@ public class CostComparisonDateService
         return new CostComparisonContext(
             processedDate, 
             comparisonType,
-            monthComparisonPeriod.CurrentFirstDayOfMonth,
-            monthComparisonPeriod.PreviousFirstDayOfMonth,
-            monthComparisonPeriod.CurrentMonthDaysCount,
-            monthComparisonPeriod.PreviousMonthDaysCount,
+            monthComparisonPeriod,
             comparisonDayCount,
             previousDayUtcDataLoadDelayHours); // i dont think this context needs previousDayUtcDataLoadDelayHours anymore - we handle it elsewhere....please check when you can...
     }

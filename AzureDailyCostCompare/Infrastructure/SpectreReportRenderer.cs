@@ -25,8 +25,8 @@ public class SpectreReportRenderer : IReportRenderer
 
         var table = new Table()
             .AddColumn("Day of Month")
-            .AddColumn(context.PreviousMonthStart.ToString("MMMM"))
-            .AddColumn(context.CurrentMonthStart.ToString("MMMM"))
+            .AddColumn(context.MonthComparisonPeriod.PreviousFirstDayOfMonth.ToString("MMMM"))
+            .AddColumn(context.MonthComparisonPeriod.CurrentFirstDayOfMonth.ToString("MMMM"))
             .AddColumn("Cost Difference (USD)");
 
         foreach (var row in tableRows)

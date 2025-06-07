@@ -10,11 +10,11 @@ public class WeeklyAnalysisService
 
         foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
         {
-            var previousWeeks = GetWeeksForDay(day, context.PreviousMonthStart)
+            var previousWeeks = GetWeeksForDay(day, context.MonthComparisonPeriod.PreviousFirstDayOfMonth)
                 .Where(d => d <= context.ComparisonReferenceDate)
                 .ToList();
 
-            var currentWeeks = GetWeeksForDay(day, context.CurrentMonthStart)
+            var currentWeeks = GetWeeksForDay(day, context.MonthComparisonPeriod.CurrentFirstDayOfMonth)
                 .Where(d => d <= context.ComparisonReferenceDate)
                 .ToList();
 

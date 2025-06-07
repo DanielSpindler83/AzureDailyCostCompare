@@ -13,8 +13,8 @@ public class DailyCostTableBuilder
                select new DailyCostRow
                {
                    DayOfMonth = day,
-                   PreviousCost = DetermineMonthCost(previousDay, day, context.PreviousMonthDayCount),
-                   CurrentCost = DetermineMonthCost(currentDay, day, context.CurrentMonthDayCount),
+                   PreviousCost = DetermineMonthCost(previousDay, day, context.MonthComparisonPeriod.PreviousMonthDaysCount),
+                   CurrentCost = DetermineMonthCost(currentDay, day, context.MonthComparisonPeriod.CurrentMonthDaysCount),
                    CostDifference = CalculateCostDifference(currentDay, previousDay)
                };
     }

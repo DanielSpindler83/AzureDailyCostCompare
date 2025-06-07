@@ -22,8 +22,8 @@ public class ConsoleReportRenderer : IReportRenderer
 
         Console.WriteLine("\n{0,-18} {1,-18} {2,-18} {3,-18}",
             "Day of Month",
-            context.PreviousMonthStart.ToString("MMMM"),
-            context.CurrentMonthStart.ToString("MMMM"),
+            context.MonthComparisonPeriod.PreviousFirstDayOfMonth.ToString("MMMM"),
+            context.MonthComparisonPeriod.CurrentFirstDayOfMonth.ToString("MMMM"),
             "Cost Difference(USD)");
 
         foreach (var row in tableRows)

@@ -1,3 +1,4 @@
+using AzureDailyCostCompare.Application;
 using AzureDailyCostCompare.Domain;
 
 namespace AzureDailyCostCompare.Tests;
@@ -11,13 +12,14 @@ public class ProgramTests : ReportGeneratorTestBase
         var mockCostData = TestHelper.LoadMockCostData("mockCostData_dec2023-jan2024.json");
 
         // Arrange: Setup cost comparision context
+        var comparisonReferenceDate = new DateTime(2024, 01, 01);
+        var monthCalculationService = new MonthCalculationService();
+        var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+
         var costComparisonContext = new CostComparisonContext(
-            comparisonReferenceDate: new DateTime(2024, 01, 01),
+            comparisonReferenceDate: comparisonReferenceDate,
             comparisonType: ComparisonType.FullMonth,
-            currentMonthStart: new DateTime(2024, 1, 1),   // January 1st
-            previousMonthStart: new DateTime(2023, 12, 1), // December 1st
-            currentMonthDayCount: 31,  // Only 1 day in current month (Jan 1st)
-            previousMonthDayCount: 31, // Full December (31 days)
+            monthComparisonPeriod: monthComparisonPeriod,
             comparisonTableDayCount: 31, // Compare against 31 days
             dataLoadDelayHours: 4
         );
@@ -50,13 +52,14 @@ public class ProgramTests : ReportGeneratorTestBase
         var mockCostData = TestHelper.LoadMockCostData("mockCostData_jan2024-feb2024.json");
 
         // Arrange: Setup cost comparision context
+        var comparisonReferenceDate = new DateTime(2024, 02, 10);
+        var monthCalculationService = new MonthCalculationService();
+        var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+
         var costComparisonContext = new CostComparisonContext(
-            comparisonReferenceDate: new DateTime(2024, 02, 10),
+            comparisonReferenceDate: comparisonReferenceDate,
             comparisonType: ComparisonType.FullMonth,
-            currentMonthStart: new DateTime(2024, 2, 1),   
-            previousMonthStart: new DateTime(2024, 1, 1), 
-            currentMonthDayCount: 29, // Feb in a leap year  
-            previousMonthDayCount: 31, // Jan
+            monthComparisonPeriod: monthComparisonPeriod,
             comparisonTableDayCount: 31, // Compare against 31 days
             dataLoadDelayHours: 4
         );
@@ -89,13 +92,14 @@ public class ProgramTests : ReportGeneratorTestBase
         var mockCostData = TestHelper.LoadMockCostData("mockCostData_feb2024-mar2024.json");
 
         // Arrange: Setup cost comparision context
+        var comparisonReferenceDate = new DateTime(2024, 03, 10);
+        var monthCalculationService = new MonthCalculationService();
+        var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+
         var costComparisonContext = new CostComparisonContext(
-            comparisonReferenceDate: new DateTime(2024, 03, 31),
-            comparisonType: ComparisonType.PartialMonth,
-            currentMonthStart: new DateTime(2024, 3, 1),
-            previousMonthStart: new DateTime(2024, 2, 1),
-            currentMonthDayCount: 31, // March
-            previousMonthDayCount: 29, // Feb in a leap year 
+            comparisonReferenceDate: comparisonReferenceDate,
+            comparisonType: ComparisonType.FullMonth,
+            monthComparisonPeriod: monthComparisonPeriod,
             comparisonTableDayCount: 31, // Compare against 31 days
             dataLoadDelayHours: 4
         );
@@ -127,19 +131,19 @@ public class ProgramTests : ReportGeneratorTestBase
         // Arrange: Create dynamic mock data
         var mockCostData = CurrentDateDynamicCostDataCreator.GenerateCostData();
 
-        var referenceDate = DateTime.UtcNow;
-
-        var previousMonthStart = new DateTime(referenceDate.Year, referenceDate.Month, 1).AddMonths(-1);
 
         // Arrange: Setup cost comparision context
+        var comparisonReferenceDate = DateTime.UtcNow;
+        var monthCalculationService = new MonthCalculationService();
+        var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+        var comparisonCalculation = new ComparisonCalculationService();
+        var comparisonType = comparisonCalculation.DetermineComparisonType(comparisonReferenceDate);
+
         var costComparisonContext = new CostComparisonContext(
-            comparisonReferenceDate: referenceDate,
-            comparisonType: ComparisonType.PartialMonth,
-            currentMonthStart: new DateTime(referenceDate.Year, referenceDate.Month, 1),
-            previousMonthStart: previousMonthStart,
-            currentMonthDayCount: DateTime.DaysInMonth(referenceDate.Year, referenceDate.Month),
-            previousMonthDayCount: DateTime.DaysInMonth(previousMonthStart.Year, previousMonthStart.Month),
-            comparisonTableDayCount: referenceDate.Day,
+            comparisonReferenceDate: comparisonReferenceDate,
+            comparisonType: comparisonType,
+            monthComparisonPeriod: monthComparisonPeriod,
+            comparisonTableDayCount: comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate, comparisonType),
             dataLoadDelayHours: 4
         );
 
@@ -155,7 +159,7 @@ public class ProgramTests : ReportGeneratorTestBase
 
         // Assert: Validate expected report output
         var output = consoleOutput.ToString();
-        Assert.Contains(referenceDate.Month.ToString(), output);
+        Assert.Contains(comparisonReferenceDate.Month.ToString(), output);
         //Assert.Contains("March", output);
         //Assert.Contains("277.55", output);
         //Assert.Contains("617.95", output);

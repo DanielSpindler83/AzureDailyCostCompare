@@ -1,4 +1,6 @@
-﻿namespace AzureDailyCostCompare.Domain;
+﻿using AzureDailyCostCompare.Application;
+
+namespace AzureDailyCostCompare.Domain;
 
 /// <summary>
 /// Contains all calculated date information for cost comparison
@@ -8,30 +10,30 @@ public record CostComparisonContext
 {
     public DateTime ComparisonReferenceDate { get; init; }
     public ComparisonType ComparisonType { get; init; }
-    public DateTime CurrentMonthStart { get; init; }
-    public DateTime PreviousMonthStart { get; init; }
-    public int CurrentMonthDayCount { get; init; }
-    public int PreviousMonthDayCount { get; init; }
+    public MonthComparisonPeriod MonthComparisonPeriod { get; init; }
     public int ComparisonTableDayCount { get; init; }
     public int DataLoadDelayHours { get; init; }
 
     public CostComparisonContext(
         DateTime comparisonReferenceDate,
         ComparisonType comparisonType,
-        DateTime currentMonthStart,
-        DateTime previousMonthStart,
-        int currentMonthDayCount,
-        int previousMonthDayCount,
+        MonthComparisonPeriod monthComparisonPeriod,
         int comparisonTableDayCount,
         int dataLoadDelayHours)
     {
         ComparisonReferenceDate = comparisonReferenceDate;
         ComparisonType = comparisonType;
-        CurrentMonthStart = currentMonthStart;
-        PreviousMonthStart = previousMonthStart;
-        CurrentMonthDayCount = currentMonthDayCount;
-        PreviousMonthDayCount = previousMonthDayCount;
+        MonthComparisonPeriod = monthComparisonPeriod;
         ComparisonTableDayCount = comparisonTableDayCount;
         DataLoadDelayHours = dataLoadDelayHours;
     }
 }
+
+//ComparisonReferenceDate = comparisonReferenceDate;
+//        ComparisonType = comparisonType;
+//        CurrentMonthStart = monthComparisonPeriod.CurrentFirstDayOfMonth;
+//        PreviousMonthStart = monthComparisonPeriod.PreviousFirstDayOfMonth;
+//        CurrentMonthDayCount = monthComparisonPeriod.CurrentMonthDaysCount;
+//        PreviousMonthDayCount = monthComparisonPeriod.PreviousMonthDaysCount;
+//        ComparisonTableDayCount = comparisonTableDayCount;
+//        DataLoadDelayHours = dataLoadDelayHours;

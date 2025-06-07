@@ -59,7 +59,7 @@ public class CostComparisonBusinessHandler
         var costData = await _costService.QueryCostManagementAPI(
             accessToken,
             billingAccountId,
-            costComparisonContext.PreviousMonthStart,
+            costComparisonContext.MonthComparisonPeriod.PreviousFirstDayOfMonth,
             costComparisonContext.ComparisonReferenceDate);
 
         _reportGenerator.GenerateDailyCostReport(costData, costComparisonContext, _applicationUnifiedSettings.ShowWeeklyPatterns, _applicationUnifiedSettings.ShowDayOfWeekAverages);

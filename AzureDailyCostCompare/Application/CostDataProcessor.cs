@@ -8,14 +8,14 @@ public class CostDataProcessor
     {
         // Filter and sort data for each month
         var currentMonthDailyCosts = costData
-            .Where(dc => dc.DateString.Month == context.CurrentMonthStart.Month &&
-                   dc.DateString.Year == context.CurrentMonthStart.Year)
+            .Where(dc => dc.DateString.Month == context.MonthComparisonPeriod.CurrentFirstDayOfMonth.Month &&
+                   dc.DateString.Year == context.MonthComparisonPeriod.CurrentFirstDayOfMonth.Year)
             .OrderBy(dc => dc.DateString)
             .ToList();
 
         var previousMonthDailyCosts = costData
-            .Where(dc => dc.DateString.Month == context.PreviousMonthStart.Month &&
-                   dc.DateString.Year == context.PreviousMonthStart.Year)
+            .Where(dc => dc.DateString.Month == context.MonthComparisonPeriod.PreviousFirstDayOfMonth.Month &&
+                   dc.DateString.Year == context.MonthComparisonPeriod.PreviousFirstDayOfMonth.Year)
             .OrderBy(dc => dc.DateString)
             .ToList();
 
