@@ -9,11 +9,9 @@ public class CostService
 {
     private readonly HttpClient _httpClient;
 
-    // API-specific constants stay in the service
     private const string COST_MANAGEMENT_PATH = "/providers/Microsoft.CostManagement/query";
     private const string API_VERSION = "2023-11-01";
 
-    // Constructor injection of HttpClient
     public CostService(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
