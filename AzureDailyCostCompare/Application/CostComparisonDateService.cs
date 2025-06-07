@@ -43,18 +43,18 @@ public class CostComparisonDateService
         var validatedDate = _dataAvailability.ValidateDate(comparisonReferenceDate, latestAvailableFullDaysDataDate, previousDayUtcDataLoadDelayHours);
         var comparisonType = _comparisonCalculation.DetermineComparisonType(comparisonReferenceDate);
         var comparisonDayCount = _comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate, comparisonType);
-        var (currentStart, previousStart, currentDays, previousDays) = _monthCalculation.CalculateMonthBoundaries(comparisonReferenceDate);
+        var monthComparisonPeriod = _monthCalculation.CalculateMonthComparisonPeriod(comparisonReferenceDate);
         var processedDate = _comparisonCalculation.AdjustForHistoricalDate(validatedDate); //sloppy as we may not need to do this check if the month is partial?
 
         // i feel this is all working now but it can be improved - capture state within the services? and only return what we need?
 
         return new CostComparisonContext(
-            processedDate, // double check this is what we should pass in here
+            processedDate, 
             comparisonType,
-            currentStart,
-            previousStart,
-            currentDays,
-            previousDays,
+            monthComparisonPeriod.CurrentFirstDayOfMonth,
+            monthComparisonPeriod.PreviousFirstDayOfMonth,
+            monthComparisonPeriod.CurrentMonthDaysCount,
+            monthComparisonPeriod.PreviousMonthDaysCount,
             comparisonDayCount,
             previousDayUtcDataLoadDelayHours); // i dont think this context needs previousDayUtcDataLoadDelayHours anymore - we handle it elsewhere....please check when you can...
     }
