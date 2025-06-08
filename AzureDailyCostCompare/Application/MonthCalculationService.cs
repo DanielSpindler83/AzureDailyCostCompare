@@ -2,11 +2,11 @@
 
 public class MonthCalculationService
 {
-    public MonthComparisonPeriod CalculateMonthComparisonPeriod(DateTime referenceDate)
+    public MonthComparisonPeriod CalculateMonthComparisonPeriod(DateTime validatedComparisonDate)
     {
-        var currentStart = new DateTime(referenceDate.Year, referenceDate.Month, 1);
+        var currentStart = new DateTime(validatedComparisonDate.Year, validatedComparisonDate.Month, 1);
         var previousStart = currentStart.AddMonths(-1);
-        var currentDays = DateTime.DaysInMonth(referenceDate.Year, referenceDate.Month);
+        var currentDays = DateTime.DaysInMonth(validatedComparisonDate.Year, validatedComparisonDate.Month);
         var previousDays = DateTime.DaysInMonth(previousStart.Year, previousStart.Month);
 
         return new MonthComparisonPeriod

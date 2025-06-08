@@ -2,61 +2,41 @@
 
 namespace AzureDailyCostCompare.Application;
 
-/// <summary>
-/// Determines the type of comparison and calculates comparison day counts
-/// APPLICATION: Service that applies comparison business rules
-/// </summary>
 public class ComparisonCalculationService
 {
-
     private DateTime CurrentDateTimeUtc { get; init; } = DateTime.UtcNow;
 
-    /// <summary>
-    /// Determines the type of comparison based on override and current dates
-    /// </summary>
-    public ComparisonType DetermineComparisonType(DateTime date)
+    public ComparisonType DetermineComparisonType(DateTime validatedDate)
     {
-        return date.Month == CurrentDateTimeUtc.Month && date.Year == CurrentDateTimeUtc.Year
+        return validatedDate.Month == CurrentDateTimeUtc.Month && validatedDate.Year == CurrentDateTimeUtc.Year
             ? ComparisonType.PartialMonth
             : ComparisonType.FullMonth;
     }
 
-    /// <summary>
-    /// Calculates the number of days to display in the comparison table
-    /// </summary>
-    /// <param name="overrideDate">Override date (null for current date scenario)</param>
-    /// <param name="currentDate">Current date</param>
-    /// <param name="referenceDate">Reference date used for calculations</param>
-    /// <returns>Number of days for comparison table</returns>
-    public int CalculateComparisonDayCount(DateTime date, ComparisonType comparisonType)
+    public int CalculateComparisonDayCount(DateTime validatedDate)
     {
+        var comparisonType = DetermineComparisonType(validatedDate);
         if (comparisonType == ComparisonType.PartialMonth)
         {
-            return date.Day;
+            return validatedDate.Day;
         }
 
-        // Historical month comparisons - use maximum days to show comparison of ALL days in the month (even though user may have asked for a specific date)
-        int overrideMonthDays = DateTime.DaysInMonth(date.Year, date.Month);
-        DateTime previousMonth = date.AddMonths(-1);
+        int overrideMonthDays = DateTime.DaysInMonth(validatedDate.Year, validatedDate.Month);
+        DateTime previousMonth = validatedDate.AddMonths(-1);
         int previousMonthDays = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
-
         return Math.Max(overrideMonthDays, previousMonthDays);
     }
 
-    public DateTime AdjustForHistoricalDate(DateTime date)
+    public DateTime AdjustForHistoricalDate(DateTime validatedDate)
     {
-        // If the date represents a complete month in the past,
-        // adjust it to the last day of that month for full month comparison
-        bool isCompleteMonthInPast = date < CurrentDateTimeUtc &&
-                                   date.Month != CurrentDateTimeUtc.Month &&
-                                   date.Year <= CurrentDateTimeUtc.Year;
+        DateTime startOfCurrentMonth = new DateTime(CurrentDateTimeUtc.Year, CurrentDateTimeUtc.Month, 1);
+        bool isCompleteMonthInPast = validatedDate < startOfCurrentMonth;
 
         if (isCompleteMonthInPast)
         {
-            return new DateTime(date.Year, date.Month,
-                              DateTime.DaysInMonth(date.Year, date.Month));
+            var countOfDaysInMonth = DateTime.DaysInMonth(validatedDate.Year, validatedDate.Month);
+            return new DateTime(validatedDate.Year, validatedDate.Month, countOfDaysInMonth);
         }
-
-        return date;
+        return validatedDate;
     }
 }

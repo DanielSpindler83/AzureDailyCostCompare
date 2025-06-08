@@ -1,5 +1,4 @@
 ﻿using AzureDailyCostCompare.Application;
-using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine;
 
 namespace AzureDailyCostCompare.Infrastructure;

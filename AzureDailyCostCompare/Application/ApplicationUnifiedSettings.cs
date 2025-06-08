@@ -1,21 +1,17 @@
 ﻿using AzureDailyCostCompare.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using System.Text.Json;
 
 namespace AzureDailyCostCompare.Application;
 
 public class ApplicationUnifiedSettings
 {
-    public const string ConfigFileName = "appsettings.json";
     private readonly UserSettings _userSettings;
 
-    public ApplicationUnifiedSettings(
-        UserSettings userSettings)
+    public ApplicationUnifiedSettings(UserSettings userSettings)
     {
         _userSettings = userSettings;
     }
 
-    public DateTime ComparisonReferenceDate { get; private set; } = DateTime.UtcNow;
+    public DateTime InputComparisonDate { get; private set; } = DateTime.UtcNow;
     public bool ShowWeeklyPatterns { get; private set; } = false;
     public bool ShowDayOfWeekAverages { get; private set; } = false;
     public int PreviousDayUtcDataLoadDelayHours { get; private set; } = 4; // default value of 4 - but should always be set via file config or command line
@@ -23,13 +19,13 @@ public class ApplicationUnifiedSettings
     public void SetApplicationUnifiedSettings(DateTime? comparisonReferenceDateFromCommandLine, bool showWeeklyPatterns, bool showDayOfWeekAverages, int? previousDayUtcDataLoadDelayHoursFromCommandLine)
     {
         if (comparisonReferenceDateFromCommandLine is not null) // if a date was passed in via command line we use it
-        { 
-            ComparisonReferenceDate = (DateTime)comparisonReferenceDateFromCommandLine; 
+        {
+            InputComparisonDate = (DateTime)comparisonReferenceDateFromCommandLine;
         }
 
         if (comparisonReferenceDateFromCommandLine is null) // if no date passed in we use the current UTC date time
         {
-            ComparisonReferenceDate = DateTime.UtcNow;
+            InputComparisonDate = DateTime.UtcNow;
         }
 
         ShowWeeklyPatterns = showWeeklyPatterns;
@@ -40,7 +36,7 @@ public class ApplicationUnifiedSettings
             PreviousDayUtcDataLoadDelayHours = _userSettings.PreviousDayUtcDataLoadDelayHours.NumberOfHours ?? 4;
         }
 
-        if (previousDayUtcDataLoadDelayHoursFromCommandLine is not null) // commandline passed in value for PreviousDayUtcDataLoadDelayHours and we should use it and store it in user settings(app settings for now)
+        if (previousDayUtcDataLoadDelayHoursFromCommandLine is not null) 
         {
             ValidatePreviousDayUtcDataLoadDelayHoursValue(previousDayUtcDataLoadDelayHoursFromCommandLine);
             PreviousDayUtcDataLoadDelayHours = previousDayUtcDataLoadDelayHoursFromCommandLine ?? 4;
@@ -48,9 +44,6 @@ public class ApplicationUnifiedSettings
             UserSettings.SaveSetting(
                 "PreviousDayUtcDataLoadDelayHoursUserSetting",
                 new { NumberOfHours = PreviousDayUtcDataLoadDelayHours });
-
-            DisplaySuccess($"PreviousDayUtcDataLoadDelayHoursUserSetting value successfully updated to {PreviousDayUtcDataLoadDelayHours} " +
-              $"in {ConfigFileName}. New value will be used now and for subsequent executions.");
         }
     }
 
@@ -60,12 +53,5 @@ public class ApplicationUnifiedSettings
         {
             throw new ConfigurationValidationException($"PreviousDayUtcDataLoadDelayHoursUserSetting:Value must be between 0 and 23 inclusive, got {previousDayUtcDataLoadDelayHours}");
         }
-    }
-
-    private static void DisplaySuccess(string message)
-    {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(message);
-        Console.ResetColor();
     }
 }

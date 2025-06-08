@@ -15,12 +15,12 @@ public class ProgramTests : ReportGeneratorTestBase
         var comparisonReferenceDate = new DateTime(2024, 01, 01);
         var monthCalculationService = new MonthCalculationService();
         var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+        var comparisonCalculation = new ComparisonCalculationService();
 
         var costComparisonContext = new CostComparisonContext(
             comparisonReferenceDate: comparisonReferenceDate,
-            comparisonType: ComparisonType.FullMonth,
             monthComparisonPeriod: monthComparisonPeriod,
-            comparisonTableDayCount: 31, // Compare against 31 days
+            comparisonTableDayCount: comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate),
             dataLoadDelayHours: 4
         );
 
@@ -55,12 +55,12 @@ public class ProgramTests : ReportGeneratorTestBase
         var comparisonReferenceDate = new DateTime(2024, 02, 10);
         var monthCalculationService = new MonthCalculationService();
         var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+        var comparisonCalculation = new ComparisonCalculationService();
 
         var costComparisonContext = new CostComparisonContext(
             comparisonReferenceDate: comparisonReferenceDate,
-            comparisonType: ComparisonType.FullMonth,
             monthComparisonPeriod: monthComparisonPeriod,
-            comparisonTableDayCount: 31, // Compare against 31 days
+            comparisonTableDayCount: comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate),
             dataLoadDelayHours: 4
         );
 
@@ -95,12 +95,12 @@ public class ProgramTests : ReportGeneratorTestBase
         var comparisonReferenceDate = new DateTime(2024, 03, 10);
         var monthCalculationService = new MonthCalculationService();
         var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
+        var comparisonCalculation = new ComparisonCalculationService();
 
         var costComparisonContext = new CostComparisonContext(
             comparisonReferenceDate: comparisonReferenceDate,
-            comparisonType: ComparisonType.FullMonth,
             monthComparisonPeriod: monthComparisonPeriod,
-            comparisonTableDayCount: 31, // Compare against 31 days
+            comparisonTableDayCount: comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate),
             dataLoadDelayHours: 4
         );
 
@@ -121,7 +121,7 @@ public class ProgramTests : ReportGeneratorTestBase
         Assert.Contains("277.55", output);
         Assert.Contains("617.95", output);
         Assert.Contains("31", output);
-        Assert.Contains("29 days", output); // failing here as we show Feb has 31 days.....which is WRONG
+        Assert.Contains("29 days", output);
     }
 
     [Fact]
@@ -137,13 +137,11 @@ public class ProgramTests : ReportGeneratorTestBase
         var monthCalculationService = new MonthCalculationService();
         var monthComparisonPeriod = monthCalculationService.CalculateMonthComparisonPeriod(comparisonReferenceDate);
         var comparisonCalculation = new ComparisonCalculationService();
-        var comparisonType = comparisonCalculation.DetermineComparisonType(comparisonReferenceDate);
 
         var costComparisonContext = new CostComparisonContext(
             comparisonReferenceDate: comparisonReferenceDate,
-            comparisonType: comparisonType,
             monthComparisonPeriod: monthComparisonPeriod,
-            comparisonTableDayCount: comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate, comparisonType),
+            comparisonTableDayCount: comparisonCalculation.CalculateComparisonDayCount(comparisonReferenceDate),
             dataLoadDelayHours: 4
         );
 

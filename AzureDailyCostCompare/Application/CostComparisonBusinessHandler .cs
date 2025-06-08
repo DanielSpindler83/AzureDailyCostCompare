@@ -31,7 +31,7 @@ public class CostComparisonBusinessHandler
     {
         try
         {
-            await RunCostComparisonAsync(_applicationUnifiedSettings.ComparisonReferenceDate, 
+            await RunCostComparisonAsync(_applicationUnifiedSettings.InputComparisonDate, 
                                          _applicationUnifiedSettings.PreviousDayUtcDataLoadDelayHours);
         }
         catch (ConfigurationValidationException ex)
@@ -47,14 +47,14 @@ public class CostComparisonBusinessHandler
     }
 
     private async Task RunCostComparisonAsync(
-        DateTime comparisonReferenceDate,
+        DateTime inputComparisonDate,
         int previousDayUtcDataLoadDelayHours)
     {
         var accessToken = await _authService.GetAccessToken();
 
         var billingAccountId = await _billingService.GetBillingAccountIdAsync(accessToken);
 
-        var costComparisonContext = _costComparisonDateService.CreateContext(comparisonReferenceDate, previousDayUtcDataLoadDelayHours);
+        var costComparisonContext = _costComparisonDateService.CreateContext(inputComparisonDate, previousDayUtcDataLoadDelayHours);
 
         var costData = await _costService.QueryCostManagementAPI(
             accessToken,
