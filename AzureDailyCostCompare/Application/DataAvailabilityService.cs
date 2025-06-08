@@ -38,17 +38,17 @@ public class DataAvailabilityService
     /// <param name="previousDayUtcDataLoadDelayHours">Hours after UTC midnight to declare previous days data complete enough to load</param>
     /// <returns>Validated date (normalized to date only)</returns>
     /// <exception cref="ArgumentException">When override date exceeds available data</exception>
-    public DateTime ValidateDate(DateTime date, DateTime latestAvailableFullDaysDataDate, int previousDayUtcDataLoadDelayHours)
+    public DateTime ValidateDate(DateTime comparisonReferenceDate, DateTime latestAvailableFullDaysDataDate, int previousDayUtcDataLoadDelayHours)
     {
 
-        if (date.Date > latestAvailableFullDaysDataDate)
+        if (comparisonReferenceDate.Date > latestAvailableFullDaysDataDate)
         {
             throw new ArgumentException(
-                $"ComparisonReferenceDate {date:yyyy-MM-dd} exceeds the latest date with complete cost data " +
+                $"ComparisonReferenceDate {comparisonReferenceDate:yyyy-MM-dd} exceeds the latest date with complete cost data " +
                 $"({latestAvailableFullDaysDataDate:yyyy-MM-dd}). Data completeness is determined by the {previousDayUtcDataLoadDelayHours}:00 UTC cutoff.",
-                nameof(date)); // review error message
+                nameof(comparisonReferenceDate)); // review error message
         }
 
-        return date.Date;
+        return comparisonReferenceDate.Date;
     }
 }

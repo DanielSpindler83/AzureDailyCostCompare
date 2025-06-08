@@ -11,10 +11,7 @@ class Program
     {
         try
         {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .Build();
+            var configuration = UserSettings.CreateUserConfiguration();
 
             var services = new ServiceCollection();
             services.ConfigureServices(configuration);
