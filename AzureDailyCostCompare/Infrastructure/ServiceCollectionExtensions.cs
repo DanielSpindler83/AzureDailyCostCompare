@@ -1,5 +1,4 @@
 ﻿using AzureDailyCostCompare.Application;
-using AzureDailyCostCompare.Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,8 +9,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
 
-        var previousDayUtcDataLoadDelayHours = new PreviousDayUtcDataLoadDelayHoursUserSetting(configuration);
-        services.AddSingleton(previousDayUtcDataLoadDelayHours);
+        //var previousDayUtcDataLoadDelayHours = new PreviousDayUtcDataLoadDelayHoursUserSetting(configuration);
+        //services.AddSingleton(previousDayUtcDataLoadDelayHours);
+        services.AddSingleton<UserSettings>(provider => new UserSettings(configuration));
 
         // Composition Root
         services.AddScoped<CommandLineBuilder>();

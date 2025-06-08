@@ -7,12 +7,12 @@ namespace AzureDailyCostCompare.Application;
 public class ApplicationUnifiedSettings
 {
     public const string ConfigFileName = "appsettings.json";
-    private readonly PreviousDayUtcDataLoadDelayHoursUserSetting _previousDayUtcDataLoadDelayHoursUserSetting;
+    private readonly UserSettings _userSettings;
 
     public ApplicationUnifiedSettings(
-        PreviousDayUtcDataLoadDelayHoursUserSetting previousDayUtcDataLoadDelayHoursUserSetting)
+        UserSettings userSettings)
     {
-        _previousDayUtcDataLoadDelayHoursUserSetting = previousDayUtcDataLoadDelayHoursUserSetting;
+        _userSettings = userSettings;
     }
 
     public DateTime ComparisonReferenceDate { get; private set; } = DateTime.UtcNow;
@@ -38,7 +38,7 @@ public class ApplicationUnifiedSettings
 
         if (previousDayUtcDataLoadDelayHoursFromCommandLine is null) // if NO commandline value we use user settings
         {
-            PreviousDayUtcDataLoadDelayHours = _previousDayUtcDataLoadDelayHoursUserSetting.NumberOfHours ?? 4;
+            PreviousDayUtcDataLoadDelayHours = _userSettings.PreviousDayUtcDataLoadDelayHours.NumberOfHours ?? 4;
         }
 
         if (previousDayUtcDataLoadDelayHoursFromCommandLine is not null) // commandline passed in value for PreviousDayUtcDataLoadDelayHours and we should use it and store it in user settings(app settings for now)
