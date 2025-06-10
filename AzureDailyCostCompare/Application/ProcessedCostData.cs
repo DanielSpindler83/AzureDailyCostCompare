@@ -24,13 +24,3 @@ public class ProcessedCostData
     // Extra days analysis (null if not applicable)
     public decimal? CurrentMonthExtraDaysAverage { get; set; }
 }
-
-//public class ProcessedCostData
-//{
-//    public List<DailyCostData> CurrentMonthCostData { get; set; } = [];
-//    public List<DailyCostData> PreviousMonthCostData { get; set; } = [];
-//    public decimal AverageCurrentPartialMonth { get; set; }
-//    public decimal AveragePreviousPartialMonth { get; set; }
-//    public decimal AveragePreviousFullMonth { get; set; }
-//    public decimal CurrentToPreviousMonthAveragesCostDelta { get; set; }
-//}
